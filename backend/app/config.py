@@ -67,12 +67,17 @@ class Settings(BaseSettings):
         print(f"DEBUG: Settings.groq_api_key value: {mask(self.groq_api_key)}")
         
         # Initialize Groq
+        print(f"DEBUG: GROQ_AVAILABLE status: {GROQ_AVAILABLE}")
         if GROQ_AVAILABLE and self.groq_api_key:
             try:
                 self.groq_client = Groq(api_key=self.groq_api_key)
-                logger.info("Groq AI Client: INITIALIZED")
+                print("DEBUG: Groq AI Client: INITIALIZED SUCCESSFULLY")
+                logger.info("Groq client initialized successfully")
             except Exception as e:
-                logger.error(f"Groq AI Client: FAILED ({e})")
+                print(f"DEBUG: Groq AI Client: FAILED with error: {str(e)}")
+                logger.error(f"Failed to initialize Groq client: {e}")
+        else:
+            print(f"DEBUG: Groq AI Client: SKIPPED (Available={GROQ_AVAILABLE}, Key={bool(self.groq_api_key)})")
         
         # Initialize Sarvam
         if self.sarvam_api_key:
