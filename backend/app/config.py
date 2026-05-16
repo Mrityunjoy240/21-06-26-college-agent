@@ -51,8 +51,9 @@ class Settings(BaseSettings):
     algorithm: str = "HS256"
     access_token_expire_minutes: int = 30
     
-    # Direct Groq client initialization
+    # Direct Client initializations
     groq_client: Optional[Any] = None
+    sarvam_client: Optional[Any] = None
     
     # Gemini settings
     gemini_model: str = os.getenv("GEMINI_MODEL", "gemini-2.0-flash")
@@ -79,7 +80,7 @@ class Settings(BaseSettings):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         
-        # Debugging: Log status of environment variables (masked for security)
+        # Debugging: Log status (masked)
         def mask_key(key):
             if not key: return "MISSING"
             if len(key) <= 8: return "****"
@@ -88,20 +89,28 @@ class Settings(BaseSettings):
         logger.info(f"Railway Env Check - GROQ_API_KEY: {mask_key(self.groq_api_key)}")
         logger.info(f"Railway Env Check - SARVAM_API_KEY: {mask_key(self.sarvam_api_key)}")
         
-        # Initialize Groq client if API key is available and library is installed
+        # Fail-fast check for production (only if not running locally)
+        if os.getenv("KUBERNETES_SERVICE_HOST") or os.getenv("RAILWAY_ENVIRONMENT"):
+            if not self.groq_api_key or not self.sarvam_api_key:
+                error_msg = "CRITICAL ERROR: Required API keys (GROQ or SARVAM) are missing in Railway settings!"
+                logger.error(error_msg)
+        
+        # Initialize Groq client
         if GROQ_AVAILABLE and self.groq_api_key:
             try:
                 self.groq_client = Groq(api_key=self.groq_api_key)
                 logger.info("Groq client initialized successfully")
             except Exception as e:
                 logger.error(f"Failed to initialize Groq client: {e}")
-                self.groq_client = None
-        else:
-            if not GROQ_AVAILABLE:
-                logger.error("Groq library NOT installed")
-            if not self.groq_api_key:
-                logger.error("GROQ_API_KEY is EMPTY or MISSING")
-            self.groq_client = None
+        
+        # Initialize Sarvam client if available
+        try:
+            from sarvamai import SarvamAI
+            if self.sarvam_api_key:
+                self.sarvam_client = SarvamAI(api_subscription_key=self.sarvam_api_key)
+                logger.info("Sarvam client initialized successfully")
+        except (ImportError, Exception) as e:
+            logger.warning(f"Sarvam client initialization skipped: {e}")
 
 # Create settings instance
 settings = Settings()
