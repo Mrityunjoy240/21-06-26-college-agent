@@ -67,21 +67,18 @@ Response: "With 20,000 rank in WBJEE, you can get CSE, IT, or ECE in BCREC. CSE 
 """
     
     def __init__(self):
-        self.client = None
         self.model = "llama-3.3-70b-versatile"  # Groq's best model
         self.temperature = 0.3
         self.max_tokens = 500
         self.knowledge_base = self._load_knowledge_base()
         
-        if GROQ_AVAILABLE and settings.groq_api_key:
-            try:
-                self.client = Groq(api_key=settings.groq_api_key)
-                logger.info("Groq client initialized")
-            except Exception as e:
-                logger.error(f"Failed to initialize Groq client: {e}")
-                self.client = None
+        # Directly use the client from settings
+        self.client = settings.groq_client
+        
+        if self.client:
+            logger.info("GroqService successfully connected to settings client")
         else:
-            logger.warning("Groq API key not configured or library not installed")
+            logger.warning(f"GroqService: No client found in settings. API Key: {'present' if settings.groq_api_key else 'MISSING'}")
     
     def _load_knowledge_base(self) -> str:
         """Load and format the knowledge base for the prompt"""
