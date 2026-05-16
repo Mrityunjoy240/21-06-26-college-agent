@@ -79,15 +79,28 @@ class Settings(BaseSettings):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         
+        # Debugging: Log status of environment variables (masked for security)
+        def mask_key(key):
+            if not key: return "MISSING"
+            if len(key) <= 8: return "****"
+            return f"{key[:4]}...{key[-4:]}"
+            
+        logger.info(f"Railway Env Check - GROQ_API_KEY: {mask_key(self.groq_api_key)}")
+        logger.info(f"Railway Env Check - SARVAM_API_KEY: {mask_key(self.sarvam_api_key)}")
+        
         # Initialize Groq client if API key is available and library is installed
         if GROQ_AVAILABLE and self.groq_api_key:
             try:
                 self.groq_client = Groq(api_key=self.groq_api_key)
-                logger.info("Groq client initialized from API key")
+                logger.info("Groq client initialized successfully")
             except Exception as e:
                 logger.error(f"Failed to initialize Groq client: {e}")
                 self.groq_client = None
         else:
+            if not GROQ_AVAILABLE:
+                logger.error("Groq library NOT installed")
+            if not self.groq_api_key:
+                logger.error("GROQ_API_KEY is EMPTY or MISSING")
             self.groq_client = None
 
 # Create settings instance
