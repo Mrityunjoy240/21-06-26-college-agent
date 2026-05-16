@@ -1,4 +1,4 @@
-from pydantic_settings import BaseSettings
+from pydantic_settings import BaseSettings, SettingsConfigDict
 from typing import List, Optional, Any
 import os
 import logging
@@ -6,111 +6,82 @@ from dotenv import load_dotenv
 
 logger = logging.getLogger(__name__)
 
-# Try to load local.env first, then .env
-# Search in current dir, then parent dir (project root)
-def get_env_path(filename):
-    if os.path.exists(filename):
-        return filename
-    parent_path = os.path.join("..", filename)
-    if os.path.exists(parent_path):
-        return parent_path
-    return None
+# Try to load local.env or .env for local development
+for env_file in ["local.env", ".env", "../local.env", "../.env"]:
+    if os.path.exists(env_file):
+        load_dotenv(env_file)
+        logger.info(f"Loaded environment from {env_file}")
+        break
 
-env_path = get_env_path("local.env") or get_env_path(".env")
-if env_path:
-    load_dotenv(env_path)
-    logger.info(f"Loaded configuration from {env_path}")
-else:
-    # Check if required keys are already in environment (e.g., Railway)
-    if os.getenv("GROQ_API_KEY") and os.getenv("SARVAM_API_KEY"):
-        pass
-    else:
-        # If not found, log warning only if we're not in a container
-        if not os.getenv("KUBERNETES_SERVICE_HOST"): # Common check for container environments
-            print("No configuration file (local.env or .env) found! Using system environment variables.")
-
-# Try to import Groq, gracefully degrade if not available
+# Graceful Groq check
 try:
     from groq import Groq
     GROQ_AVAILABLE = True
 except ImportError:
     GROQ_AVAILABLE = False
     Groq = None
-    logger.warning("groq package not installed. Groq features will be unavailable.")
+    logger.warning("Groq library not found in environment")
 
 class Settings(BaseSettings):
-    # API Keys
-    groq_api_key: str = os.getenv("GROQ_API_KEY", "")
-    gemini_api_key: str = os.getenv("GEMINI_API_KEY", "")
-    sarvam_api_key: str = os.getenv("SARVAM_API_KEY", "")
+    # API Keys - Pydantic will automatically pick these up from system env if available
+    groq_api_key: str = ""
+    sarvam_api_key: str = ""
+    gemini_api_key: str = ""
 
     # Auth Settings
-    admin_username: str = os.getenv("ADMIN_USERNAME", "admin")
-    admin_password: str = os.getenv("ADMIN_PASSWORD", "admin")
-    secret_key: str = os.getenv("SECRET_KEY", "supersecretkey")
+    admin_username: str = "admin"
+    admin_password: str = "admin"
+    secret_key: str = "college-agent-secret-key-2026"
     algorithm: str = "HS256"
-    access_token_expire_minutes: int = 30
+    access_token_expire_minutes: int = 60
     
     # Direct Client initializations
     groq_client: Optional[Any] = None
     sarvam_client: Optional[Any] = None
     
-    # Gemini settings
-    gemini_model: str = os.getenv("GEMINI_MODEL", "gemini-2.0-flash")
-    gemini_temperature: float = float(os.getenv("GEMINI_TEMPERATURE", "0.3"))
-    gemini_max_tokens: int = int(os.getenv("GEMINI_MAX_TOKENS", "500"))
-    
     # Directories
-    chroma_persist_dir: str = os.getenv("CHROMA_PERSIST_DIR", "chroma_db")
-    upload_dir: str = os.getenv("UPLOAD_DIR", "uploads")
-    temp_audio_dir: str = os.getenv("TEMP_AUDIO_DIR", "temp_audio")
-    
-    # CORS settings
-    cors_origins: str = "*"  # Comma-separated or *
+    chroma_persist_dir: str = "chroma_db"
+    upload_dir: str = "uploads"
+    temp_audio_dir: str = "temp_audio"
     
     # College information
-    college_name: str = os.getenv("COLLEGE_NAME", "Dr. B.C. Roy Engineering College")
-    admissions_phone: str = os.getenv("ADMISSIONS_PHONE", "0343-2501353")
-    support_email: str = os.getenv("SUPPORT_EMAIL", "info@bcrec.ac.in")
+    college_name: str = "Dr. B.C. Roy Engineering College"
+    admissions_phone: str = "0343-2501353"
+    support_email: str = "info@bcrec.ac.in"
     
-    class Config:
-        env_file = ".env"
-        extra = "ignore"
+    # Pydantic Config
+    model_config = SettingsConfigDict(
+        env_file=None, # Don't force a file
+        extra="ignore",
+        env_prefix="" # No prefix (e.g. look for GROQ_API_KEY directly)
+    )
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         
-        # Debugging: Log status (masked)
-        def mask_key(key):
-            if not key: return "MISSING"
-            if len(key) <= 8: return "****"
-            return f"{key[:4]}...{key[-4:]}"
+        # Security masking
+        def mask(s):
+            return f"{s[:4]}...{s[-4:]}" if s and len(s) > 8 else "MISSING"
             
-        logger.info(f"Railway Env Check - GROQ_API_KEY: {mask_key(self.groq_api_key)}")
-        logger.info(f"Railway Env Check - SARVAM_API_KEY: {mask_key(self.sarvam_api_key)}")
+        logger.info(f"ENV STATUS - GROQ: {mask(self.groq_api_key)}")
+        logger.info(f"ENV STATUS - SARVAM: {mask(self.sarvam_api_key)}")
         
-        # Fail-fast check for production (only if not running locally)
-        if os.getenv("KUBERNETES_SERVICE_HOST") or os.getenv("RAILWAY_ENVIRONMENT"):
-            if not self.groq_api_key or not self.sarvam_api_key:
-                error_msg = "CRITICAL ERROR: Required API keys (GROQ or SARVAM) are missing in Railway settings!"
-                logger.error(error_msg)
-        
-        # Initialize Groq client
+        # Initialize Groq
         if GROQ_AVAILABLE and self.groq_api_key:
             try:
                 self.groq_client = Groq(api_key=self.groq_api_key)
-                logger.info("Groq client initialized successfully")
+                logger.info("Groq AI Client: INITIALIZED")
             except Exception as e:
-                logger.error(f"Failed to initialize Groq client: {e}")
+                logger.error(f"Groq AI Client: FAILED ({e})")
         
-        # Initialize Sarvam client if available
-        try:
-            from sarvamai import SarvamAI
-            if self.sarvam_api_key:
+        # Initialize Sarvam
+        if self.sarvam_api_key:
+            try:
+                from sarvamai import SarvamAI
                 self.sarvam_client = SarvamAI(api_subscription_key=self.sarvam_api_key)
-                logger.info("Sarvam client initialized successfully")
-        except (ImportError, Exception) as e:
-            logger.warning(f"Sarvam client initialization skipped: {e}")
+                logger.info("Sarvam Voice Client: INITIALIZED")
+            except Exception as e:
+                logger.info(f"Sarvam Voice Client: SKIPPED ({e})")
 
-# Create settings instance
+# Singleton
 settings = Settings()
