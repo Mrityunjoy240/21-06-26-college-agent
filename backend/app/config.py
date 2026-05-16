@@ -63,8 +63,8 @@ class Settings(BaseSettings):
         def mask(s):
             return f"{s[:4]}...{s[-4:]}" if s and len(s) > 8 else "MISSING"
             
-        logger.info(f"ENV STATUS - GROQ: {mask(self.groq_api_key)}")
-        logger.info(f"ENV STATUS - SARVAM: {mask(self.sarvam_api_key)}")
+        print(f"DEBUG: GROQ_API_KEY from os.environ: {mask(os.getenv('GROQ_API_KEY'))}")
+        print(f"DEBUG: Settings.groq_api_key value: {mask(self.groq_api_key)}")
         
         # Initialize Groq
         if GROQ_AVAILABLE and self.groq_api_key:

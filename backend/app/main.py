@@ -1,18 +1,19 @@
+import logging
+from app.logging_config import setup_logging
+# Configure logging FIRST before anything else
+setup_logging()
+logger = logging.getLogger(__name__)
+
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from app.api import qa
 from app.api import conversations
-import logging
 import os
 from uuid import uuid4
 
-from app.logging_config import setup_logging
 from app.config import settings
 from app.database import init_db
-
-# Configure logging
-setup_logging()
 logger = logging.getLogger(__name__)
 
 # Initialize Database
