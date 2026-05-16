@@ -7,12 +7,21 @@ from dotenv import load_dotenv
 logger = logging.getLogger(__name__)
 
 # Try to load local.env first, then .env
-if os.path.exists("local.env"):
-    load_dotenv("local.env")
-    logger.info("Loaded configuration from local.env")
+# Search in current dir, then parent dir (project root)
+def get_env_path(filename):
+    if os.path.exists(filename):
+        return filename
+    parent_path = os.path.join("..", filename)
+    if os.path.exists(parent_path):
+        return parent_path
+    return None
+
+env_path = get_env_path("local.env") or get_env_path(".env")
+if env_path:
+    load_dotenv(env_path)
+    logger.info(f"Loaded configuration from {env_path}")
 else:
-    load_dotenv(".env")
-    logger.info("Loaded configuration from .env")
+    logger.warning("No configuration file (local.env or .env) found!")
 
 # Try to import Groq, gracefully degrade if not available
 try:
@@ -50,7 +59,7 @@ class Settings(BaseSettings):
     temp_audio_dir: str = os.getenv("TEMP_AUDIO_DIR", "temp_audio")
     
     # CORS settings
-    cors_origins: List[str] = ["*"]  # In production, specify exact origins
+    cors_origins: str = "*"  # Comma-separated or *
     
     # College information
     college_name: str = os.getenv("COLLEGE_NAME", "Dr. B.C. Roy Engineering College")

@@ -66,7 +66,10 @@ app.include_router(auth_routes.router, tags=["auth"])
 app.include_router(admin.router, prefix="/admin", tags=["admin"])
 
 # Serve Frontend Static Files (if they exist)
-frontend_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "frontend", "dist")
+# Path: backend/app/main.py -> backend -> project_root -> frontend/dist
+project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+frontend_path = os.path.join(project_root, "frontend", "dist")
+
 logger.info(f"Searching for frontend at: {frontend_path}")
 if os.path.exists(frontend_path):
     logger.info("Frontend directory found. Mounting static files.")
