@@ -21,7 +21,13 @@ if env_path:
     load_dotenv(env_path)
     logger.info(f"Loaded configuration from {env_path}")
 else:
-    logger.warning("No configuration file (local.env or .env) found!")
+    # Check if required keys are already in environment (e.g., Railway)
+    if os.getenv("GROQ_API_KEY") and os.getenv("SARVAM_API_KEY"):
+        pass
+    else:
+        # If not found, log warning only if we're not in a container
+        if not os.getenv("KUBERNETES_SERVICE_HOST"): # Common check for container environments
+            print("No configuration file (local.env or .env) found! Using system environment variables.")
 
 # Try to import Groq, gracefully degrade if not available
 try:
