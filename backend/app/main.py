@@ -70,20 +70,26 @@ app.include_router(admin.router, prefix="/admin", tags=["admin"])
 possible_paths = [
     os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), "frontend", "dist"),
     os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "frontend", "dist"),
-    os.path.join(os.getcwd(), "frontend", "dist")
+    os.path.join(os.getcwd(), "frontend", "dist"),
+    "/app/frontend/dist"
 ]
 
 frontend_path = None
+logger.info(f"System Check - Current Working Directory: {os.getcwd()}")
+logger.info(f"System Check - File Path: {os.path.abspath(__file__)}")
+
 for path in possible_paths:
-    if os.path.exists(path):
+    exists = os.path.exists(path)
+    logger.info(f"Checking frontend path: {path} -> {'FOUND' if exists else 'NOT FOUND'}")
+    if exists:
         frontend_path = path
         break
 
 if frontend_path:
-    logger.info(f"Frontend directory found at: {frontend_path}. Mounting static files.")
+    logger.info(f"CRITICAL: Frontend directory found at: {frontend_path}. Mounting static files.")
     app.mount("/", StaticFiles(directory=frontend_path, html=True), name="frontend")
 else:
-    logger.warning("Frontend directory NOT found in any expected locations.")
+    logger.error("CRITICAL ERROR: Frontend directory NOT found in any expected locations!")
     @app.get("/")
     async def root():
         return {"message": "College Voice Agent API is running! (Frontend not built)"}
