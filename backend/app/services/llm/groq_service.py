@@ -485,11 +485,19 @@ Response: "With 20,000 rank in WBJEE, you can get CSE, IT, or ECE in BCREC. CSE 
                     lines.append(f"{code}: HOD - {hod_name}")
             lines.append("")
         
-        # Principal
-        if "principal" in kb_data:
-            p = kb_data["principal"]
+        # Principal & Vice Principal
+        if "principal" in kb_data or "vice_principal" in kb_data:
             lines.append("=== COLLEGE LEADERSHIP ===")
-            lines.append(f"Principal: {p.get('name', 'Dr. Sanjay S. Pawar')}")
+            if "principal" in kb_data:
+                p = kb_data["principal"]
+                lines.append(f"Principal: {p.get('name', 'Dr. Sanjay S. Pawar')}")
+                if p.get('email'):
+                    lines.append(f"  Email: {p.get('email')}")
+            if "vice_principal" in kb_data:
+                vp = kb_data["vice_principal"]
+                lines.append(f"Vice Principal: {vp.get('name', 'Prof. (Dr.) K. M. Hossain')}")
+                if vp.get('email'):
+                    lines.append(f"  Email: {vp.get('email')}")
             lines.append("")
         
         # Quick Answers
@@ -598,6 +606,10 @@ Response:"""
     def is_available(self) -> bool:
         """Check if Groq service is available"""
         return self.client is not None
+
+    def get_voice_kb(self) -> str:
+        """Get a natural language version of the KB for flawless TTS pronunciation"""
+        return self.knowledge_base
 
 
 # Global instance

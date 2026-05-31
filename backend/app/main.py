@@ -65,6 +65,8 @@ app.include_router(monitoring.router, prefix="/monitoring", tags=["monitoring"])
 app.include_router(health.router, prefix="/health", tags=["health"])
 app.include_router(auth_routes.router, tags=["auth"])
 app.include_router(admin.router, prefix="/admin", tags=["admin"])
+from app.api import voice
+app.include_router(voice.router, prefix="/voice", tags=["voice"])
 
 # Serve Frontend Static Files (if they exist)
 # Check multiple possible locations to support both Local and Docker/Railway

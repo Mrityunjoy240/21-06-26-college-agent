@@ -80,6 +80,59 @@ class SarvamService:
         """Check if Sarvam service is available"""
         return self.client is not None
     
+    def _normalize_text_for_tts(self, text: str) -> str:
+        """Normalize text to prevent spelling out and awkward pauses in TTS"""
+        import re
+        
+        # Replace abbreviations and initialisms
+        replacements = {
+            r"\bRs\b\.?": "Rupees",
+            r"\bRs\b": "Rupees",
+            r"\bDr\b\.?": "Doctor",
+            r"\bProf\b\.?": "Professor",
+            r"\bB\.?Tech\b\.?": "B Tech",
+            r"\bM\.?Tech\b\.?": "M Tech",
+            r"\bMBA\b": "M B A",
+            r"\bMCA\b": "M C A",
+            r"\bCSE\b": "C S E",
+            r"\bIT\b": "I T",
+            r"\bECE\b": "E C E",
+            r"\bEE\b": "E E",
+            r"\bME\b": "M E",
+            r"\bCE\b": "C E",
+            r"\bMAKAUT\b": "M A K A U T",
+            r"\bNAAC\b": "N A A C",
+            r"\bNBA\b": "N B A",
+            r"\bWBJEE\b": "W B J E E",
+            r"\bJEE\b": "J E E",
+            r"\bLPA\b": "Lakhs per annum",
+            r"\bB\.?C\.?\b": "B C",
+            r"\bTCS\b": "T C S",
+            r"\bTPO\b": "T P O",
+            r"\bHOD\b": "H O D",
+        }
+        
+        normalized = text
+        for pattern, replacement in replacements.items():
+            normalized = re.sub(pattern, replacement, normalized, flags=re.IGNORECASE)
+            
+        # Replace slashes in units
+        normalized = re.sub(r"/month\b", " per month", normalized, flags=re.IGNORECASE)
+        normalized = re.sub(r"/year\b", " per year", normalized, flags=re.IGNORECASE)
+        normalized = re.sub(r"/sem\b", " per semester", normalized, flags=re.IGNORECASE)
+        normalized = re.sub(r"/", " or ", normalized)
+        
+        # Format phone numbers (remove hyphens between digits)
+        normalized = re.sub(r"(\d+)-(\d+)", r"\1 \2", normalized)
+        
+        # Remove period after single letters (like middle initials: Sanjay S. Pawar -> Sanjay S Pawar)
+        normalized = re.sub(r"\b([A-Z])\.", r"\1", normalized)
+        
+        # Clean double spaces
+        normalized = re.sub(r"\s+", " ", normalized).strip()
+        
+        return normalized
+
     async def text_to_speech(
         self,
         text: str,
@@ -90,16 +143,6 @@ class SarvamService:
     ) -> Dict[str, Any]:
         """
         Convert text to speech using Sarvam TTS API.
-        
-        Args:
-            text: Text to convert to speech
-            language: Language code (default: en-IN)
-            speaker: Voice name (default: shubh)
-            pace: Speech pace 0.5-2.0 (default: 1.0)
-            model: TTS model (default: bulbul:v3)
-        
-        Returns:
-            Dict with 'audio_bytes' (bytes) and 'format' (str)
         """
         if not self.client:
             return {
@@ -108,8 +151,12 @@ class SarvamService:
             }
         
         try:
+            # Normalize text for perfect pronunciation
+            normalized_text = self._normalize_text_for_tts(text)
+            logger.info(f"Normalized TTS text: '{normalized_text}'")
+            
             response = self.client.text_to_speech.convert(
-                text=text,
+                text=normalized_text,
                 target_language_code=language,
                 speaker=speaker,
                 model=model,

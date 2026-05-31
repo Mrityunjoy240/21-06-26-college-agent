@@ -19,7 +19,8 @@ import {
 import { Delete as DeleteIcon, CloudUpload as UploadIcon } from '@mui/icons-material';
 
 const AdminDashboard: React.FC = () => {
-    const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+    const API_BASE = import.meta.env.VITE_API_URL || 
+        (typeof window !== 'undefined' && window.location.hostname === 'localhost' ? 'http://localhost:8000' : '');
     const [files, setFiles] = useState<any[]>([]);
     const [uploadFile, setUploadFile] = useState<File | null>(null);
     const [uploadProgress, setUploadProgress] = useState<number | null>(null);

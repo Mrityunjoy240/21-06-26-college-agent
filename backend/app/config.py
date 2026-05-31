@@ -27,6 +27,15 @@ class Settings(BaseSettings):
     groq_api_key: str = ""
     sarvam_api_key: str = ""
     gemini_api_key: str = ""
+    deepgram_api_key: str = ""
+    livekit_url: str = ""
+    livekit_api_key: str = ""
+    livekit_api_secret: str = ""
+
+    # Twilio Settings
+    twilio_account_sid: str = ""
+    twilio_auth_token: str = ""
+    twilio_phone_number: str = ""
 
     # Auth Settings
     admin_username: str = "admin"

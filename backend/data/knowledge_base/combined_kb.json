@@ -34,13 +34,22 @@
     "affiliation": "MAKAUT",
     "approved_by": "AICTE",
     "nba_programs": ["CSE", "IT", "ECE", "EE", "ME"],
-    "nirf": "Ranked in Engineering category",
+    "nirf": "Ranked 201-250 in the Engineering category (2025)",
     "aicte_idea_lab_rank": "#1 in India among 106 AICTE-IDEA LABS (2022-23)"
   },
 
   "principal": {
     "name": "Dr. Sanjay S. Pawar",
-    "role": "Principal, BCREC"
+    "role": "Principal, BCREC",
+    "phone": "0343-2501353",
+    "email": "principal@bcrec.ac.in"
+  },
+
+  "vice_principal": {
+    "name": "Prof. (Dr.) K. M. Hossain",
+    "role": "Vice Principal, BCREC",
+    "phone": "0343-2501353",
+    "email": "km.hossain@bcrec.ac.in"
   },
 
   "courses": {
