@@ -176,13 +176,30 @@ class SarvamTTS(tts.TTS):
                     if data.startswith(b"RIFF"):
                         data = data[44:] # Skip WAV header
                     
+                    # Reduce volume (gain) to prevent clipping noise
+                    # 0.7 multiplier reduces volume by 30% for a cleaner sound
+                    try:
+                        data = audioop.mul(data, 2, 0.7) 
+                    except Exception as e:
+                        logger.error(f"Failed to adjust audio gain: {e}")
+
                     # Resample 24000 Hz to 8000 Hz
                     try:
                         data, _ = audioop.ratecv(data, 2, 1, 24000, 8000, None)
+                        
+                        # CHUNKING: Break into 20ms packets (320 bytes for 8kHz 16-bit mono)
+                        # This prevents jitter and makes the audio smooth for telephony.
+                        chunk_size = 320 
+                        for i in range(0, len(data), chunk_size):
+                            chunk = data[i : i + chunk_size]
+                            if len(chunk) < chunk_size:
+                                chunk = chunk.ljust(chunk_size, b"\x00") # Padding
+                            emitter.push(chunk)
+                            await asyncio.sleep(0.015) # Steady stream to avoid bursting
+                            
                     except Exception as e:
-                        logger.error(f"Failed to resample audio: {e}")
+                        logger.error(f"Failed to resample or chunk audio: {e}")
                     
-                    emitter.push(data)
                     emitter.flush()
 
         return Stream()
@@ -193,7 +210,7 @@ async def run_directly(room_name: str):
     
     # Load components once outside the loop to conserve resources and avoid reloading
     logger.info("Loading VAD, STT, and TTS components...")
-    vad = silero.VAD.load(min_speech_duration=0.25, min_silence_duration=0.5)
+    vad = silero.VAD.load(min_speech_duration=0.25, min_silence_duration=0.8)
     stt_comp = SarvamSTT(os.getenv("SARVAM_API_KEY"))
     tts_comp = SarvamTTS(os.getenv("SARVAM_API_KEY"))
     
@@ -253,14 +270,14 @@ async def run_directly(room_name: str):
 
             # Wait for participant metadata
             try:
-                timeout = 5.0
+                timeout = 2.0  # Reduced from 5.0 for faster startup
                 start_time = asyncio.get_event_loop().time()
                 while len(room.remote_participants) == 0 and (asyncio.get_event_loop().time() - start_time) < timeout:
-                    await asyncio.sleep(0.1)
+                    await asyncio.sleep(0.05)
 
                 if len(room.remote_participants) > 0:
                     participant = list(room.remote_participants.values())[0]
-                    meta = json.loads(participant.metadata)
+                    meta = json.loads(participant.metadata or "{}")
                     current_phone = meta.get("phone_number", "unknown")
                     logger.info(f"Identified Caller: {current_phone}")
                 else:
@@ -270,14 +287,11 @@ async def run_directly(room_name: str):
 
             # LOAD MEMORY
             current_conv_id, history = load_history(current_phone)
-            if history:
-                greeting = "Welcome back to Dr. B.C. Roy Engineering College. How can I help you today?"
-            else:
-                greeting = "Welcome to Dr. B.C. Roy Engineering College. How can I help you today?"
+            greeting = "Hello! This is the B C Roy Engineering College AI. How can I help you today?"
 
             logger.info(f"Starting greeting: {greeting}")
-            await asyncio.sleep(0.5)
-            session.say(greeting, allow_interruptions=False)  # Greeting should not be interrupted by early noise
+            await asyncio.sleep(0.2)  # Reduced delay for snappy feel
+            session.say(greeting, allow_interruptions=False)
             current_conv_id = save_msg(current_conv_id, current_phone, "assistant", greeting)
 
             # Keep connection alive until participant disconnects
