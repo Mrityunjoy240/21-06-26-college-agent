@@ -64,7 +64,7 @@ async def list_files(current_user: str = Depends(get_current_admin)):
         file_list = []
 
         # Load existing documents to check which files have been processed
-        storage_file = Path(settings.chroma_persist_dir) / "documents.json"
+        storage_file = Path(settings.db_dir) / "documents.json"
         processed_sources = set()
 
         if storage_file.exists():
@@ -98,10 +98,10 @@ async def process_and_index_files(filenames: list[str]):
     all_documents = []
 
     # Load existing documents if any
-    storage_file = Path(settings.chroma_persist_dir) / "documents.json"
+    storage_file = Path(settings.db_dir) / "documents.json"
 
     # Create directory if not exists
-    os.makedirs(settings.chroma_persist_dir, exist_ok=True)
+    os.makedirs(settings.db_dir, exist_ok=True)
 
     if storage_file.exists():
         try:

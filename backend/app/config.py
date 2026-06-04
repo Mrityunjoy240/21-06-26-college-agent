@@ -49,7 +49,7 @@ class Settings(BaseSettings):
     sarvam_client: Optional[Any] = None
     
     # Directories
-    chroma_persist_dir: str = "chroma_db"
+    db_dir: str = "data"
     upload_dir: str = "uploads"
     temp_audio_dir: str = "temp_audio"
     
@@ -72,21 +72,15 @@ class Settings(BaseSettings):
         def mask(s):
             return f"{s[:4]}...{s[-4:]}" if s and len(s) > 8 else "MISSING"
             
-        print(f"DEBUG: GROQ_API_KEY from os.environ: {mask(os.getenv('GROQ_API_KEY'))}")
-        print(f"DEBUG: Settings.groq_api_key value: {mask(self.groq_api_key)}")
-        
         # Initialize Groq
-        print(f"DEBUG: GROQ_AVAILABLE status: {GROQ_AVAILABLE}")
         if GROQ_AVAILABLE and self.groq_api_key:
             try:
                 self.groq_client = Groq(api_key=self.groq_api_key)
-                print("DEBUG: Groq AI Client: INITIALIZED SUCCESSFULLY")
                 logger.info("Groq client initialized successfully")
             except Exception as e:
-                print(f"DEBUG: Groq AI Client: FAILED with error: {str(e)}")
                 logger.error(f"Failed to initialize Groq client: {e}")
         else:
-            print(f"DEBUG: Groq AI Client: SKIPPED (Available={GROQ_AVAILABLE}, Key={bool(self.groq_api_key)})")
+            logger.info("Groq AI Client: SKIPPED")
         
         # Initialize Sarvam
         if self.sarvam_api_key:

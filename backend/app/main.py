@@ -7,14 +7,15 @@ logger = logging.getLogger(__name__)
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
-from app.api import qa
-from app.api import conversations
 import os
 from uuid import uuid4
 
 from app.config import settings
 from app.database import init_db
-logger = logging.getLogger(__name__)
+from app.api import (
+    qa, conversations, tts, stt, monitoring, 
+    auth_routes, admin, health, voice
+)
 
 # Initialize Database
 init_db()
@@ -41,7 +42,8 @@ app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 # Add CORS middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # In production, replace with specific origins
+    allow_origins=["http://localhost:5173", "http://localhost:8000", "http://localhost:3000", "http://127.0.0.1:5173"],
+
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -56,16 +58,12 @@ app.mount("/audio", StaticFiles(directory=settings.temp_audio_dir), name="audio"
 # Include API routes
 app.include_router(qa.router, prefix="/qa", tags=["qa"])
 app.include_router(conversations.router, prefix="/api", tags=["conversations"])
-from app.api import tts, stt
 app.include_router(tts.router, prefix="/qa", tags=["tts"])
 app.include_router(stt.router, prefix="/qa", tags=["stt"])
-from app.api import monitoring, auth_routes, admin
-from app.api import health
 app.include_router(monitoring.router, prefix="/monitoring", tags=["monitoring"])
 app.include_router(health.router, prefix="/health", tags=["health"])
 app.include_router(auth_routes.router, tags=["auth"])
 app.include_router(admin.router, prefix="/admin", tags=["admin"])
-from app.api import voice
 app.include_router(voice.router, prefix="/voice", tags=["voice"])
 
 # Serve Frontend Static Files (if they exist)

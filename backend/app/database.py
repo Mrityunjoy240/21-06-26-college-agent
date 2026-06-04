@@ -6,7 +6,7 @@ from app.config import settings
 
 logger = logging.getLogger(__name__)
 
-DB_PATH = os.path.join(settings.chroma_persist_dir, "conversations.db")
+DB_PATH = os.path.join(settings.db_dir, "conversations.db")
 
 def get_db():
     """Get database connection with row factory and WAL mode for concurrency"""
@@ -25,6 +25,7 @@ def init_db():
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS conversations (
             id TEXT PRIMARY KEY,
+            phone_number TEXT,
             title TEXT NOT NULL DEFAULT 'New Chat',
             created_at TEXT NOT NULL,
             updated_at TEXT NOT NULL

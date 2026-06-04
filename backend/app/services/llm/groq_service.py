@@ -7,6 +7,7 @@ all query variations naturally.
 """
 import json
 import logging
+import re
 from typing import Dict, Any, Optional, List
 
 logger = logging.getLogger(__name__)
@@ -32,31 +33,29 @@ class GroqService:
     4. Uses Groq (Llama/Mixtral) to generate accurate responses
     """
     
-    SYSTEM_PROMPT = """You are an AI assistant for Dr. B.C. Roy Engineering College (BCREC), Durgapur.
-
-YOUR ROLE:
-- Help with admissions, fees, placements, and hostel queries.
-- Tone: Professional, friendly, and very brief.
+    SYSTEM_PROMPT = """You are Ritu (if Bengali) or Shubh (if English/Hindi), a warm admission counselor at Dr. B.C. Roy Engineering College.
 
 STRICT RULES:
-1. Answer ONLY using the knowledge base.
-2. CRITICAL: EXACTLY ONE OR TWO SENTENCES ONLY.
-3. CRITICAL: YOU MUST RESPOND IN THE SAME LANGUAGE AS THE USER.
-4. ACCURACY: Use "Intake" numbers for student counts. Never guess.
-5. NO DIGITS: Write all numbers in words.
-6. PHONETIC FORMATTING: Always write "A. I. M. L.", "C. S. E.", "W. B. J. E. E.".
-7. HUMAN TONE: Never mention "knowledge base", "provided context", or "according to the files". Speak as if you are a real college staff member.
+1. GREETING RULE: If user just says "Hi/Hello", respond with a friendly 1-sentence greeting.
+2. NO REPETITION: Do NOT introduce yourself if already done.
+3. LANGUAGE & SCRIPT: 
+   - User speaks Bengali -> Respond in Bengali Script (বাংলা). Use Bengali digits (০, ১, ২...).
+   - User speaks Hindi -> Respond in Hindi Script (हिन्दी). Use standard digits (0, 1, 2...).
+   - User speaks English -> Respond in English. Use standard digits (0, 1, 2...).
+4. CRITICAL BREVITY: MAXIMUM 2 SENTENCES. NO EXCEPTIONS. If you write more, the system will cut you off.
+5. PHONETICS: Acronyms must have spaces (C S E, A I M L). In Bengali: CSE="সি এস ই", IT="আই টি".
+6. CURRENCY: English/Hindi: "Rs. 80,500". Bengali: "৮০,৫০০ টাকা" (NEVER use "রুপি").
+7. STRICT ACCURACY: Do NOT mix up departments. If asked about AIML faculty, only state AIML faculty. Never combine faculties from different branches (like DS).
+8. FACULTY FALLBACK: If asked about general faculty members, explicitly say: "I currently only have the HOD's name. For the rest, please contact the college at 0343-2501353."
+9. ACRONYMS IN HINDI/BENGALI: ALWAYS write acronyms (WBJEE, CSE, AIML, BTECH) in English letters. Do NOT transliterate them into Hindi or Bengali script (e.g. NEVER write वीजेईई or সিএসই).
 
-RESPONSE FORMAT:
-- Max 2 sentences.
-- Natural conversation. No lists.
-"""
-    
+MAX 2 SENTENCES. BE SNAPPY."""
+
     def __init__(self):
         # Switching to 8b for ultra-low latency and higher rate limits for demo
         self.model = "llama-3.1-8b-instant" 
-        self.temperature = 0.3
-        self.max_tokens = 500
+        self.temperature = 0.1 
+        self.max_tokens = 200 # Increased to allow sentence completion
         self.knowledge_base = self._load_knowledge_base()
         
         # Directly use the client from settings
@@ -529,56 +528,67 @@ RESPONSE FORMAT:
     ) -> Dict[str, Any]:
         """
         Generate a response using Groq.
-        
-        Args:
-            query: User's question
-            conversation_history: Previous messages for context
-        
-        Returns:
-            Dict with 'answer', 'source', and 'model'
         """
         if not self.client:
-            return {
-                "answer": "Groq API is not configured. Please set GROQ_API_KEY in your environment.",
-                "source": "error",
-                "model": None
-            }
+            return {"answer": "API Error", "source": "error", "model": None}
         
         try:
-            history_context = self._format_conversation_history(conversation_history) if conversation_history else ""
+            # 1. Enhanced Script & Language Detection
+            query_lower = query.lower()
             
-            full_prompt = f"""{self.SYSTEM_PROMPT}
+            # Detect Bengali
+            is_bengali = (
+                any('\u0980' <= c <= '\u09FF' for c in query) or 
+                any(word in query_lower for word in ["koto", "ki ", "btech e", "cse te", "bolun", "hobe", "fiss", "fees koto"])
+            )
+            
+            # Detect Hindi (if not Bengali)
+            is_hindi = False
+            if not is_bengali:
+                is_hindi = (
+                    any('\u0900' <= c <= '\u097F' for c in query) or
+                    any(word in query_lower for word in ["kya ", "hai ", "kaise", "fees kitni", "bataiye", "kab ", "admission process"])
+                )
+            
+            lang_instruction = "Respond ONLY in English."
+            if is_bengali:
+                lang_instruction = "Respond ONLY in Bengali Script (বাংলা). Use 'টাকা' for currency and Bengali digits."
+            elif is_hindi:
+                lang_instruction = "Respond ONLY in Hindi Script (हिन्दी). Use standard digits (0-9)."
 
-{self.knowledge_base}
-
-{history_context}
-User Query: {query}
-
-Remember:
-1. Answer ONLY using the knowledge base above.
-2. Respond in the SAME LANGUAGE as the User Query.
-3. CRITICAL: AIML must be written as "A. I. M. L.".
-4. CRITICAL: If Bengali, use Bengali words for numbers. If Hindi, use Hindi words for numbers.
-5. Maximum 2 sentences only.
-
-Response:"""
+            history_context = self._format_conversation_history(conversation_history) if conversation_history else ""
             
             chat_completion = self.client.chat.completions.create(
                 model=self.model,
                 messages=[
-                    {"role": "system", "content": "You are a helpful admission counselor. Respond in the user's language, use localized words for numbers, and keep it under 2 sentences."},
-                    {"role": "user", "content": full_prompt}
+                    {"role": "system", "content": self.SYSTEM_PROMPT},
+                    {"role": "user", "content": f"KNOWLEDGE BASE:\n{self.knowledge_base}\n\n{history_context}\nUser Query: {query}\n\nSTRICT: {lang_instruction}. START WITH THE ANSWER. MAXIMUM 2 SENTENCES."}
                 ],
-                temperature=self.temperature,
+                temperature=0.1,
                 max_tokens=self.max_tokens
             )
             
             answer = chat_completion.choices[0].message.content.strip()
             
+            # Post-processing for Bengali Currency leak
+            if is_bengali:
+                answer = answer.replace("রুপি", "টাকা").replace("টাকা.", "টাকা।")
+            else:
+                # Remove Bengali digits if they leaked into non-Bengali response
+                bengali_to_std = str.maketrans("০১২৩৪৫৬৭৮৯", "0123456789")
+                answer = answer.translate(bengali_to_std)
+            
+            # We rely purely on the prompt and max_tokens to enforce brevity,
+            # as python regex truncation aggressively breaks on abbreviations like 'Dr. B. C. Roy'.
+            
+            # Generate a separate version specifically for the Voice engine
+            voice_text = self._clean_for_voice(answer)
+            
             logger.info(f"Groq response generated: {len(answer)} chars")
             
             return {
                 "answer": answer,
+                "voice_text": voice_text,
                 "source": "groq",
                 "model": self.model
             }
@@ -587,9 +597,54 @@ Response:"""
             logger.error(f"Groq generation error: {e}")
             return {
                 "answer": f"I encountered an error processing your request. Please try again or contact the college at 0343-2501353.",
+                "voice_text": "I encountered an error. Please try again or call our support.",
                 "source": "error",
                 "error": str(e)
             }
+
+    def _clean_for_voice(self, text: str) -> str:
+        """Safety net to force phonetic dots and number words for natural TTS"""
+        import re
+        
+        # 1. Force dots in acronyms (even if LLM forgets)
+        # Only targets acronyms surrounded by whitespace/punctuation — NOT inside emails or URLs
+        acronyms = ["CSE", "AIML", "IT", "ECE", "EE", "ME", "CE", "WBJEE", "MBA", "MCA", "BTECH"]
+        clean = text
+        for ac in acronyms:
+            # Negative lookbehind/lookahead: skip if preceded or followed by @ . / (email/URL context)
+            pattern = r'(?<![@.\w])' + ac + r'(?![.\w@/])'
+            phonetic = " ".join(list(ac))
+            clean = re.sub(pattern, phonetic, clean, flags=re.IGNORECASE)
+            
+        # 2. Convert common digits to words (to prevent robotic TTS)
+        # Handles both 5,98,300 and 598,300 formats
+        replacements = [
+            ("5,98,300", "five lakh ninety-eight thousand three hundred"),
+            ("598,300", "five lakh ninety-eight thousand three hundred"),
+            ("5,47,700", "five lakh forty-seven thousand seven hundred"),
+            ("547,700", "five lakh forty-seven thousand seven hundred"),
+            ("4,37,700", "four lakh thirty-seven thousand seven hundred"),
+            ("437,700", "four lakh thirty-seven thousand seven hundred"),
+            ("97,125", "ninety-seven thousand one hundred twenty-five"),
+            ("80,500", "eighty thousand five hundred"),
+            ("5,000", "five thousand"),
+            ("30", "thirty"),
+            ("15", "fifteen"),
+            ("85%", "eighty-five percent"),
+            ("80.62%", "eighty point six two percent"),
+        ]
+        
+        # Only apply number replacements if text is English
+        if not re.search(r"[\u0900-\u09FF]", clean):
+            # Sort replacements by length (longest first) to avoid partial matches
+            for old, new in sorted(replacements, key=lambda x: len(x[0]), reverse=True):
+                # Use word boundaries for small numbers to avoid matching inside larger ones
+                if len(old) <= 2:
+                    clean = re.sub(r'\b' + old + r'\b', new, clean)
+                else:
+                    clean = clean.replace(old, new)
+            
+        return clean
     
     def is_available(self) -> bool:
         """Check if Groq service is available"""

@@ -54,6 +54,14 @@ async def text_to_speech_direct(request_data: TTSRequest, request: Request):
         raise HTTPException(status_code=400, detail="Text cannot be empty")
     
     language = request_data.language or "en-IN"
+    
+    # Auto-detect language based on script if frontend sends wrong default language
+    import re
+    if re.search(r"[\u0980-\u09FF]", request_data.text):
+        language = "bn-IN"
+    elif re.search(r"[\u0900-\u097F]", request_data.text):
+        language = "hi-IN"
+
     speaker = request_data.speaker or "shubh"
     
     # Map languages to natural-sounding native speakers
@@ -108,6 +116,14 @@ async def text_to_speech(request_data: TTSRequest, request: Request):
     
     # Auto-select speaker based on language for better accent
     language = request_data.language or "en-IN"
+    
+    # Auto-detect language based on script if frontend sends wrong default language
+    import re
+    if re.search(r"[\u0980-\u09FF]", request_data.text):
+        language = "bn-IN"
+    elif re.search(r"[\u0900-\u097F]", request_data.text):
+        language = "hi-IN"
+
     speaker = request_data.speaker or "shubh"
     
     # Map languages to natural-sounding native speakers

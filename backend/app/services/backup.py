@@ -15,7 +15,7 @@ class BackupService:
         self.backup_dir.mkdir(exist_ok=True)
 
         # Directories to backup
-        self.targets = [Path(settings.upload_dir), Path(settings.chroma_persist_dir)]
+        self.targets = [Path(settings.upload_dir), Path(settings.db_dir)]
 
     def create_backup(self) -> dict:
         """

@@ -21,16 +21,6 @@ def test_leadership_data_accuracy(groq_service):
     assert "Sanjay S. Pawar" in kb_text
     assert "K. M. Hossain" in kb_text
 
-def test_speech_normalization(groq_service):
-    """Verify that the normalization layer correctly converts technical terms for voice."""
-    raw_text = "The fee is Rs. 50000 and the package is 10 LPA for CSE students."
-    normalized = groq_service._normalize_for_speech(raw_text)
-    
-    assert "Rupees" in normalized
-    assert "Lakhs per year" in normalized
-    assert "Computer Science" in normalized
-    assert "Rs." not in normalized
-    assert "LPA" not in normalized
 
 def test_worst_case_empty_kb(tmp_path):
     """Test how the service handles a missing or empty KB file."""

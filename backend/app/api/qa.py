@@ -13,6 +13,7 @@ logger = logging.getLogger(__name__)
 router = APIRouter()
 
 from app.database import get_db
+from app.services.llm.groq_service import get_groq_service
 
 # Request/Response Models
 class GroqQueryRequest(BaseModel):
@@ -23,11 +24,12 @@ class GroqQueryRequest(BaseModel):
 
 class QueryResponse(BaseModel):
     answer: str
+    voice_text: Optional[str] = None
     sources: List[str]
     session_id: str
     conversation_id: Optional[str] = None
     source: str = "groq"
-    intent: str = "general"
+    intent: str = "llm_generated"
     confidence: float = 0.95
 
 
@@ -90,8 +92,6 @@ async def groq_query_endpoint(request: Request, query_data: GroqQueryRequest):
     logger.info(f"[{session_id}] Groq Query: '{query_data.message[:60]}...'")
     
     try:
-        from app.services.llm.groq_service import get_groq_service
-        
         conversation_history = None
         if query_data.conversation_id:
             conversation_history = await _get_conversation_messages(query_data.conversation_id, limit=6)
@@ -123,6 +123,7 @@ async def groq_query_endpoint(request: Request, query_data: GroqQueryRequest):
         
         return QueryResponse(
             answer=result["answer"],
+            voice_text=result.get("voice_text"),
             sources=[],
             session_id=session_id,
             conversation_id=query_data.conversation_id,
@@ -141,7 +142,6 @@ async def health_check():
     """Health check endpoint"""
     groq_ok = False
     try:
-        from app.services.llm.groq_service import get_groq_service
         groq_ok = get_groq_service().is_available()
     except Exception:
         pass

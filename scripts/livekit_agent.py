@@ -242,24 +242,27 @@ async def run_directly(room_name: str):
                     user_text = ev.transcript.strip()
                     if not user_text:
                         return
-
-                    logger.info(f"User ({current_phone}): {user_text}")
-                    current_conv_id = save_msg(current_conv_id, current_phone, "user", user_text)
-                    history.append({"role": "user", "content": user_text})
-
-                    # Direct Brain Logic
-                    resp = await groq_internal.generate_response(user_text, conversation_history=history)
-                    answer = resp.get("answer", "I'm sorry, I missed that.")
-                    
-                    logger.info(f"Assistant: {answer}")
-                    session.say(answer, allow_interruptions=False)  # Set to False to prevent line static/noise from canceling speech
-                    
-                    current_conv_id = save_msg(current_conv_id, current_phone, "assistant", answer)
-                    history.append({"role": "assistant", "content": answer})
+                    await handle_query(user_text)
                 except Exception as e:
                     logger.exception(f"Error in processing agent logic: {e}")
-
             asyncio.create_task(process())
+
+        async def handle_query(user_text: str):
+            nonlocal current_conv_id, history
+            logger.info(f"User ({current_phone}): {user_text}")
+            current_conv_id = save_msg(current_conv_id, current_phone, "user", user_text)
+            history.append({"role": "user", "content": user_text})
+
+            # Direct Brain Logic
+            resp = await groq_internal.generate_response(user_text, conversation_history=history)
+            answer = resp.get("answer", "I'm sorry, I missed that.")
+            voice_text = resp.get("voice_text", answer)
+
+            logger.info(f"Assistant (Text): {answer}")
+            logger.info(f"Assistant (Voice): {voice_text}")
+            session.say(voice_text, allow_interruptions=False)
+            current_conv_id = save_msg(current_conv_id, current_phone, "assistant", answer)
+            history.append({"role": "assistant", "content": answer})
 
         from livekit.agents import voice
         dummy_agent = voice.Agent(instructions="Welcome to Dr. B.C. Roy Engineering College.", stt=stt_comp, tts=tts_comp, vad=vad)
@@ -287,7 +290,7 @@ async def run_directly(room_name: str):
 
             # LOAD MEMORY
             current_conv_id, history = load_history(current_phone)
-            greeting = "Hello! This is the B C Roy Engineering College AI. How can I help you today?"
+            greeting = "Hello this is the B C R E C, A I assistant, how can I help you today?"
 
             logger.info(f"Starting greeting: {greeting}")
             await asyncio.sleep(0.2)  # Reduced delay for snappy feel

@@ -68,18 +68,17 @@ async def call_me(request: OutboundCallRequest):
 
 @router.post("/twiml/outbound")
 async def twiml_outbound(request: Request):
+    from urllib.parse import quote
     phone_number = request.query_params.get("phone", "unknown")
     try:
         host = request.headers.get("host")
+        if not host:
+            raise ValueError("Host header is missing")
         proto = "wss" if request.url.scheme == "https" else "ws"
-        # Pass phone number to the websocket stream
-        from urllib.parse import quote
-
         stream_url = f"{proto}://{host}/voice/stream?phone={quote(phone_number)}"
-    except Exception:
-        stream_url = (
-            f"wss://serotonin-fridge-banked.ngrok-free.dev/voice/stream?phone={quote(phone_number)}"
-        )
+    except Exception as e:
+        logger.error(f"Error constructing stream URL: {e}")
+        raise HTTPException(status_code=500, detail="Could not determine stream URL")
 
     twiml = f"""<?xml version="1.0" encoding="UTF-8"?>
 <Response>
