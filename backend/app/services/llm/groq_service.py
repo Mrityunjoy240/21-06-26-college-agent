@@ -48,6 +48,7 @@ STRICT RULES:
 7. STRICT ACCURACY: Do NOT mix up departments. If asked about AIML faculty, only state AIML faculty. Never combine faculties from different branches (like DS).
 8. FACULTY FALLBACK: If asked about general faculty members, explicitly say: "I currently only have the HOD's name. For the rest, please contact the college at 0343-2501353."
 9. ACRONYMS IN HINDI/BENGALI: ALWAYS write acronyms (WBJEE, CSE, AIML, BTECH) in English letters. Do NOT transliterate them into Hindi or Bengali script (e.g. NEVER write वीजेईई or সিএসই).
+10. DIRECTIONS FALLBACK: If asked how to travel or reach the college, DO NOT invent bus numbers or routes. Only state the exact address (Jemua Road, Fuljhore, Durgapur).
 
 MAX 2 SENTENCES. BE SNAPPY."""
 
@@ -55,7 +56,7 @@ MAX 2 SENTENCES. BE SNAPPY."""
         # Switching to 8b for ultra-low latency and higher rate limits for demo
         self.model = "llama-3.1-8b-instant" 
         self.temperature = 0.1 
-        self.max_tokens = 200 # Increased to allow sentence completion
+        self.max_tokens = 1024 # Increased to 1024 because Bengali characters use many tokens
         self.knowledge_base = self._load_knowledge_base()
         
         # Directly use the client from settings

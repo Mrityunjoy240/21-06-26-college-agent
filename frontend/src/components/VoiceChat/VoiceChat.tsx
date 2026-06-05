@@ -48,14 +48,28 @@ const VoiceChat: React.FC<VoiceChatProps> = ({
     const [health, setHealth] = useState<{ status: string; ollama_connected: boolean; groq_available: boolean } | null>(null);
     const [sessionId] = useState<string | null>(null);
     const [sarvamError, setSarvamError] = useState<string | null>(null);
+    const [continuousMode, setContinuousMode] = useState(false);
 
     const audioQueueRef = useRef<string[]>([]);
     const isPlayingRef = useRef(false);
+    const continuousModeRef = useRef(false);
+    
+    // Keep ref in sync for callbacks
+    useEffect(() => {
+        continuousModeRef.current = continuousMode;
+    }, [continuousMode]);
 
-    const playNextInQueue = useCallback(async () => {
+    const playNextInQueue = useCallback(async (autoRestartMic: boolean = false) => {
         if (audioQueueRef.current.length === 0) {
             isPlayingRef.current = false;
             setIsSpeaking(false);
+            
+            // If continuous mode is enabled, restart the microphone after the AI finishes speaking
+            if (autoRestartMic && continuousModeRef.current) {
+                setTimeout(() => {
+                    startRecording();
+                }, 500);
+            }
             return;
         }
 
@@ -65,13 +79,13 @@ const VoiceChat: React.FC<VoiceChatProps> = ({
 
         if (nextUrl) {
             const audio = new Audio(nextUrl);
-            audio.onended = () => playNextInQueue();
-            audio.onerror = () => playNextInQueue();
+            audio.onended = () => playNextInQueue(true); // Pass true to trigger auto-restart on complete
+            audio.onerror = () => playNextInQueue(true);
             try {
                 await audio.play();
             } catch (err) {
                 console.error("Autoplay failed:", err);
-                playNextInQueue();
+                playNextInQueue(true);
             }
         }
     }, []);
@@ -264,12 +278,37 @@ const VoiceChat: React.FC<VoiceChatProps> = ({
         source.start(0);
     }, []);
 
+    const playBeep = useCallback(() => {
+        try {
+            const context = new (window.AudioContext || (window as any).webkitAudioContext)();
+            const oscillator = context.createOscillator();
+            const gainNode = context.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(context.destination);
+            
+            oscillator.type = 'sine';
+            // A soft, polite 600Hz tone like a walkie-talkie cue
+            oscillator.frequency.setValueAtTime(600, context.currentTime); 
+            
+            // Low volume that fades out quickly
+            gainNode.gain.setValueAtTime(0.1, context.currentTime); 
+            gainNode.gain.exponentialRampToValueAtTime(0.001, context.currentTime + 0.15); 
+            
+            oscillator.start(context.currentTime);
+            oscillator.stop(context.currentTime + 0.15);
+        } catch (e) {
+            console.error("Could not play beep", e);
+        }
+    }, []);
+
     const startRecording = async () => {
         if (isProcessing) return;
 
         try {
             // Unlock audio system on the first user gesture (click)
             unlockAudio();
+            playBeep(); // <--- Play the auditory cue
             await voice.startRecording();
         } catch (error) {
             console.error('Error starting recording:', error);
@@ -317,6 +356,15 @@ const VoiceChat: React.FC<VoiceChatProps> = ({
                         size="small"
                         sx={{ fontSize: '0.7rem' }}
                     />
+                    <Button
+                        variant={continuousMode ? "contained" : "outlined"}
+                        color={continuousMode ? "success" : "primary"}
+                        size="small"
+                        onClick={() => setContinuousMode(!continuousMode)}
+                        sx={{ ml: 1, fontSize: '0.75rem', borderRadius: 2 }}
+                    >
+                        {continuousMode ? "Hands-Free: ON" : "Hands-Free: OFF"}
+                    </Button>
                     <Button
                         variant="outlined"
                         size="small"
