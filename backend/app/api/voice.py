@@ -97,7 +97,7 @@ async def twilio_stream(websocket: WebSocket):
 
     from app.config import settings
 
-    room_name = "bcrec-voice-call"
+    room_name = f"call_{uuid.uuid4().hex[:10]}"
     participant_identity = f"twilio_{uuid.uuid4().hex[:6]}"
 
     # Attach phone number to metadata so Agent can read it

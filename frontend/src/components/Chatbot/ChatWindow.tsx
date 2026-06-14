@@ -16,6 +16,8 @@ import {
     Phone,
     School,
 } from '@mui/icons-material';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import { Message } from './types';
 import { COLLEGE_INFO } from './config';
 
@@ -119,6 +121,31 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
                         display: 'flex',
                         flexDirection: 'column',
                         gap: 2,
+                        '& .markdown-content': {
+                            fontSize: '0.875rem',
+                            lineHeight: 1.5,
+                            '& table': {
+                                width: '100%',
+                                borderCollapse: 'collapse',
+                                my: 1,
+                                fontSize: '0.75rem',
+                                '& th, & td': {
+                                    border: '1px solid #e0e0e0',
+                                    p: 0.5,
+                                    textAlign: 'left'
+                                },
+                                '& th': {
+                                    bgcolor: '#f5f5f5'
+                                }
+                            },
+                            '& ul, & ol': {
+                                pl: 2,
+                                my: 1
+                            },
+                            '& p': {
+                                my: 0.5
+                            }
+                        }
                     }}
                 >
                     {messages.map((message) => (
@@ -136,7 +163,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
                         >
                             <Box
                                 sx={{
-                                    maxWidth: '80%',
+                                    maxWidth: '85%',
                                     display: 'flex',
                                     flexDirection: message.sender === 'user' ? 'row-reverse' : 'row',
                                     alignItems: 'flex-end',
@@ -152,7 +179,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
                                     <Box
                                         sx={{
                                             px: 2,
-                                            py: 1.5,
+                                            py: 1,
                                             borderRadius: message.sender === 'user'
                                                 ? '18px 18px 4px 18px'
                                                 : '18px 18px 18px 4px',
@@ -161,9 +188,17 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
                                             boxShadow: 1,
                                         }}
                                     >
-                                        <Typography variant="body2" sx={{ whiteSpace: 'pre-wrap', lineHeight: 1.5 }}>
-                                            {message.text}
-                                        </Typography>
+                                        {message.sender === 'user' ? (
+                                            <Typography variant="body2">
+                                                {message.text}
+                                            </Typography>
+                                        ) : (
+                                            <Box className="markdown-content">
+                                                <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                                                    {message.text}
+                                                </ReactMarkdown>
+                                            </Box>
+                                        )}
                                     </Box>
                                     <Typography
                                         variant="caption"

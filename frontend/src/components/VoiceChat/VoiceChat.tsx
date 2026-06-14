@@ -40,7 +40,7 @@ const VoiceChat: React.FC<VoiceChatProps> = ({
     // Dynamically resolve API base: use current domain in production, localhost in development
     const API_BASE = import.meta.env.VITE_API_URL || 
         (window.location.hostname === 'localhost' ? 'http://localhost:8000' : window.location.origin);
-    const QUERY_ENDPOINT = '/qa/groq-query'; // PRODUCTION: Using Groq (Llama 3.3)
+    const QUERY_ENDPOINT = '/qa/query'; // PRODUCTION: Using Consolidated Query
     const [messages, setMessages] = useState<Message[]>([]);
     const [isProcessing, setIsProcessing] = useState(false);
     const [textInput, setTextInput] = useState('');

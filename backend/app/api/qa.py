@@ -2,25 +2,25 @@ from fastapi import APIRouter, HTTPException, Request
 from pydantic import BaseModel
 from typing import List, Optional
 import logging
-import os
 import time
-import sqlite3
+import json
 from datetime import datetime
+from fastapi.responses import StreamingResponse
 
 from app.config import settings
+from app.database import get_db
+from app.services.llm.groq_service import get_groq_service
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
 
-from app.database import get_db
-from app.services.llm.groq_service import get_groq_service
-
-# Request/Response Models
+# ---------------------------------------------------------------------------
+# MODELS
+# ---------------------------------------------------------------------------
 class GroqQueryRequest(BaseModel):
     message: str
     conversation_id: Optional[str] = None
     session_id: Optional[str] = None
-
 
 class QueryResponse(BaseModel):
     answer: str
@@ -28,14 +28,14 @@ class QueryResponse(BaseModel):
     sources: List[str]
     session_id: str
     conversation_id: Optional[str] = None
-    source: str = "groq"
+    source: str = "groq_rag"
     intent: str = "llm_generated"
     confidence: float = 0.95
 
-
-# Helper Functions
-async def _get_conversation_messages(conversation_id: str, limit: int = 10):
-    """Get messages from a conversation"""
+# ---------------------------------------------------------------------------
+# HELPERS (DB Management)
+# ---------------------------------------------------------------------------
+async def _get_history(conversation_id: str, limit: int = 6):
     conn = get_db()
     cursor = conn.cursor()
     cursor.execute(
@@ -46,110 +46,81 @@ async def _get_conversation_messages(conversation_id: str, limit: int = 10):
     conn.close()
     return [{"role": m["role"], "content": m["content"]} for m in reversed(messages)]
 
-
-async def _save_message(conversation_id: str, role: str, content: str):
-    """Save a message to a conversation"""
+async def _save_turn(conversation_id: str, user_msg: str, assistant_msg: str):
     conn = get_db()
     cursor = conn.cursor()
     now = datetime.now().isoformat()
+    # Save User
     cursor.execute(
         "INSERT INTO messages (conversation_id, role, content, created_at) VALUES (?, ?, ?, ?)",
-        (conversation_id, role, content, now)
+        (conversation_id, "user", user_msg, now)
     )
+    # Save Assistant
     cursor.execute(
-        "UPDATE conversations SET updated_at = ? WHERE id = ?",
-        (now, conversation_id)
+        "INSERT INTO messages (conversation_id, role, content, created_at) VALUES (?, ?, ?, ?)",
+        (conversation_id, "assistant", assistant_msg, now)
     )
+    # Update Conversation Timestamp
+    cursor.execute("UPDATE conversations SET updated_at = ? WHERE id = ?", (now, conversation_id))
     conn.commit()
     conn.close()
 
+# ---------------------------------------------------------------------------
+# ENDPOINTS
+# ---------------------------------------------------------------------------
 
-async def _create_conversation() -> str:
-    """Create a new conversation"""
-    import uuid
-    conn = get_db()
-    cursor = conn.cursor()
-    conv_id = str(uuid.uuid4())
-    now = datetime.now().isoformat()
-    cursor.execute(
-        "INSERT INTO conversations (id, title, created_at, updated_at) VALUES (?, ?, ?, ?)",
-        (conv_id, "New Chat", now, now)
-    )
-    conn.commit()
-    conn.close()
-    return conv_id
-
-
-# ============== ENDPOINTS ==============
-
-@router.post("/groq-query", response_model=QueryResponse)
-async def groq_query_endpoint(request: Request, query_data: GroqQueryRequest):
-    """
-    Pure LLM Query Endpoint using Groq API (Llama 3.3 70B).
-    """
+@router.post("/query", response_model=QueryResponse)
+async def query_endpoint(request: Request, data: GroqQueryRequest):
+    """Legacy blocking endpoint - maintained for simple compatibility."""
     start_time = time.time()
-    session_id = query_data.session_id or getattr(request.state, 'session_id', 'default')
-    logger.info(f"[{session_id}] Groq Query: '{query_data.message[:60]}...'")
+    session_id = data.session_id or "default"
     
     try:
-        conversation_history = None
-        if query_data.conversation_id:
-            conversation_history = await _get_conversation_messages(query_data.conversation_id, limit=6)
+        history = await _get_history(data.conversation_id) if data.conversation_id else None
+        service = get_groq_service()
         
-        groq_service = get_groq_service()
+        result = await service.generate_response(data.message, history)
         
-        if not groq_service.is_available():
-            return QueryResponse(
-                answer="Groq API is not configured. Please check your .env file.",
-                sources=[],
-                session_id=session_id,
-                conversation_id=query_data.conversation_id,
-                source="error",
-                intent="configuration_error",
-                confidence=0.0
-            )
-        
-        result = await groq_service.generate_response(
-            query_data.message,
-            conversation_history=conversation_history
-        )
-        
-        if query_data.conversation_id:
-            await _save_message(query_data.conversation_id, "user", query_data.message)
-            await _save_message(query_data.conversation_id, "assistant", result["answer"])
-        
-        elapsed = time.time() - start_time
-        logger.info(f"[{session_id}] Groq processed in {elapsed:.2f}s")
-        
+        if data.conversation_id:
+            await _save_turn(data.conversation_id, data.message, result["answer"])
+            
         return QueryResponse(
             answer=result["answer"],
             voice_text=result.get("voice_text"),
             sources=[],
             session_id=session_id,
-            conversation_id=query_data.conversation_id,
-            source=result.get("source", "groq"),
-            intent="llm_generated",
-            confidence=0.95
+            conversation_id=data.conversation_id
         )
-        
     except Exception as e:
-        logger.error(f"Groq query error: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        logger.error(f"Query error: {e}")
+        raise HTTPException(status_code=500, detail="Internal server error")
 
+@router.post("/query-stream")
+async def query_stream_endpoint(data: GroqQueryRequest):
+    """
+    PROFESSIONAL STREAMING ENDPOINT.
+    Used by the Web UI for word-by-word rendering and tables.
+    """
+    try:
+        history = await _get_history(data.conversation_id) if data.conversation_id else None
+        service = get_groq_service()
+        
+        async def stream_generator():
+            full_answer = ""
+            async for chunk in service.stream_response(data.message, history):
+                full_answer += chunk
+                yield f"data: {json.dumps({'text': chunk})}\n\n"
+            
+            if data.conversation_id:
+                await _save_turn(data.conversation_id, data.message, full_answer)
+            
+            yield "data: [DONE]\n\n"
+
+        return StreamingResponse(stream_generator(), media_type="text/event-stream")
+    except Exception as e:
+        logger.error(f"Stream error: {e}")
+        raise HTTPException(status_code=500, detail="Internal server error")
 
 @router.get("/health")
-async def health_check():
-    """Health check endpoint"""
-    groq_ok = False
-    try:
-        groq_ok = get_groq_service().is_available()
-    except Exception:
-        pass
-    
-    return {
-        'status': 'healthy',
-        'groq_available': groq_ok,
-        'groq_endpoint': '/qa/groq-query',
-        'knowledge_base': 'combined_kb.json',
-        'conversations_enabled': True
-    }
+async def health():
+    return {"status": "healthy", "service": "BCREC Voice Brain", "engine": "Groq Llama 3.3"}

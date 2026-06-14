@@ -81,22 +81,29 @@ npm run dev
 
 **Access:** Open http://localhost:5173
 
-### 3️⃣ Test the System
+### 3️⃣ Start Production Voice Agent (SIP/Telephony)
 
 ```bash
-cd backend
-python verify_demo.py
+# Start the optimized LiveKit agent
+python scripts/livekit_agent.py dev
+```
+
+### 4️⃣ Verify Multilingual Brain (Demo Ready)
+
+Run this to confirm the agent correctly handles Fees, Names, and Pronunciation (Taka/Rupeya) across English, Hindi, and Bengali:
+```bash
+python test_production_ready.py
 ```
 
 Expected output:
 ```
-✅ Health Check Passed
-✅ Query Passed
-✅ Formatting Check Passed (Clean text)
-✅ Text-to-Speech & Static Serving Passed
-
-🚀 System is Ready for Demo!
+✅ ALL TESTS PASSED! THE BRAIN IS STABLE.
 ```
+
+## 🛠️ Key Production Features
+- **Hybrid RAG:** Combines high-precision JSON for facts (Fees, Names) with Vector Search for fuzzy context.
+- **Natural TTS:** Automatically converts currency and numbers into words for flawless Hindi/Bengali/English speech.
+- **Zero-Lag Startup:** Pre-warms embedding models to ensure <2s join time for SIP calls.
 
 ---
 

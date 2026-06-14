@@ -63,8 +63,22 @@ export function useChat() {
         addMessage(text, 'user');
         setState(prev => ({ ...prev, isLoading: true, error: null }));
 
+        // Create a placeholder message for the bot's streaming response
+        const botMessageId = `${Date.now()}-bot`;
+        const initialBotMessage: Message = {
+            id: botMessageId,
+            text: '',
+            sender: 'bot',
+            timestamp: new Date(),
+        };
+
+        setState(prev => ({
+            ...prev,
+            messages: [...prev.messages, initialBotMessage],
+        }));
+
         try {
-            const response = await fetch(`${API_CONFIG.baseUrl}/qa/query`, {
+            const response = await fetch(`${API_CONFIG.baseUrl}/qa/query-stream`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -72,19 +86,57 @@ export function useChat() {
                 body: JSON.stringify({ message: text }),
             });
 
-            if (!response.ok) {
-                throw new Error('Failed to get response');
-            }
+            if (!response.ok) throw new Error('Failed to get response');
 
-            const data = await response.json();
-            addMessage(data.answer || "I apologize, but I couldn't process your request. Please try again.", 'bot');
+            const reader = response.body?.getReader();
+            const decoder = new TextDecoder();
+            let fullText = '';
+
+            if (reader) {
+                while (true) {
+                    const { done, value } = await reader.read();
+                    if (done) break;
+
+                    const chunk = decoder.decode(value);
+                    const lines = chunk.split('\n');
+
+                    for (const line of lines) {
+                        if (line.startsWith('data: ')) {
+                            const dataStr = line.slice(6).trim();
+                            if (dataStr === '[DONE]') continue;
+
+                            try {
+                                const data = JSON.parse(dataStr);
+                                if (data.text) {
+                                    fullText += data.text;
+                                    // Update the specific bot message in state
+                                    setState(prev => ({
+                                        ...prev,
+                                        messages: prev.messages.map(msg =>
+                                            msg.id === botMessageId ? { ...msg, text: fullText } : msg
+                                        ),
+                                    }));
+                                }
+                            } catch (e) {
+                                console.error('Error parsing chunk:', e);
+                            }
+                        }
+                    }
+                }
+            }
         } catch (error) {
             console.error('Chat error:', error);
             setState(prev => ({
                 ...prev,
                 error: 'Connection error. Please try again.',
             }));
-            addMessage("I'm having trouble connecting. Please try again in a moment.", 'bot');
+            // Update the bot message with an error
+            setState(prev => ({
+                ...prev,
+                messages: prev.messages.map(msg =>
+                    msg.id === botMessageId ? { ...msg, text: "I'm having trouble connecting. Please try again in a moment." } : msg
+                ),
+            }));
         } finally {
             setState(prev => ({ ...prev, isLoading: false }));
         }

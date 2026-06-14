@@ -7,10 +7,10 @@ from dotenv import load_dotenv
 logger = logging.getLogger(__name__)
 
 # Try to load local.env or .env for local development
-for env_file in ["local.env", ".env", "../local.env", "../.env"]:
+for env_file in [".env", "backend/.env", "local.env", "../.env", "../local.env"]:
     if os.path.exists(env_file):
-        load_dotenv(env_file)
-        logger.info(f"Loaded environment from {env_file}")
+        load_dotenv(env_file, override=True)
+        logger.info(f"Loaded environment from {os.path.abspath(env_file)}")
         break
 
 # Graceful Groq check
@@ -46,6 +46,7 @@ class Settings(BaseSettings):
     
     # Direct Client initializations
     groq_client: Optional[Any] = None
+    async_groq_client: Optional[Any] = None
     sarvam_client: Optional[Any] = None
     
     # Directories
@@ -60,7 +61,7 @@ class Settings(BaseSettings):
     
     # Pydantic Config
     model_config = SettingsConfigDict(
-        env_file=None, # Don't force a file
+        env_file=".env", # Look for .env by default
         extra="ignore",
         env_prefix="" # No prefix (e.g. look for GROQ_API_KEY directly)
     )
@@ -75,7 +76,9 @@ class Settings(BaseSettings):
         # Initialize Groq
         if GROQ_AVAILABLE and self.groq_api_key:
             try:
+                from groq import AsyncGroq
                 self.groq_client = Groq(api_key=self.groq_api_key)
+                self.async_groq_client = AsyncGroq(api_key=self.groq_api_key)
                 logger.info("Groq client initialized successfully")
             except Exception as e:
                 logger.error(f"Failed to initialize Groq client: {e}")

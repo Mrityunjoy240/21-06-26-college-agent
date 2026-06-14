@@ -11,12 +11,14 @@ import os
 
 from app.config import settings
 from app.services.sarvam_service import get_sarvam_service, init_sarvam_service
+from app.services.stt_local import get_qwen_stt
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
 
 SUPPORTED_FORMATS = ["wav", "mp3", "webm", "ogg", "aac", "flac", "m4a"]
 
+LOCAL_STT_MODE = os.getenv("USE_LOCAL_STT", "true").lower() == "true"
 
 def _init_sarvam():
     """Initialize Sarvam service if not already done"""
@@ -32,12 +34,26 @@ async def speech_to_text(
     model: str = Form("saaras:v3")
 ):
     """
-    Transcribe speech to text using Sarvam AI STT API.
-    
-    - **audio**: Audio file (wav, mp3, webm, ogg, aac, flac, m4a)
-    - **language**: Language code (en-IN, hi-IN, auto for detection)
-    - **model**: STT model (saaras:v3 recommended)
+    Transcribe speech to text using Sarvam AI STT API or Local Qwen3-ASR.
     """
+    if LOCAL_STT_MODE:
+        stt_engine = get_qwen_stt()
+        if not stt_engine.available:
+            logger.warning("Local STT failed to load, falling back to Sarvam")
+        else:
+            try:
+                audio_bytes = await audio.read()
+                result = stt_engine.transcribe(audio_bytes)
+                if result["success"]:
+                    return {
+                        "text": result["text"],
+                        "language": result["language"],
+                        "confidence": 0.99,
+                        "model": "qwen3-asr-0.6b"
+                    }
+            except Exception as e:
+                logger.error(f"Local STT error: {e}")
+
     sarvam = _init_sarvam()
     
     if not sarvam.is_available():

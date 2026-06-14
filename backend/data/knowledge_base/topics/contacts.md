@@ -1,6 +1,6 @@
 # BCREC Contact Directory
 
-## Main Office
+## Main Office (প্রধান কার্যালয় / मुख्य कार्यालय)
 
 **Address**: Management House, Jemua Road, Fuljhore, Durgapur - 713206, West Bengal
 
@@ -20,7 +20,7 @@
 
 ---
 
-## Admission Department
+## Admission Department (ভর্তি / एडमिशन विभाग)
 
 **Phone Numbers**:
 - 9333928874
@@ -35,7 +35,7 @@
 
 ---
 
-## Accounts Department
+## Accounts Department (ফিস এবং একাউন্টস / फीस और अकाउंट्स)
 
 **Phone**: 0343-2501353 (Extension 278)
 **Mobile**: 7001380141
@@ -44,7 +44,7 @@
 
 ---
 
-## Placement (TPO)
+## Placement (TPO) (প্লেসমেন্ট / प्लेसमेंट)
 
 **Kolkata Office**:
 - 92/2A, Bidhan Nagar Main Road, Concord Tower 1st Floor
@@ -57,22 +57,23 @@
 
 ---
 
-## Academic Leadership
+## Academic Leadership (একাডেমিক লিডারশিপ / शैक्षणिक नेतृत्व)
 
-### Principal
+### Principal (প্রিন্সিপাল / प्रिंसिपल)
+- **Name**: Dr. Sanjay S. Pawar
 - **Email**: principal@bcrec.ac.in
 - **Phone**: 0343-2501353
 
-### Vice Principal
+### Vice Principal (ভাইস প্রিন্সিপাল / वाइस प्रिंसिपल)
 - **Name**: Prof. (Dr.) K. M. Hossain
 - **Email**: km.hossain@bcrec.ac.in
 - **Phone**: 0343-2501353
 
 ---
 
-## Department Contacts
+## Department Contacts (ডিপার্টমেন্ট / विभाग संपर्क)
 
-### Computer Science & Engineering (CSE)
+### Computer Science & Engineering (CSE) (সি.এস.ই / सीएसई)
 - **HOD**: Dr. Bappaditya Das
 - **Qualification**: PhD, M.Tech, B.Tech, B.Sc(Hons)
 - **Email**: bappaditya.das@bcrec.ac.in
