@@ -546,5 +546,55 @@
     "admission_portal": "https://bcrec.ucanapply.com",
     "placements": "https://bcrec.ac.in/placements",
     "contact": "https://bcrec.ac.in/contact-us"
+  },
+
+  "voice_ready_answers": {
+    "fees": {
+      "cse_it_ece": {
+        "en": "B.Tech CSE, IT, and ECE total fee is five lakh ninety-eight thousand three hundred rupees. Admission fee is ninety-seven thousand one hundred and twenty-five rupees.",
+        "hi": "बी.टेक सीएसई, आईटी, और ईसीई की कुल फीस पाँच लाख अट्ठानवे हज़ार तीन सौ रुपये है। एडमिशन फीस सत्तानवे हज़ार एक सौ पच्चीस रुपये है।",
+        "bn": "বি.টেক সিএসই, আইটি, এবং ইসিই এর মোট ফি পাঁচ লাখ আটানব্বই হাজার তিনশত টাকা। ভর্তি ফি সাতানব্বই হাজার একশত পঁচিশ টাকা।"
+      },
+      "ee_aiml_ds_cy_csd": {
+        "en": "B.Tech EE, AI-ML, Data Science, Cyber Security, and CS Design total fee is five lakh forty-seven thousand seven hundred rupees. Admission fee is ninety thousand eight hundred rupees.",
+        "hi": "बी.टेक ईई, एआई-एमएल, डाटा साइंस, साइबर सिक्योरिटी, और सीएस डिज़ाइन की कुल फीस पाँच लाख सैंतालीस हज़ार सात सौ रुपये है। एडमिशन फीस नब्बे हज़ार आठ सौ रुपये है।",
+        "bn": "বি.টেক ইই, এআই-এমএল, ডাটা সায়েন্স, সাইবার সিকিউরিটি, এবং সিএস ডিজাইন এর মোট ফি পাঁচ লাখ সাতচল্লিশ হাজার সাতশত টাকা। ভর্তি ফি নব্বই হাজার আটশত টাকা।"
+      },
+      "me_ce": {
+        "en": "B.Tech Mechanical and Civil total fee is four lakh thirty-seven thousand seven hundred rupees. Admission fee is seventy-seven thousand fifty rupees.",
+        "hi": "बी.टेक मैकेनिकल और सिविल की कुल फीस चार लाख सैंतीस हज़ार सात सौ रुपये है। एडमिशन फीस सतहत्तर हज़ार पचास रुपये है।",
+        "bn": "বি.টেক মেকানিক্যাল এবং সিভিল এর মোট ফি চার লাখ সাতত্রিশ হাজার সাতশত টাকা। ভর্তি ফি সাতাত্তর হাজার পঞ্চাশ টাকা।"
+      },
+      "mba": {
+        "en": "MBA total fee is four lakh nineteen thousand two hundred rupees. Admission fee is one lakh twenty-one thousand four hundred rupees.",
+        "hi": "एमबीए की कुल फीस चार लाख उन्नीस हज़ार दो सौ रुपये है। एडमिशन फीस एक लाख इक्कीस हज़ार चार सौ रुपये है।",
+        "bn": "এমবিএ এর মোট ফি চার লাখ উনিশ হাজার দুইশত টাকা। ভর্তি ফি এক লাখ একুশ হাজার চারশত টাকা।"
+      },
+      "mca": {
+        "en": "MCA total fee is two lakh eight thousand eight hundred rupees. Admission fee is sixty-seven thousand two hundred rupees.",
+        "hi": "एमसीए की कुल फीस दो लाख आठ हज़ार आठ सौ रुपये है। एडमिशन फीस सड़सठ हज़ार दो सौ रुपये है।",
+        "bn": "এমসিএ এর মোট ফি দুই লাখ আট হাজার আটশত টাকা। ভর্তি ফি সাতষট্টি হাজার দুইশত টাকা।"
+      }
+    },
+    "hostel": {
+      "en": "Hostel is optional, not compulsory. Single bed room costs thirty thousand rupees per semester. Double or triple bed room costs ten thousand rupees per semester. Mess food charges are five thousand rupees per month. Four meals are served daily including non-veg three to four days a week.",
+      "hi": "हॉस्टल वैकल्पिक है, अनिवार्य नहीं। सिंगल बेड रूम की फीस तीस हज़ार रुपये प्रति सेमेस्टर है। डबल या ट्रिपल बेड रूम दस हज़ार रुपये प्रति सेमेस्टर है। मेस का खाना पाँच हज़ार रुपये प्रति महीना है। रोज़ चार बार खाना मिलता है, हफ्ते में तीन-चार दिन नॉन-वेज मिलता है।",
+      "bn": "হোস্টেল ঐচ্ছিক, বাধ্যতামূলক নয়। সিঙ্গেল বেড রুমের ভাড়া ত্রিশ হাজার টাকা প্রতি সেমিস্টার। ডাবল বা ট্রিপল বেড রুম দশ হাজার টাকা প্রতি সেমিস্টার। মেসের খাবার পাঁচ হাজার টাকা প্রতি মাস। প্রতিদিন চারবেলা খাবার দেওয়া হয়, সপ্তাহে তিন-চারদিন মাংস বা মাছ থাকে।"
+    },
+    "placement": {
+      "en": "BCREC placement rate is eighty point six two percent. Highest package is thirty lakh rupees per year from Cyberwissen. Top recruiters include Cyberwissen, Cerify, TCS Digital, Celebal Technology, and TCS.",
+      "hi": "बीसीआरईसी का प्लेसमेंट रेट अस्सी दशमलव बासठ प्रतिशत है। सबसे ज्यादा पैकेज तीस लाख रुपये प्रति वर्ष है, कंपनी साइबरविसेन से। प्रमुख कंपनियाँ हैं साइबरविसेन, सेरिफाई, टीसीएस डिजिटल, सेलेबल टेक्नोलॉजी, और टीसीएस।",
+      "bn": "বিসিআরইসি এর প্লেসমেন্ট রেট আশি দশমিক বাষট্টি শতাংশ। সর্বোচ্চ প্যাকেজ ত্রিশ লাখ টাকা প্রতি বছর, সাইবারউইসেন কোম্পানি থেকে। প্রধান নিয়োগকারী কোম্পানিগুলো হল সাইবারউইসেন, সেরিফাই, টিসিএস ডিজিটাল, সেলেবাল টেকনোলজি, এবং টিসিএস।"
+    },
+    "documents": {
+      "en": "For admission, you need class ten and twelve marksheets, admit cards, allotment letter, rank card, photographs, Aadhar card, and domicile or caste certificates if applicable.",
+      "hi": "एडमिशन के लिए आपको दसवीं और बारहवीं की मार्कशीट, एडमिट कार्ड, अलॉटमेंट लेटर, रैंक कार्ड, फोटो, आधार कार्ड और डोमिसाइल या जाति प्रमाण पत्र की आवश्यकता होगी।",
+      "bn": "ভর্তির জন্য আপনার দশম ও দ্বাদশ শ্রেণীর মার্কশিট, অ্যাডমিট কার্ড, অ্যালটমেন্ট লেটার, র‍্যাঙ্ক কার্ড, ফটো, আধার কার্ড এবং প্রযোজ্য ক্ষেত্রে ডোমিসাইল বা কাস্ট সার্টিফিকেট লাগবে।"
+    },
+    "scholarship": {
+      "en": "BCREC offers Tuition Fee Waiver, Swami Vivekananda Scholarship, Kanyashree for girls, and OASIS or Aikyashree scholarships for SC, ST, OBC, and minority students.",
+      "hi": "बीसीआरईसी ट्यूशन फीस माफी, स्वामी विवेकानंद स्कॉलरशिप, लड़कियों के लिए कन्याश्री और एससी, एसटी, ओबीसी और अल्पसंख्यक छात्रों के लिए ओएसिस या ऐक्यश्री स्कॉलरशिप प्रदान करता है।",
+      "bn": "বিসিআরইসি টিউশন ফি ওয়েভার, স্বামী বিবেকানন্দ স্কলারশিপ, মেয়েদের জন্য কন্যাশ্রী এবং এসসি, এসটি, ওবিসি ও সংখ্যালঘু শিক্ষার্থীদের জন্য ওয়েসিস বা ঐক্যশ্রী স্কলারশিপ প্রদান করে।"
+    }
   }
 }

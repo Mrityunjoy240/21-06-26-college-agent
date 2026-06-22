@@ -44,7 +44,7 @@ class VectorStoreService:
         try:
             self.embeddings = HuggingFaceEmbeddings(
                 model_name=self.embedding_model_name,
-                model_kwargs={'device': 'cpu'}, # Use 'cuda' if GPU available, but CPU is safer for general env
+                model_kwargs={'device': 'cpu', 'local_files_only': True},
                 encode_kwargs={'normalize_embeddings': True}
             )
             

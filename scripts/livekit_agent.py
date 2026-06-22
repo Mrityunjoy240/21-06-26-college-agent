@@ -8,6 +8,18 @@ import uuid
 from datetime import datetime
 from typing import AsyncIterable, List, Dict, Any, Literal
 
+# Force HuggingFace to load from local disk cache — skips all network HEAD/GET
+# requests that were causing prewarm to timeout. Model was already downloaded.
+os.environ.setdefault("TRANSFORMERS_OFFLINE", "1")
+os.environ.setdefault("HF_DATASETS_OFFLINE", "1")
+os.environ.setdefault("HF_HUB_OFFLINE", "1")
+
+# Fix Windows cp1252 crash: the rupee symbol (₹) and Bengali chars in LLM
+# responses crash the Rich console logger. Force UTF-8 everywhere so child
+# processes spawned by LiveKit IPC inherit the correct encoding.
+os.environ.setdefault("PYTHONUTF8", "1")
+os.environ.setdefault("PYTHONIOENCODING", "utf-8")
+
 # Add backend to path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "backend")))
 
@@ -257,24 +269,32 @@ class SarvamChunkedStream(tts.ChunkedStream):
         
         emitter.end_input()
 
-# ---------------------------------------------------------------------------
-# GLOBAL PRE-WARMED SERVICES
-# ---------------------------------------------------------------------------
-# Initialize these globally so they are shared across jobs and pre-loaded
-# when the worker process starts, NOT when the call arrives.
-vad_inst = silero.VAD.load(min_speech_duration=0.3, min_silence_duration=1.0)
-stt_comp = SarvamSTT()
-llm_comp = BCRECGroqLLM()
-
 from livekit.agents.tts import StreamAdapter
 from livekit.agents.tokenize.basic import SentenceTokenizer
-tts_comp = StreamAdapter(tts=SarvamTTS(), sentence_tokenizer=SentenceTokenizer())
+
+# ---------------------------------------------------------------------------
+# PREWARM — runs ONCE per worker process, not in every subprocess fork.
+# This is the correct LiveKit pattern to avoid re-loading BGE-M3 repeatedly.
+# ---------------------------------------------------------------------------
+def prewarm(proc: agents.JobProcess):
+    logger.info("Prewarming agent components (VAD, STT, LLM, TTS)...")
+    proc.userdata["vad"] = silero.VAD.load(min_speech_duration=0.3, min_silence_duration=1.0)
+    proc.userdata["stt"] = SarvamSTT()
+    proc.userdata["llm"] = BCRECGroqLLM()
+    proc.userdata["tts"] = StreamAdapter(tts=SarvamTTS(), sentence_tokenizer=SentenceTokenizer())
+    logger.info("Prewarm complete — agent is ready to accept jobs.")
 
 # ---------------------------------------------------------------------------
 # MAIN ENTRYPOINT (The Worker Model)
 # ---------------------------------------------------------------------------
 async def entrypoint(ctx: agents.JobContext):
     logger.info(f"Starting agent job {ctx.job.id}")
+
+    # Pull pre-warmed components from process userdata (loaded once by prewarm)
+    vad_inst = ctx.proc.userdata["vad"]
+    stt_comp = ctx.proc.userdata["stt"]
+    llm_comp = ctx.proc.userdata["llm"]
+    tts_comp = ctx.proc.userdata["tts"]
     
     agent = voice.Agent(
         instructions="""You are a VOICE-FIRST AI assistant for Dr. B.C. Roy Engineering College (BCREC). 
@@ -320,7 +340,7 @@ async def entrypoint(ctx: agents.JobContext):
     
     await asyncio.sleep(0.5)
     logger.info("Sending greeting...")
-    session.say("Hello, BCREC AI assistant here. How can I help you?", allow_interruptions=False)
+    session.say("Hello! BCREC AI assistant here. How can I help you today?", allow_interruptions=False)
 
     while ctx.room.isconnected():
         await asyncio.sleep(1)
@@ -328,4 +348,9 @@ async def entrypoint(ctx: agents.JobContext):
     logger.info("Room disconnected, exiting entrypoint")
 
 if __name__ == "__main__":
-    cli.run_app(WorkerOptions(entrypoint_fnc=entrypoint, agent_name="bcrec-agent"))
+    cli.run_app(WorkerOptions(
+        entrypoint_fnc=entrypoint,
+        prewarm_fnc=prewarm,
+        agent_name="bcrec-agent",
+        initialize_process_timeout=120.0,  # BGE-M3 needs ~30s to load from cache
+    ))

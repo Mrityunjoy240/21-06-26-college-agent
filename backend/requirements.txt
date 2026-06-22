@@ -18,3 +18,4 @@ aiofiles
 pypdf
 pandas
 openpyxl
+cachetools

@@ -89,7 +89,9 @@ async def query_endpoint(request: Request, data: GroqQueryRequest):
             voice_text=result.get("voice_text"),
             sources=[],
             session_id=session_id,
-            conversation_id=data.conversation_id
+            conversation_id=data.conversation_id,
+            source=result.get("source", "groq_rag"),
+            intent=result.get("intent", "faq_deterministic" if result.get("source") == "faq_deterministic" else "llm_generated")
         )
     except Exception as e:
         logger.error(f"Query error: {e}")
