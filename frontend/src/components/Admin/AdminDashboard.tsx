@@ -20,7 +20,7 @@ import { Delete as DeleteIcon, CloudUpload as UploadIcon } from '@mui/icons-mate
 
 const AdminDashboard: React.FC = () => {
     const API_BASE = import.meta.env.VITE_API_URL || 
-        (typeof window !== 'undefined' && window.location.hostname === 'localhost' ? 'http://localhost:8000' : '');
+        (typeof window !== 'undefined' ? window.location.origin : '');
     const [files, setFiles] = useState<any[]>([]);
     const [uploadFile, setUploadFile] = useState<File | null>(null);
     const [uploadProgress, setUploadProgress] = useState<number | null>(null);

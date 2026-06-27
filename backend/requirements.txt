@@ -19,3 +19,4 @@ pypdf
 pandas
 openpyxl
 cachetools
+fasttext-wheel  # Windows-compatible fasttext for language detection

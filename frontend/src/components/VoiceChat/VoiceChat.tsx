@@ -19,6 +19,7 @@ import {
     Add as AddIcon
 } from '@mui/icons-material';
 import { useVoice } from '../../hooks/useVoice';
+import { useVoiceWS } from '../../hooks/useVoiceWS';
 import { useNoiseCancellation } from '../../hooks/useNoiseCancellation';
 
 interface Message {
@@ -38,8 +39,7 @@ const VoiceChat: React.FC<VoiceChatProps> = ({
     onNewChat,
 }) => {
     // Dynamically resolve API base: use current domain in production, localhost in development
-    const API_BASE = import.meta.env.VITE_API_URL || 
-        (window.location.hostname === 'localhost' ? 'http://localhost:8000' : window.location.origin);
+    const API_BASE = import.meta.env.VITE_API_URL || window.location.origin;
     const QUERY_ENDPOINT = '/qa/query'; // PRODUCTION: Using Consolidated Query
     const [messages, setMessages] = useState<Message[]>([]);
     const [isProcessing, setIsProcessing] = useState(false);
@@ -49,6 +49,8 @@ const VoiceChat: React.FC<VoiceChatProps> = ({
     const [sessionId] = useState<string | null>(null);
     const [sarvamError, setSarvamError] = useState<string | null>(null);
     const [continuousMode, setContinuousMode] = useState(false);
+    const [pipelineMode, setPipelineMode] = useState(false);
+    const [streamingAnswer, setStreamingAnswer] = useState('');
 
     const audioQueueRef = useRef<string[]>([]);
     const isPlayingRef = useRef(false);
@@ -131,8 +133,28 @@ const VoiceChat: React.FC<VoiceChatProps> = ({
         }
     }, [sessionId, API_BASE, addToAudioQueue]);
 
-    // Function to submit query
-    const handleQuery = useCallback(async (queryText?: string, lang: string = 'en-IN') => {
+    const { sendText: sendPipelineText } = useVoiceWS({
+        apiBase: API_BASE,
+        onToken: (token) => {
+            setStreamingAnswer(prev => prev + token);
+        },
+        onAudio: (url) => {
+            addToAudioQueue(url);
+        },
+        onError: (error) => {
+            console.error('Pipeline error:', error);
+            setMessages(prev => [...prev, { role: 'assistant', content: `Error: ${error}` }]);
+            setIsProcessing(false);
+            setStreamingAnswer('');
+        },
+        onDone: (fullText) => {
+            setMessages(prev => [...prev, { role: 'assistant', content: fullText }]);
+            setStreamingAnswer('');
+            setIsProcessing(false);
+        }
+    });
+
+    const handlePipelineQuery = useCallback(async (queryText?: string, lang: string = 'en-IN') => {
         const textToSend = queryText || textInput;
         if (!textToSend.trim() || isProcessing) return;
 
@@ -140,14 +162,34 @@ const VoiceChat: React.FC<VoiceChatProps> = ({
         setIsSpeaking(false);
         audioQueueRef.current = [];
 
-        // Add user message to UI immediately
+        const userMessage: Message = { role: 'user', content: textToSend };
+        setMessages(prev => [...prev, userMessage]);
+
+        if (!queryText) setTextInput('');
+
+        setStreamingAnswer('');
+        sendPipelineText(textToSend, lang);
+    }, [textInput, isProcessing, sendPipelineText]);
+
+    // Function to submit query
+    const handleQuery = useCallback(async (queryText?: string, lang: string = 'en-IN') => {
+        if (pipelineMode) {
+            return handlePipelineQuery(queryText, lang);
+        }
+
+        const textToSend = queryText || textInput;
+        if (!textToSend.trim() || isProcessing) return;
+
+        setIsProcessing(true);
+        setIsSpeaking(false);
+        audioQueueRef.current = [];
+
         const userMessage: Message = { role: 'user', content: textToSend };
         setMessages(prev => [...prev, userMessage]);
 
         if (!queryText) setTextInput('');
 
         try {
-            // Use Groq endpoint for prototype (high accuracy)
             const res = await fetch(`${API_BASE}${QUERY_ENDPOINT}`, {
                 method: 'POST',
                 headers: {
@@ -163,16 +205,13 @@ const VoiceChat: React.FC<VoiceChatProps> = ({
                 const data = await res.json();
                 const answer = data.answer;
 
-                // Add assistant message to UI
                 const assistantMessage: Message = { role: 'assistant', content: answer };
                 setMessages(prev => [...prev, assistantMessage]);
 
-                // Notify parent of conversation change
                 if (data.conversation_id && data.conversation_id !== conversationId) {
                     onConversationChange?.(data.conversation_id);
                 }
 
-                // Auto-speak if voice input using detected language
                 if (queryText) {
                     speakAnswer(answer, lang);
                 }
@@ -186,7 +225,7 @@ const VoiceChat: React.FC<VoiceChatProps> = ({
         } finally {
             setIsProcessing(false);
         }
-    }, [textInput, isProcessing, API_BASE, QUERY_ENDPOINT, conversationId, onConversationChange, speakAnswer]);
+    }, [textInput, isProcessing, API_BASE, QUERY_ENDPOINT, conversationId, onConversationChange, speakAnswer, pipelineMode, handlePipelineQuery]);
 
     // Initialize voice hook with callback for auto-answer
     const voice = useVoice({ 
@@ -199,7 +238,7 @@ const VoiceChat: React.FC<VoiceChatProps> = ({
     });
 
     const noiseCanceller = useNoiseCancellation({
-        enabled: false, // Disabled by default to prevent gating low volume speech
+        enabled: false,
         noiseGateThreshold: -50,
         highPassFrequency: 100,
         noiseReduction: 0.3
@@ -366,6 +405,15 @@ const VoiceChat: React.FC<VoiceChatProps> = ({
                         {continuousMode ? "Hands-Free: ON" : "Hands-Free: OFF"}
                     </Button>
                     <Button
+                        variant={pipelineMode ? "contained" : "outlined"}
+                        color={pipelineMode ? "secondary" : "primary"}
+                        size="small"
+                        onClick={() => setPipelineMode(!pipelineMode)}
+                        sx={{ ml: 1, fontSize: '0.75rem', borderRadius: 2 }}
+                    >
+                        {pipelineMode ? "Stream: ON" : "Stream: OFF"}
+                    </Button>
+                    <Button
                         variant="outlined"
                         size="small"
                         startIcon={<AddIcon />}
@@ -442,12 +490,23 @@ const VoiceChat: React.FC<VoiceChatProps> = ({
                     </Box>
                 ))}
 
-                {isProcessing && (
+                {isProcessing && !streamingAnswer && (
                     <Box sx={{ display: 'flex', justifyContent: 'flex-start' }}>
                         <Paper sx={{ p: 2, bgcolor: '#f5f5f5', borderRadius: 2 }}>
                             <CircularProgress size={20} />
                             <Typography variant="body2" sx={{ ml: 2, display: 'inline' }}>
                                 Processing...
+                            </Typography>
+                        </Paper>
+                    </Box>
+                )}
+
+                {streamingAnswer && (
+                    <Box sx={{ display: 'flex', justifyContent: 'flex-start' }}>
+                        <Paper sx={{ p: 2, bgcolor: '#e8f5e9', borderRadius: 2, maxWidth: '80%' }}>
+                            <Typography variant="body1">
+                                {streamingAnswer}
+                                {isProcessing && ' ...'}
                             </Typography>
                         </Paper>
                     </Box>

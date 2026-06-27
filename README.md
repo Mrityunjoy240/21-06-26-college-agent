@@ -1,6 +1,6 @@
 # 🎓 College Voice Agent
 
-> AI-Powered Voice Assistant for College Admissions | Built with RAG + Groq + gTTS
+> AI-Powered Voice Assistant for College Admissions | Built with RAG + Groq + Sarvam TTS/STT
 
 [![Status](https://img.shields.io/badge/status-production-green)]()
 [![Python](https://img.shields.io/badge/python-3.9+-blue)]()
@@ -11,9 +11,8 @@
 
 ## 📋 Quick Links
 
--   **[📊 Project Report](PROJECT_REPORT.md)** - Comprehensive technical documentation
 -   **[👨‍💻 Developer Guide](DEVELOPER_GUIDE.md)** - Setup & development workflows
--   **[🚀 Demo Walkthrough](C:\Users\ANAMIKA\.gemini\antigravity\brain\131d970b-0582-4288-992f-04324d707922\walkthrough.md)** - How to run the demo
+-   **[📊 Demo Status](DEMO_STATUS.md)** - Current demo readiness
 
 ---
 
@@ -23,12 +22,14 @@ The **College Voice Agent** is an intelligent voice assistant that helps prospec
 
 ### ✨ Key Features
 
--   🎤 **Voice-First Interface** - Natural conversation in Indian English
--   🎯 **95%+ Accuracy** - Strict grounding prevents hallucinations
--   ⚡ **Sub-2s Response Time** - Lightning-fast answers
--   🆓 **Zero Cost** - Built on free-tier services (Groq, gTTS)
+-   🎤 **Voice-First Interface** - Natural conversation in English, Hindi, Bengali
+-   🎯 **95%+ Accuracy** - Deterministic FAQ bypass for common questions, strict RAG grounding
+-   ⚡ **Sub-2s Response Time** - Lightning-fast answers (4-6ms for FAQ hits)
+-   🆓 **Zero Cost** - Built on free-tier services (Groq, Sarvam AI)
 -   📱 **Mobile Friendly** - Works on any device with a browser
 -   🔒 **Privacy First** - No personal data storage
+-   🌐 **Trilingual** - English, Hindi, Bengali with script-based language detection
+-   🔄 **Admin API** - Hot-reload knowledge base without server restart
 
 ---
 
@@ -36,9 +37,9 @@ The **College Voice Agent** is an intelligent voice assistant that helps prospec
 
 ### Prerequisites
 
--   Python 3.9+
--   Node.js 16+
--   Groq API Key ([Get Free Key](https://console.groq.com))
+-   Python 3.10+
+-   Node.js 18+
+-   API Keys: Groq ([Get Free Key](https://console.groq.com)), Sarvam AI
 
 ### 1️⃣ Backend Setup
 
@@ -54,14 +55,14 @@ source venv/bin/activate  # Mac/Linux
 # Install dependencies
 pip install -r requirements.txt
 
-# Configure environment
-echo "GROQ_API_KEY=your_key_here" > .env
+# Configure environment — edit backend/.env with your keys
+# Required: GROQ_API_KEY, SARVAM_API_KEY
 
 # Start server
-python -m uvicorn app.main:app --reload
+python -m uvicorn app.main:app --reload --port 8080
 ```
 
-**Verify:** Open http://localhost:8000/health
+**Verify:** Open http://localhost:8080/qa/health
 
 ### 2️⃣ Frontend Setup
 
@@ -72,38 +73,35 @@ cd frontend
 # Install dependencies
 npm install
 
-# Configure environment
-echo "VITE_API_URL=http://localhost:8000" > .env
-
 # Start dev server
 npm run dev
 ```
 
-**Access:** Open http://localhost:5173
+**Access:** Open http://localhost:5173 (frontend connects to backend at same origin)
 
-### 3️⃣ Start Production Voice Agent (SIP/Telephony)
+### 3️⃣ Start Voice Agent (LiveKit — for phone-call-style demo)
 
 ```bash
-# Start the optimized LiveKit agent
-python scripts/livekit_agent.py dev
+# Start the LiveKit agent worker
+python scripts/livekit_agent.py
 ```
 
-### 4️⃣ Verify Multilingual Brain (Demo Ready)
+Then open https://agents-playground.livekit.io to talk to the agent via browser mic.
 
-Run this to confirm the agent correctly handles Fees, Names, and Pronunciation (Taka/Rupeya) across English, Hindi, and Bengali:
+### 4️⃣ Verify API Works
+
 ```bash
-python test_production_ready.py
-```
-
-Expected output:
-```
-✅ ALL TESTS PASSED! THE BRAIN IS STABLE.
+curl -X POST http://localhost:8080/qa/query \
+  -H "Content-Type: application/json" \
+  -d '{"message": "What is the BTech fee?"}'
 ```
 
 ## 🛠️ Key Production Features
-- **Hybrid RAG:** Combines high-precision JSON for facts (Fees, Names) with Vector Search for fuzzy context.
-- **Natural TTS:** Automatically converts currency and numbers into words for flawless Hindi/Bengali/English speech.
-- **Zero-Lag Startup:** Pre-warms embedding models to ensure <2s join time for SIP calls.
+- **FAQ Bypass:** Common questions (fees, principal, HOD, hostel, placement) answered in 4-6ms from JSON, no LLM needed.
+- **Hybrid RAG:** Combines high-precision JSON for facts with ChromaDB Vector Search for fuzzy context.
+- **Multilingual TTS:** Sarvam AI converts answers to natural speech in English, Hindi, Bengali with number-to-words.
+- **LiveKit Agent:** Real-time voice pipeline with STT → LLM → TTS for phone-call-like experience.
+- **Hallucination Guard:** Validates LLM answers against retrieved context before responding.
 
 ---
 
@@ -111,12 +109,12 @@ Expected output:
 
 ```mermaid
 graph LR
-    A[User Voice] --> B[React Frontend]
-    B --> C[FastAPI Backend]
+    A[User Voice/Browser] --> B[React Frontend / LiveKit Playground]
+    B --> C[FastAPI Backend / LiveKit Agent]
     C --> D[RAG Engine]
-    D --> E[FAISS + BM25]
+    D --> E[ChromaDB Vector Search]
     D --> F[Groq LLM]
-    F --> G[gTTS]
+    F --> G[Sarvam TTS]
     G --> B
     B --> H[User Hears Answer]
 ```
@@ -131,27 +129,20 @@ graph LR
 
 **Backend:**
 -   FastAPI (Python)
--   Groq (LLM - Llama 3.1)
--   FAISS (Vector Search)
--   BM25 (Keyword Search)
--   gTTS (Text-to-Speech)
+-   Groq (LLM - Llama 3.3 70B)
+-   ChromaDB (Vector Search)
+-   Sarvam AI (STT + TTS)
+-   Deepgram (STT alternative)
+-   LiveKit Agents (Voice pipeline)
 
 **Infrastructure:**
+-   LiveKit Cloud (WebRTC/SIP transport)
 -   Docker (Optional)
 -   Nginx (Production)
--   AWS/GCP (Deployment)
 
 ---
 
 ## 📖 Documentation
-
-### For Managers & Stakeholders
-👉 **[PROJECT_REPORT.md](PROJECT_REPORT.md)**
--   Executive summary
--   Business case & ROI
--   Architecture diagrams
--   Performance metrics
--   Deployment guide
 
 ### For Developers
 👉 **[DEVELOPER_GUIDE.md](DEVELOPER_GUIDE.md)**
@@ -214,33 +205,29 @@ CORS_ORIGINS=*
 ### Frontend Environment Variables
 
 ```bash
-VITE_API_URL=http://localhost:8000
+# Leave empty — frontend uses same origin as backend
+VITE_API_URL=
 ```
 
 ---
 
 ## 🧪 Testing
 
-### Automated Tests
 ```bash
-cd backend
-python verify_demo.py
-```
-
-### Manual Testing
-
-**Test Query:**
-```bash
-curl -X POST http://localhost:8000/qa/query \
+# Test FAQ (bypasses LLM — answers from JSON)
+curl -X POST http://localhost:8080/qa/query \
   -H "Content-Type: application/json" \
   -d '{"message": "What is the BTech fee?"}'
-```
 
-**Test TTS:**
-```bash
-curl -X POST http://localhost:8000/qa/tts \
+# Test LLM/RAG (no FAQ match — uses vector search)
+curl -X POST http://localhost:8080/qa/query \
   -H "Content-Type: application/json" \
-  -d '{"text": "Hello, this is a test."}'
+  -d '{"message": "Tell me about campus infrastructure"}'
+
+# Test voice agent (browser-based, no phone needed)
+# 1. python scripts/livekit_agent.py
+# 2. Open https://agents-playground.livekit.io
+# 3. Connect to your LiveKit cloud room
 ```
 
 ---
@@ -263,7 +250,7 @@ college-agent-clean/
 │   │   └── hooks/       # Custom hooks
 │   └── package.json
 │
-├── PROJECT_REPORT.md    # Comprehensive documentation
+├── DEMO_STATUS.md       # Demo readiness status
 ├── DEVELOPER_GUIDE.md   # Developer onboarding
 └── README.md            # This file
 ```
@@ -294,29 +281,25 @@ npm run build
 # Serve dist/ with Nginx or similar
 ```
 
-See [PROJECT_REPORT.md](PROJECT_REPORT.md) for detailed deployment guide.
+See [DEVELOPER_GUIDE.md](DEVELOPER_GUIDE.md) for detailed setup and deployment guide.
 
 ---
 
 ## 🛣️ Roadmap
 
-### Phase 2 (Q1 2026)
--   [ ] Multilingual support (Hindi, Bengali)
--   [ ] Advanced analytics dashboard
+### ✅ Completed
+-   [x] Multilingual support (English, Hindi, Bengali)
+-   [x] FAQ bypass for common questions (4-6ms)
+-   [x] Hallucination guardrail
+-   [x] WebSocket streaming LLM + TTS pipeline
+-   [x] LiveKit voice agent for real-time conversation
+-   [x] Admin dashboard for KB management
+
+### Phase 2 (Next)
+-   [ ] LiveKit Playground demo walkthrough
+-   [ ] Production telephony (SIP trunk)
+-   [ ] Usage analytics & monitoring
 -   [ ] Sentiment analysis
--   [ ] Admin panel improvements
-
-### Phase 3 (Q2 2026)
--   [ ] Telephony integration (IVR)
--   [ ] WhatsApp bot
--   [ ] Video avatar responses
--   [ ] Personalization engine
-
-### Phase 4 (Q3 2026)
--   [ ] Multi-institution SaaS platform
--   [ ] Graph-based RAG
--   [ ] Custom voice cloning
--   [ ] Native mobile apps
 
 ---
 
@@ -343,8 +326,8 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 ## 🙏 Acknowledgments
 
 -   **Groq** for lightning-fast LLM inference
--   **Google** for gTTS (Text-to-Speech)
--   **Facebook AI** for FAISS vector search
+-   **Sarvam AI** for Text-to-Speech & Speech-to-Text
+-   **Groq** for lightning-fast LLM inference
 -   **FastAPI** for the amazing web framework
 
 ---
@@ -359,8 +342,8 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 <div align="center">
 
-**Built with ❤️ for Educational Institutions**
+**Built with ❤️ for Dr. B.C. Roy Engineering College**
 
-[Documentation](PROJECT_REPORT.md) • [Developer Guide](DEVELOPER_GUIDE.md) • [Demo](C:\Users\ANAMIKA\.gemini\antigravity\brain\131d970b-0582-4288-992f-04324d707922\walkthrough.md)
+[Developer Guide](DEVELOPER_GUIDE.md) • [Demo Status](DEMO_STATUS.md)
 
 </div>

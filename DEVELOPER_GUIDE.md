@@ -1,90 +1,125 @@
-# 🛠️ Developer Guide - College Voice Agent
+# Developer Guide - College Voice Agent
 
-This guide provides technical details for developers working on the BCREC Voice Agent.
-
----
-
-## 🏗️ Architecture Overview
-
-The system follows a decoupled Frontend-Backend architecture:
-
--   **Frontend:** React SPA that handles audio capture and playback.
--   **Backend:** FastAPI server that orchestrates LLM and Voice services.
--   **Knowledge Base:** A structured JSON file (`combined_kb.json`) that acts as the source of truth.
+Technical details for developers working on the BCREC Voice Agent.
 
 ---
 
-## 🚀 Environment Setup
+## Architecture Overview
 
-### 1. Requirements
--   Python 3.10+
--   Node.js 18+
--   Docker (Optional)
+- **Frontend:** React SPA (audio capture/playback, text chat, streaming)
+- **Backend:** FastAPI server (LLM orchestration, voice services, admin API)
+- **Knowledge Base:** `combined_kb.json` — single source of truth for FAQ + context
 
-### 2. API Keys Needed
--   `GROQ_API_KEY`: For LLM inference ([Groq Cloud](https://console.groq.com/))
--   `SARVAM_API_KEY`: For STT and TTS ([Sarvam AI](https://www.sarvam.ai/))
+---
 
-### 3. Backend Configuration (`backend/.env`)
-```env
-GROQ_API_KEY=your_key
-SARVAM_API_KEY=your_key
-CORS_ORIGINS=["http://localhost:5173"]
+## FAQ System (Auto-Discovery)
+
+The FAQ system in `_try_faq()` (`groq_service.py:519`) automatically discovers all `voice_ready_answers` entries.
+
+### Adding a New FAQ Topic
+
+Just add a JSON block to `voice_ready_answers` in `combined_kb.json`:
+
+```json
+"your_topic": {
+  "keywords": ["trigger1", "trigger2", "ट्रिगर"],
+  "answers": {
+    "en": "English answer...",
+    "hi": "Hindi answer...",
+    "bn": "Bengali answer..."
+  }
+}
 ```
 
----
+Then reload via Admin API or restart the server. **Zero Python code changes.**
 
-## 📂 Code Navigation
+### Priority Ordering
 
-### Backend (`/backend`)
--   `app/api/`: Endpoint definitions (QA, STT, TTS, Admin).
--   `app/services/`: Core logic for AI services.
-    -   `llm/groq_service.py`: Handles prompt engineering and LLM calls.
-    -   `sarvam_service.py`: Wrapper for Sarvam AI APIs.
--   `data/knowledge_base/`: JSON/Markdown files containing college data.
--   `uploads/`: Directory for dynamic document uploads.
+The code checks entries in a specific priority order:
+1. `vice_principal` (checked before principal)
+2. `principal`
+3. `hod` (with sub-answer department routing)
+4. `hidden_charges`, `refund_policy` (checked before general fees)
+5. `fees` (with branch-specific sub-answers)
+6. `international`, `application_status`, `why_bcrec`, `campus`, `policies`
+7. All remaining entries auto-discovered
 
-### Frontend (`/frontend`)
--   `src/components/Chatbot/`: Main UI for interaction.
--   `src/components/VoiceChat/`: Specialized voice-only interface.
--   `src/hooks/useVoice.ts`: Custom hook for Web Speech API management.
+If adding a new broad-category entry (like `admission`), make sure more specific entries are checked first so they don't get shadowed.
 
----
+### Admin API (Hot-Reload)
 
-## 🔧 Core Workflows
+All KB mutations are available through the admin API:
 
-### Updating the Knowledge Base
-1.  Navigate to `backend/data/knowledge_base/`.
-2.  Update `combined_kb.json` with new information.
-3.  The backend automatically reloads the KB on every request (in the current prototype).
-
-### Adding New Voice Models
-1.  Check `backend/app/api/tts.py` and `stt.py`.
-2.  Update the `language_speaker_map` to include new voice profiles from Sarvam.
-
----
-
-## 🧪 Testing
-
-### API Testing
-Use the provided `curl` commands or Postman:
 ```bash
-# Test LLM
-curl -X POST http://localhost:8000/qa/groq-query -H "Content-Type: application/json" -d '{"message": "What is the CSE fee?"}'
-```
+# Get token
+curl -X POST http://localhost:8080/token -d "username=admin&password=admin"
 
-### Voice Testing
-Use the Admin Dashboard to record and test STT/TTS latency.
+# List all FAQs
+curl http://localhost:8080/admin/kb/faq -H "Authorization: Bearer <token>"
+
+# Add/update an entry
+curl -X POST http://localhost:8080/admin/kb/faq/campus \
+  -H "Authorization: Bearer <token>" \
+  -H "Content-Type: application/json" \
+  -d '{"keywords":["campus"],"answers":{"en":"...","hi":"...","bn":"..."}}'
+
+# Delete an entry
+curl -X DELETE http://localhost:8080/admin/kb/faq/campus \
+  -H "Authorization: Bearer <token>"
+
+# Force reload from disk
+curl -X POST http://localhost:8080/admin/kb/reload \
+  -H "Authorization: Bearer <token>"
+```
 
 ---
 
-## 🚢 Deployment
+## API Keys
 
-### Using Docker
-```bash
-docker-compose up --build
+- `GROQ_API_KEY`: LLM inference (Groq Cloud)
+- `SARVAM_API_KEY`: STT and TTS (Sarvam AI)
+
+---
+
+## Code Navigation
+
+### Backend (`backend/`)
+- `app/api/qa.py` — QA query endpoint (`POST /qa/query`)
+- `app/api/admin.py` — Admin endpoints for KB CRUD
+- `app/api/ws_voice.py` — WebSocket voice streaming pipeline
+- `app/services/llm/groq_service.py` — LLM, FAQ, caching logic
+- `app/services/sarvam_service.py` — Sarvam AI voice API wrapper
+- `app/utils/language_detect.py` — Language detection (fasttext or regex fallback)
+
+### Frontend (`frontend/`)
+- `src/components/VoiceChat/` — Voice UI with streaming
+- `src/hooks/useVoiceWS.ts` — WebSocket hook for streaming pipeline
+
+---
+
+## Testing
+
+### API Testing (UTF-8 Safe)
+On Windows, `curl` corrupts Unicode characters. Use Python requests instead:
+
+```python
+import requests
+r = requests.post("http://localhost:8080/qa/query",
+    json={"message": "कैंपस का आकार क्या है"})
+print(r.json()["source"])  # "faq_deterministic"
 ```
 
-### Manual Deployment
-1.  **Backend:** `uvicorn app.main:app --host 0.0.0.0 --port 8000`
-2.  **Frontend:** `npm run build` and serve `dist/` via Nginx.
+Or use `curl` with `--data-binary @file` and a UTF-8 encoded file.
+
+### Running the Server
+```bash
+cd backend
+python -m uvicorn app.main:app --host 0.0.0.0 --port 8080
+```
+
+---
+
+## Known Issues
+
+- `fasttext` not installed — romanized Hinglish/Banglish detection is less accurate
+- Stale tests in `backend/tests/test_groq_service.py` reference old `_format_knowledge_base`

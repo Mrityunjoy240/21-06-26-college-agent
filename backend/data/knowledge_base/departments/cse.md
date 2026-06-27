@@ -74,6 +74,6 @@ TCS, Infosys, Wipro, Cognizant, Amazon, Microsoft, Google, IBM
 
 ## Contact
 
-**HOD**: Dr. Bappaditya Das
-- Email: bappaditya.das@bcrec.ac.in
-- Phone: +91-9051218105
+**HOD**: Dr. Pabitra Kumar Dey
+- Email: pabitrakumar.dey@bcrec.ac.in
+- Phone: Contact main office

@@ -7,6 +7,7 @@ code-mixed "Hinglish" and "Banglish" that regex-based approaches miss.
 
 Model size: 917KB, loads in <100ms, 95%+ accuracy on mixed-script text.
 """
+
 import logging
 import os
 import re
@@ -73,44 +74,140 @@ def detect_language(text: str) -> Literal["en", "hi", "bn"]:
         return "en"
 
     # Quick script-based detection for native scripts (faster than model)
-    has_bengali = any("\u0980" <= c <= "\u09FF" for c in text)
-    has_devanagari = any("\u0900" <= c <= "\u097F" for c in text)
+    has_bengali = any("\u0980" <= c <= "\u09ff" for c in text)
+    has_devanagari = any("\u0900" <= c <= "\u097f" for c in text)
 
     if has_bengali:
         return "bn"
     if has_devanagari:
         return "hi"
 
-    # For romanized text, use FastText
-    model = _load_model()
-    if model is None:
-        # Fallback: Detect Hinglish/Banglish based on common stop words in Roman letters
-        text_lower = text.lower()
-        # Bengali Romanized (Banglish) markers — avoid very short/ambiguous words like "ki", "r", "a"
-        bangla_roman_words = [
-            "ami", "tumi", "amader", "kotha", "bolte", "ache", "bhul",
-            "korte", "hobe", "thik", "bolche", "bhalo", "kothay", "ekhane",
-            "kachhe", "apnar", "jabe", "asbe", "dite", "nite", "niye",
-            "kemon", "dekho", "bole", "jano", "janao", "janio", "shunun",
-        ]
-        # Hindi Romanized (Hinglish) markers — distinct from Bengali
-        hindi_roman_words = [
-            "hai", "hain", "toh", "bhi", "kya", "kaise", "sakte", "hoon",
-            "aap", "aur", "main", "suno", "batao", "chahiye", "milega",
-            "kitna", "kitne", "kaisa", "kaisi", "wahan", "yahan", "unka",
-            "mujhe", "tumhe", "humara", "tumhara", "theek", "nahin", "nahi",
-        ]
-        
-        # Count matches (whole word only)
-        bn_count = sum(1 for w in bangla_roman_words if re.search(rf"\b{re.escape(w)}\b", text_lower))
-        hi_count = sum(1 for w in hindi_roman_words if re.search(rf"\b{re.escape(w)}\b", text_lower))
-        
-        if bn_count > 0 and bn_count >= hi_count:
+    # Pre-check for known Bengali college terms in Roman script
+    # (before the general keyword logic, since these are unambiguous)
+    text_lower = text.lower()
+    bengali_college_markers = [
+        r"\bupo[- ]?pradhan\b",
+        r"\bupo[- ]?principal\b",
+        r"\bvice[- ]?pradhan\b",
+        r"\bভাইস[- ]?প্রিন্সিপাল\b",
+    ]
+    for pattern in bengali_college_markers:
+        if re.search(pattern, text_lower):
             return "bn"
-        elif hi_count > 0:
-            return "hi"
-            
-        return "en"
+
+    # For romanized text, use keyword detection first (more reliable for Hinglish/Banglish)
+
+    text_words = set(re.sub(r"[^\w\s]", " ", text_lower).split())
+
+    # Bengali Romanized (Banglish) markers
+    bangla_roman_words = {
+        "ami",
+        "tumi",
+        "amader",
+        "kotha",
+        "bolte",
+        "ache",
+        "bhul",
+        "korte",
+        "hobe",
+        "thik",
+        "bolche",
+        "bhalo",
+        "kothay",
+        "ekhane",
+        "kachhe",
+        "apnar",
+        "jabe",
+        "asbe",
+        "dite",
+        "nite",
+        "niye",
+        "kemon",
+        "dekho",
+        "bole",
+        "jano",
+        "janao",
+        "janio",
+        "shunun",
+        "koto",
+        "er",
+        "theke",
+        "diye",
+        "jonno",
+        "moddhe",
+        "songe",
+        "mote",
+        "bar",
+        "ta",
+        "tar",
+        "take",
+        "dara",
+        "niye",
+        "char",
+        "na",
+        "o",
+        "ar",
+        "ebong",
+        "upo",
+    }
+    # Hindi Romanized (Hinglish) markers — distinct from Bengali
+    hindi_roman_words = {
+        "hai",
+        "hain",
+        "toh",
+        "bhi",
+        "kya",
+        "kaise",
+        "sakte",
+        "hoon",
+        "aap",
+        "aur",
+        "main",
+        "suno",
+        "batao",
+        "chahiye",
+        "milega",
+        "kitna",
+        "kitne",
+        "kaisa",
+        "kaisi",
+        "wahan",
+        "yahan",
+        "unka",
+        "mujhe",
+        "tumhe",
+        "humara",
+        "tumhara",
+        "theek",
+        "nahin",
+        "nahi",
+        "ho",
+        "ka",
+        "ki",
+        "ke",
+        "me",
+        "pe",
+        "par",
+        "se",
+        "ko",
+        "wo",
+    }
+
+    bn_count = len(text_words & bangla_roman_words)
+    hi_count = len(text_words & hindi_roman_words)
+
+    # If keyword signal is strong, use it directly (bypasses FastText confusion on mixed text)
+    if bn_count >= 1 and bn_count > hi_count:
+        return "bn"
+    if hi_count >= 1 and hi_count > bn_count:
+        return "hi"
+    if bn_count >= 2 and bn_count == hi_count:
+        return "bn"
+    if hi_count >= 2 and hi_count == bn_count:
+        return "hi"
+
+    # Fall back to FastText for ambiguous/clear English text
+    model = _load_model()
 
     try:
         # FastText expects single-line input, no newlines

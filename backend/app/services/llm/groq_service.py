@@ -10,12 +10,15 @@ Phase 0 (Hallucination Guardrail):
 - If a critical entity (fee amount, principal name, etc.) is NOT found in the
   retrieved context, replace the answer with a polite fallback.
 """
+
 import logging
 import os
 import re
 import time
 import json
 import hashlib
+import random
+import asyncio
 from typing import Dict, Any, Optional, List
 from pathlib import Path
 
@@ -30,10 +33,32 @@ HALLUCINATION_GUARD_ENABLED = os.getenv("HALLUCINATION_GUARD_ENABLED", "true").l
 # Topics where we MUST validate entities against context.
 # For other topics (greetings, general chat) we skip validation.
 VALIDATED_TOPICS = {
-    "fees", "fee", "hostel", "admission", "principal", "vice_principal",
-    "contact", "phone", "email", "address", "placement", "cutoff",
-    "scholarship", "documents", "eligibility",
+    "fees",
+    "fee",
+    "hostel",
+    "admission",
+    "principal",
+    "vice_principal",
+    "contact",
+    "phone",
+    "email",
+    "address",
+    "placement",
+    "cutoff",
+    "scholarship",
+    "documents",
+    "eligibility",
 }
+
+GREETING_PATTERNS = (
+    r"^hi+$",
+    r"^hello+$",
+    r"^hey+$",
+    r"^hii+$",
+    r"^hiii+$",
+    r"^hello there$",
+    r"^good (morning|afternoon|evening)$",
+)
 
 FALLBACK_ANSWER_EN = (
     "I'm sorry, I don't have that specific information. "
@@ -44,8 +69,7 @@ FALLBACK_ANSWER_HI = (
     "कृपया सटीक जानकारी के लिए कॉलेज को 0343-2501353 पर कॉल करें।"
 )
 FALLBACK_ANSWER_BN = (
-    "দুঃখিত, আমার কাছে এই নির্দিষ্ট তথ্য নেই। "
-    "সঠিক তথ্যের জন্য অনুগ্রহ করে কলেজে 0343-2501353 নম্বরে কল করুন।"
+    "দুঃখিত, আমার কাছে এই নির্দিষ্ট তথ্য নেই। সঠিক তথ্যের জন্য অনুগ্রহ করে কলেজে 0343-2501353 নম্বরে কল করুন।"
 )
 
 # ---------------------------------------------------------------------------
@@ -54,6 +78,7 @@ FALLBACK_ANSWER_BN = (
 # Cache TTL (seconds) and max entries. Tunable via env vars.
 try:
     import cachetools  # type: ignore
+
     CACHE_AVAILABLE = True
 except ImportError:
     cachetools = None  # type: ignore
@@ -63,11 +88,22 @@ except ImportError:
 CACHE_TTL_SECONDS = int(os.getenv("QUERY_CACHE_TTL", "600"))  # 10 min default
 CACHE_MAX_ENTRIES = int(os.getenv("QUERY_CACHE_MAX", "256"))
 
+# Knowledge gaps log path — admin checks this to know what queries need coverage.
+_KNOWLEDGE_GAPS_PATH = (
+    Path(__file__).resolve().parent.parent.parent.parent / "data" / "knowledge_gaps.json"
+)
+
 # Combined KB path — used to auto-invalidate cache when the file changes.
-_KB_PATH = Path(__file__).resolve().parent.parent.parent.parent / "data" / "knowledge_base" / "combined_kb.json"
+_KB_PATH = (
+    Path(__file__).resolve().parent.parent.parent.parent
+    / "data"
+    / "knowledge_base"
+    / "combined_kb.json"
+)
 
 try:
     from groq import Groq
+
     GROQ_AVAILABLE = True
 except ImportError:
     GROQ_AVAILABLE = False
@@ -82,49 +118,49 @@ from app.utils.language_detect import detect_language
 # ---------------------------------------------------------------------------
 SYSTEM_PROMPT = """You are an AI admission assistant for Dr. B.C. Roy Engineering College (BCREC), Durgapur.
 
-CRITICAL ROLE CLARITY:
-- THE PRINCIPAL (Head of College) is Dr. Sanjay S. Pawar.
-- THE VICE PRINCIPAL is Prof. (Dr.) K. M. Hossain.
-- If asked "Who is the principal?", always answer: Dr. Sanjay S. Pawar.
+LANGUAGE & TRANSLATION RULES:
+- Bengali script input → reply in Bengali
+- Hindi script input → reply in Hindi
+- English/Banglish/Hinglish input → reply in the SAME style they used
+- NEVER switch languages mid-response
 
-FEE ACCURACY & BRANCH CLARITY:
-- BE SURGICALLY ACCURATE. Never give ranges or "approximate" figures if the exact number is in the context.
-- BRANCH DISTINCTION:
-  * CSE (CORE), IT, and ECE have the SAME fee: Rs. 5,98,300.
-  * CSE (AI & ML), CSE (Data Science), CSE (Design), and Electrical (EE) have the SAME fee: Rs. 5,47,700.
-  * Mechanical (ME) and Civil (CE) have the SAME fee: Rs. 4,37,700.
-- If a user asks for "CSE fee", clarify: "CSE Core is five lakh ninety-eight thousand three hundred, while CSE Specializations like AI ML are five lakh forty-seven thousand seven hundred."
+TTS-FIRST WRITING RULES (Critical for voice — your output goes directly to text-to-speech):
+- Spell out ALL numbers as words. NEVER use digits (0-9).
+- Replace symbols: "percent" not "%", "per year" not "/year", "rupees" not "₹" or "Rs."
+- Phone numbers as space-separated digits: "zero three four three two five zero one three five three"
+- NO markdown, no bullet lists, no tables, no emoji. Plain sentences only.
+- Use ONLY department abbreviations: CSE, IT, ECE, EE, ME, CE, CSD, AIML
+- NEVER repeat both abbreviation and full name. Say "CSE" not "CSE (Computer Science and Engineering)"
+- End every sentence with a period.
 
-PRONUNCIATION & CURRENCY RULES (TTS OPTIMIZATION):
-- NEVER use digits (0-9) for fees or amounts.
-- ABSOLUTELY FORBIDDEN: "5.98", "6.1", "₹4.5", "Rs. 5,000".
-- YOU MUST write the entire number out in words.
-- HINDI: Use words like "पाँच लाख" (panch lakh), "छह लाख" (chheh lakh), "चार हजार" (chaar hazaar).
-- BENGALI: Use words like "পাঁচ লাখ" (panch lakh), "ছয় লাখ" (chhoy lakh), "দশ হাজার" (dosh hazaar).
-- Example Hindi: Instead of "₹4.49 लाख", write "लगभग साढ़े चार लाख रुपये".
-- Example Bengali: Instead of "Rs. 5,98,300", write "প্রায় ছয় লাখ টাকা".
-- Example English: Instead of "Rs. 5,98,300", write "approximately six lakh rupees".
-- This is the ONLY way the TTS will pronounce it correctly.
+LANGUAGE-SPECIFIC NUMBER FORMATING:
+- ENGLISH: "six lakh four thousand seven hundred rupees", "ninety-one percent", "approximately five lakh rupees"
+- HINDI: "पाँच लाख" (panch lakh), "इक्यानबे प्रतिशत" (ikyanwe pratishat)
+- BENGALI: "পাঁচ লাখ" (pañch lakh), "একানব্বই শতাংশ" (ekanabboi śatansh)
 
-CRITICAL RULES FOR VOICE INTERACTION (SPEED IS PARAMOUNT):
-- BE EXTREMELY CONCISE. Your response must be 1 to 2 short sentences MAX.
-- NEVER PROVIDE TABLES, BULLET POINTS, OR NUMBERED LISTS.
-- NEVER use filler phrases like "Based on the context". Just state the facts immediately.
-- End sentences with a period (.) for immediate TTS start.
+CRITICAL: Numbers must be spelled out in the script of the response language.
+Example — fee 6,04,700:
+  ENGLISH: "six lakh four thousand seven hundred rupees"  (NOT "₹6,04,700")
+  HINDI: "छह लाख चार हज़ार सात सौ रुपये"  (NOT "6,04,700 रुपये")
+  BENGALI: "ছয় লাখ চার হাজার সাতশো টাকা"  (NOT "6,04,700 টাকা")
 
-LANGUAGE & TRANSLATION RULES (FACTUAL CONSISTENCY IS MANDATORY):
-- The facts you provide MUST remain exactly the same regardless of the language you are speaking in.
-- If the user writes in Bengali script -> translate the facts to Bengali. Use common English loanwords phonetically. Keep it very short.
-- If the user writes in Hindi script -> translate the facts to Hindi. Keep it very short.
-- If the user writes in English or Romanized (Banglish/Hinglish) -> reply in the SAME style they used.
-- NEVER switch languages mid-response.
+NATURAL VOICE RULES:
+- Be conversational and natural, like a helpful campus counselor.
+- Keep responses concise for voice. Brief paragraphs, not lists.
+- NEVER use filler phrases like "Based on the context provided" or "According to the knowledge base". Speak naturally.
 
 CONTENT RULES:
-- Answer ONLY from the CONTEXT provided below. Do not make up facts.
-- NEVER invent or assume company names. List ONLY the companies explicitly mentioned in the context. If Infosys, Amazon, Flipkart etc. are NOT in the context, do NOT mention them.
-- If the context contains pre-formatted voice_ready_answers for the user's language, USE THOSE EXACT WORDS for fees, hostel, and placement answers. Do not rephrase or recalculate numbers.
-- If asked about "Departments" or "Admission", list ONLY the main degree categories (B.Tech, MCA, MBA, M.Tech) or the top 3 B.Tech branches.
-- If the context does not contain the answer, say so politely and give the college phone: 0343-2501353."""
+- Answer ONLY from the CONTEXT below. Do not make up facts.
+- NEVER invent company names. Only list companies mentioned in the context.
+- If user gives rank/marks, use cutoff data to tell them eligible departments. Otherwise ask for rank and marks first.
+- Physics, Chemistry, Math, Biology are FIRST-YEAR SUBJECTS, NOT admission departments. B.Tech departments: CSE, IT, ECE, EE, ME, CE, CSD, AIML, Data Science, Cyber Security.
+
+OUT-OF-KB DEFLECTION:
+- If context is empty or doesn't contain the answer, respond politely with phone:
+  ENGLISH: "I don't have information about this. Please call the college: zero three four three two five zero one three five three."
+  HINDI: "मेरे पास इस बारे में जानकारी नहीं है। कृपया कॉलेज को कॉल करें: शून्य तीन चार तीन दो पाँच शून्य एक तीन पाँच तीन।"
+  BENGALI: "আমার কাছে এই বিষয়ে তথ্য নেই। অনুগ্রহ করে কলেজে কল করুন: শূন্য তিন চার তিন দুই পাঁচ শূন্য এক তিন পাঁচ তিন।"
+- Do NOT make up data. Do NOT invent names, fees, or numbers."""
 
 
 class GroqService:
@@ -134,21 +170,16 @@ class GroqService:
 
     def __init__(self):
         self.model = "llama-3.1-8b-instant"
-        self.max_tokens = 256
+        self.max_tokens = 384
         self.client = settings.groq_client
-        self.async_client = getattr(settings, 'async_groq_client', None)
+        self.async_client = getattr(settings, "async_groq_client", None)
         self.vector_store = get_vector_store()
 
-        # Load high-precision core knowledge once into memory
-        try:
-            # backend/app/services/llm/groq_service.py -> .parent x4 -> backend/
-            kb_path = Path(__file__).resolve().parent.parent.parent.parent / "data" / "knowledge_base" / "combined_kb.json"
-            with open(kb_path, "r", encoding="utf-8") as f:
-                self.core_kb = json.load(f)
-            logger.info(f"Core Knowledge (JSON) loaded successfully from {kb_path}")
-        except Exception as e:
-            logger.error(f"Failed to load combined_kb.json: {e}")
-            self.core_kb = {}
+        # Session memory — in-memory dict, cleared on server restart
+        self._sessions: Dict[str, List[Dict]] = {}
+
+        # Core knowledge is read from disk on EVERY request (no stale cache across processes).
+        self.core_kb = {}
 
         # Phase 4 — Query cache (in-memory, TTL-based)
         # Caches the FINAL response by (query, lang, context_hash, kb_mtime).
@@ -163,9 +194,7 @@ class GroqService:
             pass
         if CACHE_AVAILABLE and cachetools is not None:
             self._cache = cachetools.TTLCache(maxsize=CACHE_MAX_ENTRIES, ttl=CACHE_TTL_SECONDS)
-            logger.info(
-                f"Query cache ENABLED (ttl={CACHE_TTL_SECONDS}s, max={CACHE_MAX_ENTRIES})"
-            )
+            logger.info(f"Query cache ENABLED (ttl={CACHE_TTL_SECONDS}s, max={CACHE_MAX_ENTRIES})")
         else:
             logger.info("Query cache DISABLED (cachetools not installed)")
 
@@ -177,6 +206,23 @@ class GroqService:
     # -----------------------------------------------------------------------
     # Phase 4 — Cache helpers
     # -----------------------------------------------------------------------
+    def _read_kb(self) -> dict:
+        """Read combined_kb.json from disk fresh on every call.
+        Ensures ALL processes (web server + agent) see edits immediately.
+        No stale cache, no per-process memory issues."""
+        try:
+            kb_path = (
+                Path(__file__).resolve().parent.parent.parent.parent
+                / "data"
+                / "knowledge_base"
+                / "combined_kb.json"
+            )
+            with open(kb_path, "r", encoding="utf-8") as f:
+                return json.load(f)
+        except Exception as e:
+            logger.error(f"Failed to read combined_kb.json: {e}")
+            return {}
+
     def _cache_key(self, query: str, lang: str, context: str) -> str:
         """Build a stable cache key from query + lang + context + KB mtime."""
         ctx_hash = hashlib.md5(context.encode("utf-8")).hexdigest()[:12] if context else "0"
@@ -219,76 +265,92 @@ class GroqService:
         logger.info(f"Query cache manually invalidated ({cleared} entries)")
         return cleared
 
-    def _get_precision_context(self, query: str) -> str:
-        """Extract relevant parts of the JSON based on keywords (Fast & Accurate)."""
-        q = query.lower()
-        context_parts = []
-        
-        # Topic Mapping (Keywords -> JSON Keys)
-        mapping = {
-            "fees": ["fees_summary", "courses", "scholarships"],
-            "fee": ["fees_summary", "courses", "scholarships"],
-            "hostel": ["hostel"],
-            "admission": ["admission", "admission_documents", "branch_change"],
-            "placement": ["placements"],
-            "company": ["placements"],
-            "cutoff": ["courses"],
-            "rank": ["courses", "admission"],
-            "contact": ["college", "departments"],
-            "principal": ["principal", "vice_principal"],
-            "vice": ["vice_principal"],
-            "infrastructure": ["infrastructure", "student_life"],
-            "courses": ["courses"],
-            "branch": ["courses", "branch_change"],
-            "scholarship": ["scholarships", "admission"],
-            "ragging": ["anti_ragging"],
-            "document": ["admission_documents"],
-            "hod": ["departments"],
-            "head": ["departments", "placements"],
-            "department": ["departments"],
-            "professor": ["departments", "academics"],
-            "faculty": ["departments", "academics"],
-            "teacher": ["departments", "academics"],
-            "email": ["college", "departments", "principal", "vice_principal"],
-            "phone": ["college", "departments", "principal", "vice_principal", "admission", "hostel"],
-            "mobile": ["college", "departments", "principal", "vice_principal", "admission", "hostel"],
-        }
-        
-        found_keys = set()
-        for topic, keys in mapping.items():
-            if topic in q:
-                found_keys.update(keys)
-        
-        # If no specific topic found, give general college info
-        if not found_keys:
-            found_keys.update(["college", "quick_answers"])
-            
-        for key in found_keys:
-            if key in self.core_kb:
-                context_parts.append(f"## {key.upper()}\n{json.dumps(self.core_kb[key], indent=1)}")
-                
-        return "\n\n".join(context_parts)
+    def reload_kb(self) -> int:
+        """Invalidate cache. KB is read from disk on every request now,
+        so no reload needed — just clear stale cache entries.
+        Returns the number of voice_ready_answers entries (0 if none)."""
+        try:
+            self._kb_mtime = _KB_PATH.stat().st_mtime if _KB_PATH.exists() else None
+            if self._cache is not None:
+                self._cache.clear()
+            kb = self._read_kb()
+            count = len(kb.get("voice_ready_answers", {}))
+            logger.info(f"Cache invalidated. KB has {count} voice_ready_answers entries")
+            return count
+        except Exception as e:
+            logger.error(f"Failed to reload KB: {e}")
+            return 0
+
+    def _normalize_query(self, query: str) -> str:
+        """Fix common STT mis-transcriptions of BCREC department names before RAG.
+        Also transliterates Roman-script Bengali college terms to Bengali script
+        so that vector search matches the native-script KB entries."""
+        q = query
+        q = re.sub(r"\bcseaml\b", "CSE-AIML", q, flags=re.IGNORECASE)
+        q = re.sub(r"\bcs e[\s-]?aml\b", "CSE-AIML", q, flags=re.IGNORECASE)
+        q = re.sub(r"\bcciml\b", "AIML", q, flags=re.IGNORECASE)
+        q = re.sub(r"\bcsd\b", "CSD", q, flags=re.IGNORECASE)
+        q = re.sub(r"\bdata sci\b", "Data Science", q, flags=re.IGNORECASE)
+        q = re.sub(r"\bcyber sec\b", "Cyber Security", q, flags=re.IGNORECASE)
+        q = re.sub(r"\binfo tech\b", "Information Technology", q, flags=re.IGNORECASE)
+        q = re.sub(r"\belec[ -]?comm\b", "ECE", q, flags=re.IGNORECASE)
+        q = re.sub(r"\belectrical\b", "EE", q, flags=re.IGNORECASE)
+        q = re.sub(r"\bmechanical\b", "ME", q, flags=re.IGNORECASE)
+        q = re.sub(r"\bcivil\b", "CE", q, flags=re.IGNORECASE)
+        q = re.sub(r"\bcomputer\b", "CSE", q, flags=re.IGNORECASE)
+        q = re.sub(r"\bai[\s-]?ml\b", "AIML", q, flags=re.IGNORECASE)
+        # Roman-script Bengali college terms → Bengali script for vector match
+        q = re.sub(r"\bupo[- ]?pradhan\b", "উপ-প্রধান", q, flags=re.IGNORECASE)
+        if q != query:
+            logger.info(f"Query normalized: '{query}' -> '{q}'")
+        return q
 
     def _retrieve_context(self, query: str) -> str:
-        """Combine Precision JSON with Vector Search."""
-        # 1. Get high-precision facts from JSON
-        precision_ctx = self._get_precision_context(query)
-        
-        # 2. Get fuzzy context from Vector Store (fallback/extra)
+        """Single retriever: vector search via ChromaDB + BGE-M3 with semantic anchor re-ranking.
+        Normalizes STT noise before search."""
+        normalized = self._normalize_query(query)
         try:
-            results = self.vector_store.search(query, k=2) # Reduced k since we have JSON
-            vector_ctx = "\n\n---\n\n".join(doc.page_content for doc in results)
+            language = detect_language(query)
+            results = self.vector_store.search(normalized, k=15)
+
+            def semantic_score(doc):
+                metadata = doc.metadata if hasattr(doc, "metadata") else {}
+                anchor = metadata.get("semantic_anchor", "").lower()
+                anchor_words = anchor.split()
+                query_lower = normalized.lower()
+                query_words = set(query_lower.split())
+                anchor_match = sum(1 for w in anchor_words if w in query_words)
+                section = metadata.get("section", "")
+                section_match = 1 if (section and section.lower() in query_lower) else 0
+                lang_match = 10 if metadata.get("language") == language else 0
+                return (anchor_match, section_match, lang_match)
+
+            ranked = sorted(results, key=semantic_score, reverse=True)
+
+            # Source coherence: if top doc is from voice_ready_answers (combined_kb_json),
+            # only keep other JSON docs to avoid markdown noise (e.g. faculty.md leaking into VP query).
+            # If top doc is from markdown, include all.
+            context_chunks = []
+            if ranked:
+                top_source = ranked[0].metadata.get("source", "")
+                for doc in ranked:
+                    if top_source == "combined_kb_json":
+                        if doc.metadata.get("source", "") != "combined_kb_json":
+                            continue
+                    text = doc.page_content if hasattr(doc, "page_content") else str(doc)
+                    if "[" in text and "]" in text:
+                        text = text.split("]", 1)[-1].strip()
+                    context_chunks.append(text)
+                    if len(context_chunks) >= 3:
+                        break
+
+            return "\n\n---\n\n".join(context_chunks)
         except Exception:
-            vector_ctx = ""
-            
-        return f"{precision_ctx}\n\n--- ADDITIONAL CONTEXT ---\n\n{vector_ctx}"
+            logger.warning("Vector search failed, returning empty context")
+            return ""
 
     def _build_messages(
-        self,
-        query: str,
-        context: str,
-        history: List[Dict],
-        lang: str
+        self, query: str, context: str, history: List[Dict], lang: str
     ) -> List[Dict]:
         """Build the messages list for Groq API."""
         messages = [{"role": "system", "content": SYSTEM_PROMPT}]
@@ -329,7 +391,16 @@ USER QUESTION: {query}
         """
         q = query.strip().lower()
         patterns = {
-            "bn": ["in bengali", "bangla te", "banglay", "বাংলায়", "বাংলা তে", "bengali te", "bengali তে", "bangla y"],
+            "bn": [
+                "in bengali",
+                "bangla te",
+                "banglay",
+                "বাংলায়",
+                "বাংলা তে",
+                "bengali te",
+                "bengali তে",
+                "bangla y",
+            ],
             "hi": ["in hindi", "hindi me", "hindi mein", "हिंदी में", "हिंदी मे"],
             "en": ["in english", "english e", "ইংরেজিতে", "english me"],
         }
@@ -339,12 +410,40 @@ USER QUESTION: {query}
                     return True, lang
         return False, None
 
+    def _is_greeting(self, query: str) -> bool:
+        """Handle short greetings without calling the LLM."""
+        q = query.strip().lower()
+        if not q:
+            return False
+        return any(re.match(pattern, q) for pattern in GREETING_PATTERNS)
+
     def _get_last_user_question(self, history: List[Dict]) -> str | None:
         """Get the most recent user question from conversation history."""
         for turn in reversed(history):
             if turn.get("role") == "user":
                 return turn.get("content", "").strip()
         return None
+
+    # -----------------------------------------------------------------------
+    # Session memory (in-memory, clears on restart)
+    # -----------------------------------------------------------------------
+    def _get_session_history(self, session_id: str) -> List[Dict]:
+        """Get conversation history for a session. Returns empty list if new session."""
+        return self._sessions.get(session_id, [])
+
+    def _append_session_turn(self, session_id: str, user_msg: str, assistant_msg: str) -> None:
+        """Store a user+assistant turn in the session's in-memory history."""
+        if session_id not in self._sessions:
+            self._sessions[session_id] = []
+        self._sessions[session_id].append({"role": "user", "content": user_msg})
+        self._sessions[session_id].append({"role": "assistant", "content": assistant_msg})
+        # Keep last 12 turns to prevent unbounded growth
+        if len(self._sessions[session_id]) > 12:
+            self._sessions[session_id] = self._sessions[session_id][-12:]
+
+    def clear_session(self, session_id: str) -> None:
+        """Clear a session's memory. Called when session ends."""
+        self._sessions.pop(session_id, None)
 
     # -----------------------------------------------------------------------
     # Phase 0 — Hallucination guard
@@ -367,15 +466,15 @@ USER QUESTION: {query}
             "phone_like": [],
         }
 
-        # 1) Numbers (≥3 digit) — likely fee amounts, intakes, cutoffs, percentages
-        #    E.g. "598300", "5,98,300", "90%", "180"
-        for m in re.finditer(r"\b\d[\d,\.]{2,}\b", text):
+        # 1) Numbers (≥3 digit) — likely fee amounts, intakes, cutoffs
+        #    E.g. "598300", "5,98,300", "180" — but NOT "93.6" (decimal)
+        for m in re.finditer(r"\b\d[\d,]{2,}\b", text):
             raw = m.group(0)
             # Skip if this number is part of a percentage (e.g., 80.62%)
             end_pos = m.end()
-            if end_pos < len(text) and text[end_pos] == '%':
+            if end_pos < len(text) and text[end_pos] == "%":
                 continue
-            num = raw.replace(",", "").replace(".", "")
+            num = raw.replace(",", "")
             if num.isdigit() and len(num) >= 3:
                 entities["numbers"].append(num)
 
@@ -393,20 +492,37 @@ USER QUESTION: {query}
         return entities
 
     def _context_contains(self, context: str, entity: str) -> bool:
-        """Loose check: does the entity appear anywhere in the retrieved context?"""
+        """Check if entity appears in context (normalize Unicode digits to ASCII)."""
         if not entity:
-            return True  # vacuously true; nothing to validate
-        # Normalize both sides (commas, spaces) for robust matching
-        ctx_norm = context.replace(",", "").replace(" ", "").lower()
-        ent_norm = entity.replace(",", "").replace(" ", "").lower()
+            return True
+
+        def normalize_digits(text: str) -> str:
+            """Convert all Unicode digit scripts to ASCII."""
+            result = text
+            bengali_digits = "০১২৩৪৫৬৭৮৯"
+            devanagari_digits = "०१२३४५६७८९"
+            for i in range(10):
+                result = result.replace(bengali_digits[i], str(i))
+                result = result.replace(devanagari_digits[i], str(i))
+            return result
+
+        ctx_norm = normalize_digits(context).replace(",", "").replace(" ", "").lower()
+        ent_norm = normalize_digits(entity).replace(",", "").replace(" ", "").lower()
         return ent_norm in ctx_norm
 
     def _validate_answer(self, answer: str, context: str, query: str) -> tuple[bool, str]:
         """
         Validate that critical entities in `answer` appear in the context.
+        Skips numbers that appear in the user's query (they provided them).
+        Skips low-risk queries like placement rate (college-wide stat, never hallucinated).
         Returns (is_valid, reason_if_invalid).
         """
         if not self._should_validate(query):
+            return True, ""
+
+        # Exempt low-risk queries — numbers here are always in context
+        query_lower = query.lower()
+        if any(word in query_lower for word in ["placement", "प्लेसमेंट", "প্লেসমেন্ট", "प्लेसमेन्ट"]):
             return True, ""
 
         entities = self._extract_entities(answer)
@@ -415,14 +531,27 @@ USER QUESTION: {query}
         # hallucination markers. Names are too noisy to check blindly.
         critical = entities["numbers"] + entities["phone_like"]
         if not critical:
-            # No verifiable entities extracted → nothing to validate.
-            # (Answers like "Yes, hostel is available" pass through.)
             return True, ""
 
-        missing = [e for e in critical if not self._context_contains(context, e)]
+        # Extract user-provided numbers from the query — skip those
+        query_entities = self._extract_entities(query)
+        query_numbers = set(query_entities["numbers"] + query_entities["phone_like"])
+
+        missing = [
+            e for e in critical if e not in query_numbers and not self._context_contains(context, e)
+        ]
         if missing:
             return False, f"entities not found in context: {missing[:5]}"
         return True, ""
+
+    def _prepare_for_tts(self, text: str, lang: str) -> str:
+        """Catch remaining digits the LLM missed — delegate to voice_utils."""
+        try:
+            from app.utils.voice_utils import clean_for_voice
+
+            return clean_for_voice(text)
+        except Exception:
+            return text
 
     def _safe_fallback(self, lang: str) -> str:
         """Return a polite, language-appropriate fallback message."""
@@ -432,213 +561,73 @@ USER QUESTION: {query}
             return FALLBACK_ANSWER_BN
         return FALLBACK_ANSWER_EN
 
-    # -----------------------------------------------------------------------
-    # Deterministic FAQ — bypasses LLM for common questions
-    # -----------------------------------------------------------------------
-    def _try_faq(self, query: str, lang: str) -> Optional[str]:
-        """Match common questions and return pre-formatted answers directly.
-        Returns None if no FAQ match (falls through to LLM)."""
-        q = query.lower()
-        vra = self.core_kb.get("voice_ready_answers", {})
-        if not vra:
-            return None
+    def _log_gap(self, query: str, lang: str, reason: str) -> None:
+        """Log an unanswered query to knowledge_gaps.json so admins know what to add."""
+        import datetime
 
-        # --- PRINCIPAL questions ---
-        principal_keywords = ["principal", "प्रिंसिपल", "প্রিন্সিপাল", "প্রধান", "head of college"]
-        if any(k in q for k in principal_keywords):
-            principal_answers = {
-                "en": "The principal of BCREC is Dr. Sanjay S. Pawar.",
-                "hi": "बीसीआरईसी के प्रिंसिपल डॉ. संजय एस. पवार हैं।",
-                "bn": "বিসিআরইসি এর প্রিন্সিপাল হলেন ড. সঞ্জয় এস পাওয়ার।"
-            }
-            return principal_answers.get(lang, principal_answers["en"])
+        try:
+            path = _KNOWLEDGE_GAPS_PATH
+            gaps = []
+            if path.exists():
+                with open(path, "r", encoding="utf-8") as f:
+                    gaps = json.load(f)
+            gaps.append(
+                {
+                    "query": query,
+                    "lang": lang,
+                    "reason": reason,
+                    "timestamp": datetime.datetime.utcnow().isoformat() + "Z",
+                    "count": 1,
+                }
+            )
+            with open(path, "w", encoding="utf-8") as f:
+                json.dump(gaps, f, indent=2, ensure_ascii=False)
+            logger.info(f"Knowledge gap logged: '{query[:60]}' ({reason})")
+        except Exception as e:
+            logger.debug(f"Failed to log knowledge gap: {e}")
 
-        # --- HOD questions ---
-        hod_keywords = ["hod", "head of department", "head of the department", "विभाग अध्यक्ष", "বিভাগীয় প্রধান", "विभाग प्रमुख"]
-        if any(k in q for k in hod_keywords):
-            # Detect department
-            if "cse" in q or "computer science" in q:
-                return {
-                    "en": "The Head of the CSE department is Dr. Raj Kumar Samanta.",
-                    "hi": "सीएसई विभाग के अध्यक्ष डॉ. राज कुमार सामंत हैं।",
-                    "bn": "সিএসই বিভাগের প্রধান হলেন ড. রাজ কুমার সামন্ত।"
-                }.get(lang, "The Head of the CSE department is Dr. Raj Kumar Samanta.")
-            elif "it" in q or "information tech" in q:
-                return {
-                    "en": "The Head of the Information Technology department is Dr. Dinesh Kumar Pradhan.",
-                    "hi": "इंफॉर्मेशन टेक्नोलॉजी विभाग के अध्यक्ष डॉ. दिनेश कुमार प्रधान हैं।",
-                    "bn": "ইনফরমেশন টেকনোলজি বিভাগের প্রধান হলেন ড. দীনেশ কুমার প্রধান।"
-                }.get(lang, "The Head of the Information Technology department is Dr. Dinesh Kumar Pradhan.")
-            elif "ece" in q or "electronics" in q:
-                return {
-                    "en": "The Head of the ECE department is Dr. Mrinmoy Chakraborty.",
-                    "hi": "ईसीई विभाग के अध्यक्ष डॉ. मृण्मय चक्रवर्ती हैं।",
-                    "bn": "ইসিই বিভাগের প্রধান হলেন ড. মৃন্ময় চক্রবর্তী।"
-                }.get(lang, "The Head of the ECE department is Dr. Mrinmoy Chakraborty.")
-            elif "ee" in q or "electrical" in q:
-                return {
-                    "en": "The Head of the Electrical Engineering department is Dr. Shibendu Mahata.",
-                    "hi": "इलेक्ट्रिकल इंजीनियरिंग विभाग के अध्यक्ष डॉ. शिबेंदु महता हैं।",
-                    "bn": "ইলেকট্রিক্যাল ইঞ্জিনিয়ারিং বিভাগের প্রধান হলেন ড. শিবেন্দু মাহাতো।"
-                }.get(lang, "The Head of the Electrical Engineering department is Dr. Shibendu Mahata.")
-            elif "mechanical" in q or "me" in q:
-                return {
-                    "en": "The Head of the Mechanical Engineering department is Dr. Chandan Chattoraj.",
-                    "hi": "मैकेनिक इंजीनियरिंग विभाग के अध्यक्ष डॉ. चंदन चट्टोराज हैं।",
-                    "bn": "মেকানিক্যাল ইঞ্জিনিয়ারিং বিভাগের প্রধান হলেন ড. চন্দন চট্টরাজ।"
-                }.get(lang, "The Head of the Mechanical Engineering department is Dr. Chandan Chattoraj.")
-            elif "civil" in q or "ce" in q:
-                return {
-                    "en": "The Head of the Civil Engineering department is Dr. Sanjay Sengupta.",
-                    "hi": "सिविल इंजीनियरिंग विभाग के अध्यक्ष डॉ. संजय सेनगुप्ता हैं।",
-                    "bn": "সিভিল ইঞ্জিনিয়ারিং বিভাগের প্রধান হলেন ড. সঞ্জয় সেনগুপ্ত।"
-                }.get(lang, "The Head of the Civil Engineering department is Dr. Sanjay Sengupta.")
-            elif "aiml" in q or "artificial" in q:
-                return {
-                    "en": "The Head of the Artificial Intelligence and Machine Learning department is Dr. Gour Sundar Mitra Thakur.",
-                    "hi": "एआई एमएल विभाग के अध्यक्ष डॉ. गौर सुंदर मित्रा ठाकुर हैं।",
-                    "bn": "এআই এমএল বিভাগের প্রধান হলেন ড. গৌর সুন্দর মিত্র ঠাকুর।"
-                }.get(lang, "The Head of the Artificial Intelligence and Machine Learning department is Dr. Gour Sundar Mitra Thakur.")
-            elif "data science" in q or "ds" in q:
-                return {
-                    "en": "The Head of the Data Science department is Dr. Chandan Bandyopadhyay.",
-                    "hi": "डाटा साइंस विभाग के अध्यक्ष डॉ. चंदन बंद्योपाध्याय हैं।",
-                    "bn": "ডাটা সায়েন্স বিভাগের প্রধান হলেন ড. চন্দন বন্দ্যোপাধ্যায়।"
-                }.get(lang, "The Head of the Data Science department is Dr. Chandan Bandyopadhyay.")
-            elif "cyber" in q or "cy" in q:
-                return {
-                    "en": "The Head of the Cyber Security department is Dr. Gour Sundar Mitra Thakur.",
-                    "hi": "साइबर सिक्योरिटी विभाग के अध्यक्ष डॉ. गौर सुंदर मित्रा ठाकुर हैं।",
-                    "bn": "সাইবার সিকিউরিটি বিভাগের প্রধান হলেন ড. গৌর সুন্দর মিত্র ঠাকুর।"
-                }.get(lang, "The Head of the Cyber Security department is Dr. Gour Sundar Mitra Thakur.")
-            elif "design" in q or "csd" in q:
-                return {
-                    "en": "The Head of the Computer Science and Design department is Dr. Poulomi Mukherjee Tewari.",
-                    "hi": "कंप्यूटर साइंस एंड डिज़ाइन विभाग के अध्यक्ष डॉ. पौलोमी मुखर्जी तिवारी हैं।",
-                    "bn": "কম্পিউটার সায়েন্স অ্যান্ড ডিজাইন বিভাগের প্রধান হলেন ড. পৌলমী মুখার্জী তিওয়ারী।"
-                }.get(lang, "The Head of the Computer Science and Design department is Dr. Poulomi Mukherjee Tewari.")
-            elif "mba" in q or "management" in q:
-                return {
-                    "en": "The Head of the MBA department is Somroop Siddhanta.",
-                    "hi": "एमबीए विभाग के अध्यक्ष सोमरूप सिद्धांत हैं।",
-                    "bn": "এমবিএ বিভাগের প্রধান হলেন সোমরূপ সিদ্ধান্ত।"
-                }.get(lang, "The Head of the MBA department is Somroop Siddhanta.")
-            elif "mca" in q or "application" in q:
-                return {
-                    "en": "The Head of the MCA department is Dr. Pabitra Kumar Dey.",
-                    "hi": "एमसीए विभाग के अध्यक्ष डॉ. पवित्र कुमार डे हैं।",
-                    "bn": "এমসিএ বিভাগের প্রধান হলেন ড. পবিত্র কুমার দে।"
-                }.get(lang, "The Head of the MCA department is Dr. Pabitra Kumar Dey.")
-            else:
-                return {
-                    "en": "Could you please specify which department's HOD you are looking for? We have CSE, IT, ECE, EE, MCA, MBA, and other departments.",
-                    "hi": "कृपया स्पष्ट करें कि आप किस विभाग के एचओडी की तलाश कर रहे हैं? हमारे पास सीएसई, आईटी, ईसीई, ईई, एमसीए, एमबीए और अन्य विभाग हैं।",
-                    "bn": "দয়া করে নির্দিষ্ট করুন আপনি কোন বিভাগের এইচওডির খোঁজ করছেন? আমাদের সিএসই, আইটি, ইসিই, ইই, এমসিএ, এমবিএ এবং অন্যান্য বিভাগ রয়েছে।"
-                }.get(lang, "Could you please specify which department's HOD you are looking for?")
-
-        # --- HOSTEL questions ---
-        hostel_keywords = ["hostel", "हॉस्टल", "হস্টেল", "হোস্টেল", "হসটেল", "mess", "food", "खाना", "খাবার", "ডাইনিং"]
-        if any(k in q for k in hostel_keywords):
-            hostel = vra.get("hostel", {})
-            ans = hostel.get(lang) or hostel.get("en")
-            if ans: return ans
-
-        # --- PLACEMENT questions ---
-        placement_keywords = ["placement", "प्लेसमेंट", "প্লেসমেন্ট", "company", "कंपनी", "কোম্পানি", "recruit", "package", "salary", "पैकेज", "প্যাকেজ", "চাকরি"]
-        if any(k in q for k in placement_keywords):
-            placement = vra.get("placement", {})
-            ans = placement.get(lang) or placement.get("en")
-            if ans: return ans
-
-        # --- DOCUMENTS questions ---
-        documents_keywords = ["document", "documents", "डॉक्यूमेंट", "दस्तावेज", "ডকুমেন্ট", "কাগজপত্র", "certificate", "marksheet", "মাকশিট", "মার্কশিট", "সার্টিফিকেট", "admit card"]
-        if any(k in q for k in documents_keywords):
-            documents = vra.get("documents", {})
-            ans = documents.get(lang) or documents.get("en")
-            if ans: return ans
-
-        # --- SCHOLARSHIP questions ---
-        scholarship_keywords = ["scholarship", "scholarships", "स्कॉलरशिप", "छात्रवृत्ति", "স্কলারশিপ", "বৃত্তি", "tfw", "svmcm", "kanyashree", "oasis", "aikyashree"]
-        if any(k in q for k in scholarship_keywords):
-            scholarship = vra.get("scholarship", {})
-            ans = scholarship.get(lang) or scholarship.get("en")
-            if ans: return ans
-
-        # --- FEE questions ---
-        fee_keywords = ["fee", "fees", "फीस", "ফি", "cost", "price", "खर्च", "খরচ"]
-        if any(k in q for k in fee_keywords):
-            fees = vra.get("fees", {})
-            # Detect which branch
-            cse_keys = ["cse", "computer", "सीएसई", "সিএস"]
-            it_keys = [" it ", "information tech"]
-            ece_keys = ["ece", "electronics", "ईसीई", "ইসিই"]
-            ee_keys = [" ee ", "electrical", "ईई", "ইই"]
-            aiml_keys = ["aiml", "ai ml", "ai-ml", "artificial", "machine learning"]
-            ds_keys = ["data science", " ds "]
-            me_keys = ["mechanical", " me ", "मैकेनिकल", "মেকানিকাল"]
-            ce_keys = ["civil", " ce ", "सिविल", "সিভিল"]
-            mba_keys = ["mba"]
-            mca_keys = ["mca"]
-            cy_keys = ["cyber", " cy "]
-            csd_keys = ["design", "csd"]
-
-            if any(k in q for k in me_keys + ce_keys):
-                ans = fees.get("me_ce", {}).get(lang) or fees.get("me_ce", {}).get("en")
-                if ans: return ans
-            elif any(k in q for k in ee_keys + aiml_keys + ds_keys + cy_keys + csd_keys):
-                ans = fees.get("ee_aiml_ds_cy_csd", {}).get(lang) or fees.get("ee_aiml_ds_cy_csd", {}).get("en")
-                if ans: return ans
-            elif any(k in q for k in mba_keys):
-                ans = fees.get("mba", {}).get(lang) or fees.get("mba", {}).get("en")
-                if ans: return ans
-            elif any(k in q for k in mca_keys):
-                ans = fees.get("mca", {}).get(lang) or fees.get("mca", {}).get("en")
-                if ans: return ans
-            elif any(k in q for k in cse_keys + it_keys + ece_keys):
-                ans = fees.get("cse_it_ece", {}).get(lang) or fees.get("cse_it_ece", {}).get("en")
-                if ans: return ans
-            else:
-                # General fee question — give CSE fee as primary + mention range
-                ans = fees.get("cse_it_ece", {}).get(lang) or fees.get("cse_it_ece", {}).get("en")
-                if ans: return ans
-
-        return None  # No FAQ match — fall through to LLM
-
-    async def generate_response(
-        self,
-        query: str,
-        conversation_history: Optional[List[Dict]] = None
-    ) -> Dict[str, Any]:
-        """Main entry point. Returns dict with 'answer', 'voice_text', 'source'."""
+    async def generate_response(self, query: str, session_id: str = "default") -> Dict[str, Any]:
+        """Main entry point. Uses in-memory session memory for conversation context.
+        Returns dict with 'answer', 'voice_text', 'source'."""
         if not self.client:
-            return {"answer": "Service unavailable. Please call 0343-2501353.", "voice_text": "", "source": "error"}
+            return {
+                "answer": "Service unavailable. Please call 0343-2501353.",
+                "voice_text": "",
+                "source": "error",
+            }
 
         start = time.time()
         try:
-            history = conversation_history or []
+            history = self._get_session_history(session_id)
 
             # 1. Check if user is just switching language (e.g. "in bengali")
             is_switch, forced_lang = self._is_lang_switch(query)
             if is_switch and forced_lang and history:
-                # Re-run the PREVIOUS user question in the new language
                 prev_question = self._get_last_user_question(history[:-1] if history else [])
                 if prev_question:
                     query = prev_question
-                    logger.info(f"Language switch detected → re-running '{query[:50]}' in lang={forced_lang}")
+                    logger.info(
+                        f"Language switch detected → re-running '{query[:50]}' in lang={forced_lang}"
+                    )
                 lang = forced_lang
             else:
-                # 2. Detect language normally
                 lang = detect_language(query)
 
-            # 2.5 Deterministic FAQ — bypass LLM for common questions
-            faq_answer = self._try_faq(query, lang)
-            if faq_answer:
+            # 2. Deterministic greeting
+            if self._is_greeting(query):
+                greeting_answer = {
+                    "en": "Hello. How can I help you with admissions, fees, courses, or hostel details?",
+                    "hi": "नमस्ते। मैं admissions, fees, courses, और hostel details में मदद कर सकता हूँ।",
+                    "bn": "হ্যালো। আমি admissions, fees, courses, আর hostel details নিয়ে সাহায্য করতে পারি।",
+                }.get(lang, "Hello. How can I help you?")
+
                 latency_ms = round((time.time() - start) * 1000)
-                logger.info(f"\u26a1 FAQ HIT (lang={lang}, {latency_ms}ms): '{query[:60]}'")
+                logger.info(f"GREETING HIT (lang={lang}, {latency_ms}ms): '{query[:60]}'")
+                self._append_session_turn(session_id, query, greeting_answer)
                 return {
-                    "answer": faq_answer,
-                    "voice_text": faq_answer,
-                    "source": "faq_deterministic",
+                    "answer": greeting_answer,
+                    "voice_text": greeting_answer,
+                    "source": "greeting_deterministic",
                     "model": "none",
                     "latency_ms": latency_ms,
                     "hallucination_validated": True,
@@ -646,11 +635,10 @@ USER QUESTION: {query}
                     "cache_hit": False,
                 }
 
-            # 3. Retrieve relevant context via vector search
+            # 3. Retrieve context
             context = self._retrieve_context(query)
 
-            # 4. Phase 4 — Cache lookup (skip if there's chat history — context depends on it)
-            #    Cache only stateless, fact-lookup queries. Conversational turns stay live.
+            # 4. Cache lookup (skip for sessions with history)
             if self._cache is not None and not history:
                 self._check_kb_changed()
                 cache_key = self._cache_key(query, lang, context)
@@ -658,47 +646,104 @@ USER QUESTION: {query}
                 if cached is not None:
                     self._cache_stats["hits"] += 1
                     latency_ms = round((time.time() - start) * 1000)
-                    logger.info(
-                        f"⚡ CACHE HIT (lang={lang}, {latency_ms}ms): '{query[:60]}'"
-                    )
+                    logger.info(f"CACHE HIT (lang={lang}, {latency_ms}ms): '{query[:60]}'")
                     cached_out = dict(cached)
                     cached_out["latency_ms"] = latency_ms
                     cached_out["cache_hit"] = True
+                    self._append_session_turn(session_id, query, cached_out["answer"])
                     return cached_out
                 self._cache_stats["misses"] += 1
 
-            # 5. Build messages with history + context
+            # 5. Build messages with session history + context
             messages = self._build_messages(
-                query=query,
-                context=context,
-                history=history,
-                lang=lang
+                query=query, context=context, history=history, lang=lang
             )
 
-            # 6. Call Groq
-            completion = self.client.chat.completions.create(
-                model=self.model,
-                messages=messages,
-                temperature=0.3,
-                max_tokens=self.max_tokens,
-            )
+            # 6. Call Groq with retry/backoff for rate limits
+            max_retries = 3
+            completion = None
+            for attempt in range(max_retries):
+                try:
+                    completion = self.client.chat.completions.create(
+                        model=self.model,
+                        messages=messages,
+                        temperature=0.3,
+                        max_tokens=self.max_tokens,
+                    )
+                    break
+                except Exception as e:
+                    error_str = str(e)
+                    is_rate_limit = (
+                        "429" in error_str
+                        or "rate" in error_str.lower()
+                        or "too many" in error_str.lower()
+                    )
+                    if is_rate_limit and attempt < max_retries - 1:
+                        wait = (2**attempt) + random.random()
+                        logger.warning(
+                            f"Groq rate limited (attempt {attempt + 1}/{max_retries}), retrying in {wait:.1f}s: {e}"
+                        )
+                        time.sleep(wait)
+                    else:
+                        raise
 
             answer = completion.choices[0].message.content.strip()
+            # Strip reasoning tags (e.g. <think>...</think>) from inference models
+            import re as _re
 
-            # 7. Phase 0 — Hallucination guard: verify entities against context
+            answer = _re.sub(r"<think>.*?</think>\s*", "", answer, flags=_re.DOTALL).strip()
+
+            # 7. Hallucination guard
             is_valid, reason = self._validate_answer(answer, context, query)
             if not is_valid:
                 logger.warning(
                     f"PHASE 0 GUARD TRIPPED (lang={lang}, query='{query[:60]}'): {reason}. "
                     f"LLM said: '{answer[:80]}'"
                 )
+                self._log_gap(query, lang, f"hallucination_guard: {reason}")
                 answer = self._safe_fallback(lang)
 
-            # 8. Currency normalization for Bengali
+            # 7.5 Out-of-KB detection
+            if is_valid and not self._is_greeting(query) and "0343-2501353" not in answer:
+                a = answer.lower().strip()
+                unknown_signals = (
+                    a.startswith("i'm not ")
+                    or a.startswith("i am not ")
+                    or "no information" in a
+                    or "not aware" in a
+                    or "don't have" in a
+                    or "does not contain" in a
+                    or "context does not contain" in a
+                    or "not found in" in a
+                    or a.startswith("i'm afraid")
+                    or a.startswith("i'm sorry")
+                    or "unfortunately" in a
+                    or "sorry, i" in a
+                    or "beyond the context" in a
+                    or "can't find" in a
+                    or "cannot find" in a
+                    or "cannot answer" in a
+                    or "जानकारी नहीं" in a
+                    or "पता नहीं" in a
+                    or "জান নেই" in a
+                    or "পাওয়া যায়নি" in a
+                )
+                if unknown_signals:
+                    logger.warning(
+                        f"OUT-OF-KB DETECTED (lang={lang}, query='{query[:60]}'): "
+                        f"LLM said '{answer[:80]}' without phone → replacing with fallback"
+                    )
+                    self._log_gap(query, lang, "out_of_kb_deflection")
+                    answer = self._safe_fallback(lang)
+
+            # 8. Bengali normalization
             if lang == "bn":
                 answer = answer.replace("রুপি", "টাকা").replace("টাকা.", "টাকা।")
 
-            # 9. Phase 0 — Token usage tracking (best-effort; free tier so cost=0)
+            # 8.5 Prepare for TTS — catch remaining digits the LLM missed
+            answer = self._prepare_for_tts(answer, lang)
+
+            # 9. Token tracking
             prompt_tokens = 0
             completion_tokens = 0
             try:
@@ -716,7 +761,7 @@ USER QUESTION: {query}
 
             response_payload: Dict[str, Any] = {
                 "answer": answer,
-                "voice_text": answer,  # same text — voice_utils will clean it
+                "voice_text": answer,
                 "source": "groq_rag",
                 "model": self.model,
                 "latency_ms": latency_ms,
@@ -728,7 +773,10 @@ USER QUESTION: {query}
                 "cache_hit": False,
             }
 
-            # 10. Phase 4 — Store in cache (only if validated AND no chat history)
+            # 10. Store in session memory
+            self._append_session_turn(session_id, query, answer)
+
+            # 11. Cache (only if no history, i.e. first turn)
             if self._cache is not None and is_valid and not history:
                 try:
                     cache_key = self._cache_key(query, lang, context)
@@ -750,31 +798,124 @@ USER QUESTION: {query}
     async def stream_response(
         self,
         query: str,
-        conversation_history: Optional[List[Dict]] = None
+        session_id: str = "default",
+        conversation_history: Optional[List[Dict]] = None,
     ):
-        """Streaming version for low-latency web/voice UI."""
+        """True streaming for low-latency telephony. Yields tokens immediately.
+        Hallucination guard runs in background — logs violations but does NOT block.
+        """
+        t0 = time.time()
         if not self.async_client:
             yield "Service unavailable. Please call 0343-2501353."
             return
 
         try:
-            history = conversation_history or []
-            lang = detect_language(query)
-            context = self._retrieve_context(query)
-            messages = self._build_messages(query, context, history, lang)
-
-            stream = await self.async_client.chat.completions.create(
-                model=self.model,
-                messages=messages,
-                temperature=0.3,
-                max_tokens=self.max_tokens,
-                stream=True
+            history = (
+                conversation_history
+                if conversation_history is not None
+                else self._get_session_history(session_id)
             )
+            lang = detect_language(query)
 
+            llm_query = self._normalize_query(query)
+            context = self._retrieve_context(query)
+            t_prep = time.time() - t0
+
+            messages = self._build_messages(llm_query, context, history, lang)
+
+            # Retry/backoff for rate limits (async)
+            max_retries = 3
+            stream = None
+            for attempt in range(max_retries):
+                try:
+                    stream = await self.async_client.chat.completions.create(
+                        model=self.model,
+                        messages=messages,
+                        temperature=0.3,
+                        max_tokens=self.max_tokens,
+                        stream=True,
+                    )
+                    break
+                except Exception as e:
+                    error_str = str(e)
+                    is_rate_limit = (
+                        "429" in error_str
+                        or "rate" in error_str.lower()
+                        or "too many" in error_str.lower()
+                    )
+                    if is_rate_limit and attempt < max_retries - 1:
+                        wait = (2**attempt) + random.random()
+                        logger.warning(
+                            f"Groq rate limited (async, attempt {attempt + 1}/{max_retries}), retrying in {wait:.1f}s: {e}"
+                        )
+                        await asyncio.sleep(wait)
+                    else:
+                        raise
+            t_llm_first = time.time() - t0
+
+            # Stream tokens immediately — no upfront buffering
+            buffer: List[str] = []
+            first_token = True
             async for chunk in stream:
                 content = chunk.choices[0].delta.content
                 if content:
+                    if first_token:
+                        ttft = round((time.time() - t0) * 1000)
+                        logger.info(
+                            f"STREAM TTFT={ttft}ms prep={round(t_prep * 1000)}ms "
+                            f"llm_setup={round((t_llm_first - t_prep) * 1000)}ms "
+                            f"lang={lang} q='{query[:60]}'"
+                        )
+                        first_token = False
+                    buffer.append(content)
                     yield content
+
+            full_answer = "".join(buffer).strip()
+            if not full_answer:
+                return
+
+            t_total = round((time.time() - t0) * 1000)
+            char_count = len(full_answer)
+            logger.info(
+                f"STREAM COMPLETE total={t_total}ms chars={char_count} "
+                f"~{round(char_count / t_total * 1000, 1)}cps lang={lang}"
+            )
+
+            # Non-blocking validation (logs warnings, doesn't replace output)
+            is_valid, reason = self._validate_answer(full_answer, context, query)
+            if not is_valid:
+                logger.warning(
+                    f"PHASE 0 GUARD (stream, non-blocking) lang={lang} query='{query[:60]}': {reason}"
+                )
+                self._log_gap(query, lang, f"hallucination_guard_stream: {reason}")
+
+            already_said_no_info = any(
+                phrase in full_answer.lower()
+                for phrase in (
+                    "no information",
+                    "not aware",
+                    "don't have",
+                    "does not contain",
+                    "context does not contain",
+                    "not found in",
+                    "can't find",
+                    "cannot find",
+                    "cannot answer",
+                    "जानकारी नहीं",
+                    "পাতা নেই",
+                    "পাওয়া যায়নি",
+                    "জান নেই",
+                )
+            )
+            if already_said_no_info and "0343-2501353" not in full_answer:
+                logger.warning(
+                    f"OUT-OF-KB DETECTED (stream, non-blocking) lang={lang} query='{query[:60]}': "
+                    f"LLM said '{full_answer[:80]}' without phone"
+                )
+                self._log_gap(query, lang, "out_of_kb_deflection_stream")
+
+            if conversation_history is None:
+                self._append_session_turn(session_id, query, full_answer)
 
         except Exception as e:
             logger.error(f"Groq stream error: {e}")
@@ -786,6 +927,7 @@ USER QUESTION: {query}
 
 # Singleton
 _groq_service = None
+
 
 def get_groq_service() -> GroqService:
     global _groq_service

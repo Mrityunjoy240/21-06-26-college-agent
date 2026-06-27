@@ -22,7 +22,7 @@ BCREC aims to provide quality technical education that prepares students for suc
 
 ## Why Choose BCREC?
 
-1. **Excellent Placements**: 80.62% placement rate with top companies
+1. **Excellent Placements**: 91% placement rate with top companies
 2. **NBA Accredited Programs**: Quality education meeting national standards
 3. **Experienced Faculty**: Dedicated professors with industry and research experience
 4. **Modern Infrastructure**: Well-equipped labs, library, and campus facilities

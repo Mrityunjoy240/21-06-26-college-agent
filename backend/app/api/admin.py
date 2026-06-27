@@ -2,15 +2,24 @@ import json
 import logging
 import os
 import shutil
+import sys
 from pathlib import Path
-from typing import Annotated
+from typing import Annotated, Optional
 
-from fastapi import APIRouter, BackgroundTasks, Depends, File, HTTPException, UploadFile
+# Ensure scripts directory is importable for re-ingestion
+_scripts_path = str(Path(__file__).resolve().parent.parent.parent.parent / "scripts")
+if _scripts_path not in sys.path:
+    sys.path.insert(0, _scripts_path)
+from fastapi import APIRouter, BackgroundTasks, Depends, File, HTTPException, UploadFile, Query
+from pydantic import BaseModel
+
+from app.services.llm.groq_service import get_groq_service
 
 from app.auth import get_current_admin
 from app.config import settings
 from app.services.backup import BackupService
 from app.services.document_processor import DocumentProcessor
+from scripts.ingest_knowledge_base import ingest_kb
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
@@ -169,3 +178,130 @@ async def delete_backup(filename: str, current_user: str = Depends(get_current_a
     if backup_service.delete_backup(filename):
         return {"message": "Backup deleted"}
     raise HTTPException(status_code=404, detail="Backup not found")
+
+
+# ==========================================
+# Knowledge Base FAQ Management
+# ==========================================
+
+KB_PATH = (
+    Path(__file__).resolve().parent.parent.parent / "data" / "knowledge_base" / "combined_kb.json"
+)
+
+
+def _load_kb() -> dict:
+    with open(KB_PATH, "r", encoding="utf-8") as f:
+        return json.load(f)
+
+
+def _save_kb(kb: dict):
+    with open(KB_PATH, "w", encoding="utf-8") as f:
+        json.dump(kb, f, indent=2, ensure_ascii=False)
+
+
+@router.get("/kb/faq")
+async def list_faq_entries(current_user: str = Depends(get_current_admin)):
+    """List all FAQ entries in voice_ready_answers."""
+    kb = _load_kb()
+    vra = kb.get("voice_ready_answers", {})
+    entries = []
+    for key, entry in vra.items():
+        entries.append(
+            {
+                "key": key,
+                "keywords": entry.get("keywords", []),
+                "languages": list(entry.get("answers", {}).keys()) if "answers" in entry else [],
+                "has_sub_answers": "sub_answers" in entry,
+            }
+        )
+    return {"entries": entries, "total": len(entries)}
+
+
+class FAQEntryIn(BaseModel):
+    keywords: list[str]
+    answers: dict[str, str] = {}
+    sub_answers: dict[str, dict] = {}
+
+
+@router.post("/kb/faq/{key}")
+async def add_or_update_faq(
+    key: str,
+    entry: FAQEntryIn,
+    current_user: str = Depends(get_current_admin),
+):
+    """Add or update a FAQ entry in voice_ready_answers. Reloads KB immediately."""
+    kb = _load_kb()
+    if "voice_ready_answers" not in kb:
+        kb["voice_ready_answers"] = {}
+    new_entry = {"keywords": entry.keywords}
+    if entry.answers:
+        new_entry["answers"] = entry.answers
+    if entry.sub_answers:
+        new_entry["sub_answers"] = entry.sub_answers
+    kb["voice_ready_answers"][key] = new_entry
+    _save_kb(kb)
+    count = get_groq_service().reload_kb()
+    return {"message": f"FAQ entry '{key}' saved and KB reloaded", "key": key, "faq_count": count}
+
+
+@router.delete("/kb/faq/{key}")
+async def delete_faq(key: str, current_user: str = Depends(get_current_admin)):
+    """Delete a FAQ entry from voice_ready_answers. Reloads KB immediately."""
+    kb = _load_kb()
+    vra = kb.get("voice_ready_answers", {})
+    if key not in vra:
+        raise HTTPException(status_code=404, detail=f"FAQ entry '{key}' not found")
+    del vra[key]
+    kb["voice_ready_answers"] = vra
+    _save_kb(kb)
+    count = get_groq_service().reload_kb()
+    return {"message": f"FAQ entry '{key}' deleted and KB reloaded", "faq_count": count}
+
+
+@router.post("/kb/reload")
+async def reload_kb(current_user: str = Depends(get_current_admin)):
+    """Force-reload the KB from disk (no service restart needed)."""
+    count = get_groq_service().reload_kb()
+    return {"message": "KB reloaded", "faq_count": count}
+
+
+@router.post("/cache/invalidate")
+async def invalidate_cache(current_user: str = Depends(get_current_admin)):
+    """Clear the in-memory query cache."""
+    cleared = get_groq_service().invalidate_cache()
+    return {"message": "Query cache invalidated", "entries_cleared": cleared}
+
+
+@router.get("/cache/stats")
+async def cache_stats(current_user: str = Depends(get_current_admin)):
+    """Show query cache hit/miss stats."""
+    stats = get_groq_service().get_cache_stats()
+    return stats
+
+
+@router.post("/kb/update-anchor")
+async def update_semantic_anchor(
+    section: str = Query(...),
+    subsection: Optional[str] = Query(None),
+    new_anchor: str = Query(...),
+    current_user: str = Depends(get_current_admin),
+):
+    """Update semantic anchor for a KB entry and trigger re-ingestion."""
+    kb = _load_kb()
+    vra = kb.get("voice_ready_answers", {})
+    if section not in vra:
+        raise HTTPException(status_code=404, detail=f"Section '{section}' not found")
+    if subsection:
+        if subsection not in vra[section]:
+            raise HTTPException(
+                status_code=404, detail=f"Subsection '{subsection}' not found in '{section}'"
+            )
+        vra[section][subsection]["semantic_anchor"] = new_anchor
+    else:
+        vra[section]["semantic_anchor"] = new_anchor
+    _save_kb(kb)
+    await ingest_kb()
+    return {
+        "status": "success",
+        "message": f"Updated anchor for {section}/{subsection or ''}: {new_anchor}",
+    }

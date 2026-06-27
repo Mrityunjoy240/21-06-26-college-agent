@@ -1,6 +1,6 @@
 export const API_CONFIG = {
     baseUrl: import.meta.env.VITE_API_URL || 
-        (typeof window !== 'undefined' && window.location.hostname === 'localhost' ? 'http://localhost:8000' : ''),
+        (typeof window !== 'undefined' ? window.location.origin : ''),
 };
 
 export const COLLEGE_INFO = {

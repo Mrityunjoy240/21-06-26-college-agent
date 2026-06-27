@@ -7,6 +7,10 @@
 - **Minimum Marks**: 50% aggregate for General category
 - **Entrance Exams**: WBJEE or JEE Main
 
+**IMPORTANT: Physics, Chemistry, Math (PCM) are required subjects for eligibility — they are NOT separate B.Tech branches. You CANNOT take admission into Physics, Chemistry, Math, or Biology as degree programs.**
+
+**Eligibility by WBJEE Rank (2025 Cutoffs): Rank 80,000 with 65% PCM → eligible for CSE, CSE-AIML, CE, and ME. Rank 60,000 → also IT, EE. Rank 40,000 → also ECE, Data Science. Rank 33,000 → also CSE-Design. For exact branch-wise cutoff details, check the college website or call admissions at 0343-2501353.**
+
 ### MBA (Master of Business Administration)
 - **Educational Qualification**: Bachelor's degree in any discipline
 - **Minimum Marks**: 50% aggregate

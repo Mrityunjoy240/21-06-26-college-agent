@@ -74,10 +74,9 @@
 ## Department Contacts (ডিপার্টমেন্ট / विभाग संपर्क)
 
 ### Computer Science & Engineering (CSE) (সি.এস.ই / सीएसई)
-- **HOD**: Dr. Bappaditya Das
-- **Qualification**: PhD, M.Tech, B.Tech, B.Sc(Hons)
-- **Email**: bappaditya.das@bcrec.ac.in
-- **Phone**: +91-9051218105
+- **HOD**: Dr. Pabitra Kumar Dey
+- **Email**: pabitra.dey@bcrec.ac.in
+- **Phone**: Contact main office
 
 ### Information Technology (IT)
 - **Email**: it@bcrec.ac.in
