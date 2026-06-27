@@ -129,7 +129,82 @@ async def ingest_kb():
                                     )
                                 )
                                 json_doc_count += 1
-        logger.info(f"Added {json_doc_count} voice_ready_answers documents from combined_kb.json")
+
+        # 2b. Also ingest quick_answers as English-only docs
+        quick = kb_data.get("quick_answers", {})
+        for qkey, qtext in quick.items():
+            if isinstance(qtext, str) and qtext.strip():
+                all_docs.append(
+                    Document(
+                        page_content=qtext.strip(),
+                        metadata={
+                            "source": "combined_kb_json",
+                            "section": "quick_answers",
+                            "subsection": qkey,
+                            "language": "en",
+                            "semantic_anchor": qkey,
+                        },
+                    )
+                )
+                json_doc_count += 1
+
+        # 2c. Ingest key data sections from the FLAT knowledge_base.json (college, admission, placements, etc.)
+        flat_kb_path = project_root / "backend" / "data" / "knowledge_base.json"
+        if flat_kb_path.exists():
+            logger.info("Processing data sections from knowledge_base.json...")
+            with open(flat_kb_path, "r", encoding="utf-8") as f:
+                flat_data = json.load(f)
+            data_sections = [
+                "college",
+                "admission",
+                "placements",
+                "hostel",
+                "infrastructure",
+                "scholarships",
+                "student_life",
+                "academics",
+                "fees_summary",
+            ]
+            for section in data_sections:
+                section_data = flat_data.get(section, {})
+                if not isinstance(section_data, dict):
+                    continue
+                parts = []
+
+                def _collect(obj, depth=0):
+                    if depth > 3:
+                        return
+                    if isinstance(obj, dict):
+                        for k, v in obj.items():
+                            if isinstance(v, (str, int, float, bool)):
+                                parts.append(f"{k}: {v}")
+                            elif isinstance(v, dict):
+                                _collect(v, depth + 1)
+                            elif isinstance(v, list):
+                                items = [str(x)[:100] for x in v[:5]]
+                                if items:
+                                    parts.append(f"{k}: {', '.join(items)}")
+                    elif isinstance(obj, list):
+                        for item in obj[:3]:
+                            _collect(item, depth + 1)
+
+                _collect(section_data)
+                if parts:
+                    text = ". ".join(parts)
+                    all_docs.append(
+                        Document(
+                            page_content=text,
+                            metadata={
+                                "source": "knowledge_base_json",
+                                "section": section,
+                                "language": "en",
+                                "semantic_anchor": section,
+                            },
+                        )
+                    )
+                    json_doc_count += 1
+
+        logger.info(f"Added {json_doc_count} JSON documents")
 
     # 3. Re-ingest any admin-uploaded files from uploads/ directory
     # (so they aren't silently lost after a reindex)

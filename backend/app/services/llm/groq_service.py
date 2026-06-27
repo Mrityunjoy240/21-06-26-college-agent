@@ -19,8 +19,10 @@ import json
 import hashlib
 import random
 import asyncio
+import collections
 from typing import Dict, Any, Optional, List
 from pathlib import Path
+from dataclasses import dataclass, field
 
 logger = logging.getLogger(__name__)
 
@@ -163,6 +165,91 @@ OUT-OF-KB DEFLECTION:
 - Do NOT make up data. Do NOT invent names, fees, or numbers."""
 
 
+# ---------------------------------------------------------------------------
+# Phase 5 — Rate limiter + circuit breaker for Groq API (429 prevention)
+# ---------------------------------------------------------------------------
+# Sliding window: max R requests in W seconds before self-throttling
+RATE_LIMIT_MAX_REQUESTS = int(os.getenv("GROQ_RATE_LIMIT_MAX", "25"))  # 25 req/min free tier
+RATE_LIMIT_WINDOW_SEC = int(os.getenv("GROQ_RATE_LIMIT_WINDOW", "60"))
+
+# Circuit breaker: after N consecutive 429s, pause for B seconds
+CIRCUIT_BREAKER_THRESHOLD = int(os.getenv("GROQ_CIRCUIT_THRESHOLD", "3"))
+CIRCUIT_BREAKER_BACKOFF = int(os.getenv("GROQ_CIRCUIT_BACKOFF", "30"))
+
+# Max backoff cap (single call) to prevent unbounded wait
+MAX_BACKOFF_SEC = 10.0
+
+# Model fallback list — tried in order on rate limit
+# Primary: llama-3.1-8b-instant (fast, good quality)
+# Fallback: groq/compound-mini (lighter, different backend = separate rate limit pool)
+# Fallback: qwen/qwen3-32b (good multilingual, may have separate rate limits)
+FALLBACK_MODELS = ["llama-3.1-8b-instant", "groq/compound-mini", "qwen/qwen3-32b"]
+
+
+@dataclass
+class RateLimiter:
+    """Simple sliding-window rate limiter + circuit breaker."""
+
+    max_requests: int = RATE_LIMIT_MAX_REQUESTS
+    window_sec: int = RATE_LIMIT_WINDOW_SEC
+    circuit_threshold: int = CIRCUIT_BREAKER_THRESHOLD
+    circuit_backoff: float = float(CIRCUIT_BREAKER_BACKOFF)
+
+    _timestamps: "collections.deque[float]" = field(
+        default_factory=lambda: collections.deque(maxlen=1000)
+    )
+    _consecutive_429s: int = 0
+    _circuit_open_until: float = 0.0
+
+    def _prune(self, now: float) -> None:
+        """Remove timestamps outside the window."""
+        cutoff = now - self.window_sec
+        while self._timestamps and self._timestamps[0] < cutoff:
+            self._timestamps.popleft()
+
+    def acquire(self, now: float | None = None) -> float:
+        """Try to acquire a slot. Returns wait time in seconds (0 = go now)."""
+        now = now or time.time()
+        self._prune(now)
+
+        # Circuit breaker check
+        if now < self._circuit_open_until:
+            remaining = self._circuit_open_until - now
+            logger.warning(
+                f"Circuit breaker OPEN — waiting {remaining:.1f}s "
+                f"(consecutive 429s={self._consecutive_429s})"
+            )
+            return min(remaining, MAX_BACKOFF_SEC)
+
+        # Rate limit check
+        if len(self._timestamps) >= self.max_requests:
+            oldest = self._timestamps[0]
+            wait = oldest + self.window_sec - now
+            if wait > 0:
+                return min(wait, MAX_BACKOFF_SEC)
+
+        self._timestamps.append(now)
+        return 0.0
+
+    def record_429(self) -> None:
+        """Record a 429 response. May open the circuit breaker."""
+        self._consecutive_429s += 1
+        if self._consecutive_429s >= self.circuit_threshold:
+            self._circuit_open_until = time.time() + self.circuit_backoff
+            logger.warning(
+                f"Circuit breaker TRIPPED after {self._consecutive_429s} consecutive 429s — "
+                f"pausing {self.circuit_backoff}s"
+            )
+
+    def record_success(self) -> None:
+        """Reset consecutive 429 counter on success."""
+        self._consecutive_429s = 0
+
+    @property
+    def is_circuit_open(self) -> bool:
+        return time.time() < self._circuit_open_until
+
+
 class GroqService:
     """
     Clean Hybrid RAG service: JSON (Precision) + Vector Store (Context).
@@ -198,6 +285,9 @@ class GroqService:
         else:
             logger.info("Query cache DISABLED (cachetools not installed)")
 
+        # Phase 5 — Rate limiter + circuit breaker
+        self._rate_limiter = RateLimiter()
+
         if self.client:
             logger.info("GroqService ready.")
         else:
@@ -207,9 +297,7 @@ class GroqService:
     # Phase 4 — Cache helpers
     # -----------------------------------------------------------------------
     def _read_kb(self) -> dict:
-        """Read combined_kb.json from disk fresh on every call.
-        Ensures ALL processes (web server + agent) see edits immediately.
-        No stale cache, no per-process memory issues."""
+        """Read combined_kb.json from disk. Cached in memory with mtime check."""
         try:
             kb_path = (
                 Path(__file__).resolve().parent.parent.parent.parent
@@ -217,8 +305,17 @@ class GroqService:
                 / "knowledge_base"
                 / "combined_kb.json"
             )
+            mtime = kb_path.stat().st_mtime
+            if (
+                self._kb_mtime is not None
+                and mtime == self._kb_mtime
+                and hasattr(self, "_kb_cache")
+            ):
+                return self._kb_cache
             with open(kb_path, "r", encoding="utf-8") as f:
-                return json.load(f)
+                self._kb_cache = json.load(f)
+            self._kb_mtime = mtime
+            return self._kb_cache
         except Exception as e:
             logger.error(f"Failed to read combined_kb.json: {e}")
             return {}
@@ -306,43 +403,51 @@ class GroqService:
         return q
 
     def _retrieve_context(self, query: str) -> str:
-        """Single retriever: vector search via ChromaDB + BGE-M3 with semantic anchor re-ranking.
-        Normalizes STT noise before search."""
+        """Enhanced retriever: vector search + semantic re-rank + section-aware filtering.
+        Keeps top docs across sources, prioritizes by semantic anchor + language match."""
         normalized = self._normalize_query(query)
         try:
             language = detect_language(query)
-            results = self.vector_store.search(normalized, k=15)
+            results = self.vector_store.search(normalized, k=10)
+            if not results:
+                return ""
+
+            query_lower = normalized.lower()
+            query_words = set(query_lower.split())
 
             def semantic_score(doc):
-                metadata = doc.metadata if hasattr(doc, "metadata") else {}
-                anchor = metadata.get("semantic_anchor", "").lower()
+                meta = doc.metadata if hasattr(doc, "metadata") else {}
+                score = 0
+                anchor = meta.get("semantic_anchor", "").lower()
                 anchor_words = anchor.split()
-                query_lower = normalized.lower()
-                query_words = set(query_lower.split())
-                anchor_match = sum(1 for w in anchor_words if w in query_words)
-                section = metadata.get("section", "")
-                section_match = 1 if (section and section.lower() in query_lower) else 0
-                lang_match = 10 if metadata.get("language") == language else 0
-                return (anchor_match, section_match, lang_match)
+                score += sum(1 for w in anchor_words if w in query_words)
+                section = meta.get("section", "")
+                if section and section.lower() in query_lower:
+                    score += 2
+                if meta.get("language") == language:
+                    score += 1
+                if meta.get("language") == "en" and language != "en":
+                    score -= 0.5
+                return score
 
             ranked = sorted(results, key=semantic_score, reverse=True)
 
-            # Source coherence: if top doc is from voice_ready_answers (combined_kb_json),
-            # only keep other JSON docs to avoid markdown noise (e.g. faculty.md leaking into VP query).
-            # If top doc is from markdown, include all.
             context_chunks = []
-            if ranked:
-                top_source = ranked[0].metadata.get("source", "")
-                for doc in ranked:
-                    if top_source == "combined_kb_json":
-                        if doc.metadata.get("source", "") != "combined_kb_json":
-                            continue
-                    text = doc.page_content if hasattr(doc, "page_content") else str(doc)
-                    if "[" in text and "]" in text:
-                        text = text.split("]", 1)[-1].strip()
-                    context_chunks.append(text)
-                    if len(context_chunks) >= 3:
-                        break
+            seen_sections = set()
+            for doc in ranked:
+                meta = doc.metadata if hasattr(doc, "metadata") else {}
+                section = meta.get("section", "")
+                sub = meta.get("subsection", "")
+                dedup_key = f"{section}:{sub}"
+                if dedup_key in seen_sections:
+                    continue
+                seen_sections.add(dedup_key)
+                text = doc.page_content if hasattr(doc, "page_content") else str(doc)
+                if "[" in text and "]" in text:
+                    text = text.split("]", 1)[-1].strip()
+                context_chunks.append(text)
+                if len(context_chunks) >= 5:
+                    break
 
             return "\n\n---\n\n".join(context_chunks)
         except Exception:
@@ -520,9 +625,12 @@ USER QUESTION: {query}
         if not self._should_validate(query):
             return True, ""
 
-        # Exempt low-risk queries — numbers here are always in context
+        # Exempt only general placement queries without numbers — ones asking about rate/companies
         query_lower = query.lower()
-        if any(word in query_lower for word in ["placement", "प्लेसमेंट", "প্লেসমেন্ট", "प्लेसमेन्ट"]):
+        has_number = bool(re.search(r"\d", query_lower))
+        if not has_number and any(
+            word in query_lower for word in ["placement", "प्लेसमेंट", "প্লেসমেন্ট"]
+        ):
             return True, ""
 
         entities = self._extract_entities(answer)
@@ -659,34 +767,63 @@ USER QUESTION: {query}
                 query=query, context=context, history=history, lang=lang
             )
 
-            # 6. Call Groq with retry/backoff for rate limits
-            max_retries = 3
+            # 6. Call Groq with rate limiter + model fallback + circuit breaker
             completion = None
-            for attempt in range(max_retries):
-                try:
-                    completion = self.client.chat.completions.create(
-                        model=self.model,
-                        messages=messages,
-                        temperature=0.3,
-                        max_tokens=self.max_tokens,
-                    )
-                    break
-                except Exception as e:
-                    error_str = str(e)
-                    is_rate_limit = (
-                        "429" in error_str
-                        or "rate" in error_str.lower()
-                        or "too many" in error_str.lower()
-                    )
-                    if is_rate_limit and attempt < max_retries - 1:
-                        wait = (2**attempt) + random.random()
-                        logger.warning(
-                            f"Groq rate limited (attempt {attempt + 1}/{max_retries}), retrying in {wait:.1f}s: {e}"
-                        )
-                        time.sleep(wait)
-                    else:
-                        raise
+            used_model = self.model
+            models_to_try = list(dict.fromkeys([self.model] + FALLBACK_MODELS))
+            success = False
 
+            for current_model in models_to_try:
+                for attempt in range(3):
+                    wait = self._rate_limiter.acquire()
+                    if wait > 0:
+                        logger.info(
+                            f"Rate limiter: waiting {wait:.1f}s before calling {current_model}"
+                        )
+                        await asyncio.sleep(wait)
+
+                    try:
+                        completion = self.client.chat.completions.create(
+                            model=current_model,
+                            messages=messages,
+                            temperature=0.3,
+                            max_tokens=self.max_tokens,
+                        )
+                        self._rate_limiter.record_success()
+                        used_model = current_model
+                        success = True
+                        break
+                    except Exception as e:
+                        error_str = str(e)
+                        is_rate_limit = (
+                            "429" in error_str
+                            or "rate" in error_str.lower()
+                            or "too many" in error_str.lower()
+                        )
+                        if is_rate_limit:
+                            self._rate_limiter.record_429()
+                            if attempt < 2:
+                                backoff = min((2**attempt) + random.random(), MAX_BACKOFF_SEC)
+                                logger.warning(
+                                    f"Groq rate limited on {current_model} "
+                                    f"(model {models_to_try.index(current_model) + 1}/{len(models_to_try)}, "
+                                    f"attempt {attempt + 1}/3), "
+                                    f"retrying in {backoff:.1f}s"
+                                )
+                                await asyncio.sleep(backoff)
+                            else:
+                                logger.warning(f"All retries exhausted for {current_model}")
+                        else:
+                            raise
+                if success:
+                    break
+                if current_model != models_to_try[-1]:
+                    logger.warning(
+                        f"Switching model {current_model} -> {models_to_try[models_to_try.index(current_model) + 1]}"
+                    )
+
+            if not success:
+                raise RuntimeError(f"All Groq models ({models_to_try}) rate limited after retries")
             answer = completion.choices[0].message.content.strip()
             # Strip reasoning tags (e.g. <think>...</think>) from inference models
             import re as _re
@@ -763,7 +900,7 @@ USER QUESTION: {query}
                 "answer": answer,
                 "voice_text": answer,
                 "source": "groq_rag",
-                "model": self.model,
+                "model": used_model,
                 "latency_ms": latency_ms,
                 "hallucination_validated": is_valid,
                 "tokens": {
@@ -823,34 +960,60 @@ USER QUESTION: {query}
 
             messages = self._build_messages(llm_query, context, history, lang)
 
-            # Retry/backoff for rate limits (async)
-            max_retries = 3
+            # Retry/backoff for rate limits (async) — with rate limiter + model fallback
             stream = None
-            for attempt in range(max_retries):
-                try:
-                    stream = await self.async_client.chat.completions.create(
-                        model=self.model,
-                        messages=messages,
-                        temperature=0.3,
-                        max_tokens=self.max_tokens,
-                        stream=True,
-                    )
-                    break
-                except Exception as e:
-                    error_str = str(e)
-                    is_rate_limit = (
-                        "429" in error_str
-                        or "rate" in error_str.lower()
-                        or "too many" in error_str.lower()
-                    )
-                    if is_rate_limit and attempt < max_retries - 1:
-                        wait = (2**attempt) + random.random()
-                        logger.warning(
-                            f"Groq rate limited (async, attempt {attempt + 1}/{max_retries}), retrying in {wait:.1f}s: {e}"
-                        )
+            models_to_try = list(dict.fromkeys([self.model] + FALLBACK_MODELS))
+            success = False
+
+            for current_model in models_to_try:
+                for attempt in range(3):
+                    wait = self._rate_limiter.acquire()
+                    if wait > 0:
                         await asyncio.sleep(wait)
-                    else:
-                        raise
+
+                    try:
+                        stream = await self.async_client.chat.completions.create(
+                            model=current_model,
+                            messages=messages,
+                            temperature=0.3,
+                            max_tokens=self.max_tokens,
+                            stream=True,
+                        )
+                        self._rate_limiter.record_success()
+                        success = True
+                        break
+                    except Exception as e:
+                        error_str = str(e)
+                        is_rate_limit = (
+                            "429" in error_str
+                            or "rate" in error_str.lower()
+                            or "too many" in error_str.lower()
+                        )
+                        if is_rate_limit:
+                            self._rate_limiter.record_429()
+                            if attempt < 2:
+                                backoff = min((2**attempt) + random.random(), MAX_BACKOFF_SEC)
+                                logger.warning(
+                                    f"Groq rate limited (async) on {current_model} "
+                                    f"(model {models_to_try.index(current_model) + 1}/{len(models_to_try)}, "
+                                    f"attempt {attempt + 1}/3), "
+                                    f"retrying in {backoff:.1f}s"
+                                )
+                                await asyncio.sleep(backoff)
+                            else:
+                                logger.warning(f"All retries exhausted for {current_model}")
+                        else:
+                            raise
+                if success:
+                    break
+                if current_model != models_to_try[-1]:
+                    logger.warning(
+                        f"Switching model {current_model} -> "
+                        f"{models_to_try[models_to_try.index(current_model) + 1]}"
+                    )
+
+            if not success:
+                raise RuntimeError(f"All Groq models ({models_to_try}) rate limited after retries")
             t_llm_first = time.time() - t0
 
             # Stream tokens immediately — no upfront buffering

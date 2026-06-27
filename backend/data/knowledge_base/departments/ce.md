@@ -1,73 +1,41 @@
-# Civil Engineering (CE)
+# Civil Engineering
 
 ## Program Overview
 
-**B.Tech in Civil Engineering** at BCREC focuses on structural design, construction, and infrastructure development.
+**4 years** program with an intake of **60** students.
 
 ## Key Details
 
 | Attribute | Value |
 |-----------|-------|
-| **Duration** | 4 Years (8 Semesters) |
-| **Intake** | 60 Students |
-| **Affiliation** | MAKAUT |
-| **Accreditation** | NBA |
+| **Duration** | 4 years |
+| **Intake** | 60 |
+| **Established** | 2010 |
+| **NBA Accredited** | No |
 
-## Eligibility
+## Fee Structure
 
-- 10+2 with Physics, Chemistry, Mathematics
-- Minimum 50% aggregate marks
-- Valid WBJEE or JEE Main score
-
-## WBJEE Cutoff (2025)
-
-| Category | Round 1 | Round 2 |
-|----------|---------|---------|
-| General | 70,000 | 85,000 |
+- **Total Fee**: Rs. 444100
+- **Admission Fee**: Rs. 78150
 
 ## Placement Statistics
 
-- **Placement Rate**: 55-65%
-- **Average Package**: ₹3.5-4 LPA
-- **Highest Package**: ₹6-8 LPA
+- **Placement Rate (2023-24)**: 100%
+- **Placement Rate (2024-25)**: 68%
+- **Placement Rate (2025-26)**: 55%+
+- **Minimum Package**: 1.8 LPA
+- **Average Package**: 3.2 LPA
+- **Highest Package**: 6.5 LPA
 
-## Curriculum Overview
+## WBJEE Cutoff
 
-### Year 1 (Foundation)
-- Engineering Mathematics
-- Physics & Chemistry
-- Engineering Graphics
-- Surveying
-- Building Materials
+- **2024**: 104490
+- **2025**: 96926
+- **2026 (Estimated)**: ~100000
 
-### Year 2 (Civil Core)
-- Strength of Materials
-- Structural Analysis
-- Concrete Technology
-- Fluid Mechanics
-- Geotechnical Engineering
+## Contact
 
-### Year 3 (Advanced)
-- Design of Structures
-- Transportation Engineering
-- Water Resources Engineering
-- Environmental Engineering
-- Construction Management
+**Head of Department**: Dr. Sanjay Sengupta
+- Email: sanjay.sengupta@bcrec.ac.in
+- Phone: 9836303034
 
-### Year 4 (Specialization)
-- Capstone Project
-- Industrial Training
-- Electives
-
-## Career Opportunities
-
-- Civil Engineer
-- Structural Engineer
-- Construction Manager
-- Transportation Engineer
-- Geotechnical Engineer
-- Environmental Engineer
-
-## Top Recruiters
-
-L&T, Tata Projects, Shapoorji, Godrej, Afcons, Indian Railways, NHAI, NBCC

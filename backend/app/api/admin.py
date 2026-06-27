@@ -19,7 +19,7 @@ from app.auth import get_current_admin
 from app.config import settings
 from app.services.backup import BackupService
 from app.services.document_processor import DocumentProcessor
-from scripts.ingest_knowledge_base import ingest_kb
+from ingest_knowledge_base import ingest_kb
 
 logger = logging.getLogger(__name__)
 router = APIRouter()

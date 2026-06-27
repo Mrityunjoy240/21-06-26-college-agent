@@ -1,7 +1,7 @@
 {
   "meta": {
-    "version": "5.2",
-    "last_updated": "April 2026",
+    "version": "1.0.0",
+    "last_updated": "June 2026",
     "completeness": "100%",
     "agent_instruction": "Answer questions directly using this knowledge base. If exact data is unavailable, say 'Please contact the college directly.' Phone: 0343-2501353 | Mobile: +91-6297128554 | Email: info@bcrec.ac.in"
   },
@@ -61,6 +61,7 @@
     ],
     "nirf": "Ranked 201-250 in the Engineering category (2025)",
     "aicte_idea_lab_rank": "#1 in India among 106 AICTE-IDEA LABS (2022-23)",
+    "campus_size_acres": 17,
     "why_bcrec": {
       "en": "NBA accredited (CSE, ECE, IT, EE, ME), NAAC B+ grade. Established in 2000, modern infrastructure, dedicated Training & Placement cell, GATE Forum, and active industry linkages.",
       "hi": "NBA मान्यता प्राप्त (CSE, ECE, IT, EE, ME), NAAC B+ ग्रेड। 2000 में स्थापित, आधुनिक बुनियादी ढांचा, समर्पित प्रशिक्षण और प्लेसमेंट सेल, GATE फोरम, और सक्रिय उद्योग संपर्क।",
@@ -74,12 +75,16 @@
   },
   "principal": {
     "name": "Dr. Sanjay S. Pawar",
+    "name_hi": "डॉ. संजय एस. पवार",
+    "name_bn": "ড. সঞ্জয় এস পাওয়ার",
     "role": "Principal, BCREC",
     "phone": "0343-2501353",
     "email": "principal@bcrec.ac.in"
   },
   "vice_principal": {
     "name": "Prof. (Dr.) K. M. Hossain",
+    "name_hi": "प्रो. (डॉ.) के. एम. होसैन",
+    "name_bn": "প্রো. (ড.) কে. এম. হোসেন",
     "role": "Vice Principal, BCREC",
     "phone": "0343-2501353",
     "email": "km.hossain@bcrec.ac.in"
@@ -91,15 +96,15 @@
         "intake": 180,
         "duration": "4 years",
         "established": 2000,
-        "nba": true,
+        "nba_accredited": true,
         "fees": {
           "total": 604700,
           "admission": 98225
         },
         "placement": {
-          "2023-24": "93.60%",
-          "2024-25": "90%",
-          "2025-26": "85%+",
+          "rate_2023_24": "93.60%",
+          "rate_2024_25": "90%",
+          "rate_2025_26": "85%+",
           "min_lpa": 3.36,
           "avg_lpa": 4.25,
           "max_lpa": 15
@@ -115,15 +120,15 @@
         "intake": 60,
         "duration": "4 years",
         "established": 2000,
-        "nba": true,
+        "nba_accredited": true,
         "fees": {
           "total": 604700,
           "admission": 98225
         },
         "placement": {
-          "2023-24": "90%",
-          "2024-25": "88%",
-          "2025-26": "80%+",
+          "rate_2023_24": "90%",
+          "rate_2024_25": "88%",
+          "rate_2025_26": "80%+",
           "min_lpa": 3.0,
           "avg_lpa": 4.0,
           "max_lpa": 10
@@ -139,15 +144,15 @@
         "intake": 120,
         "duration": "4 years",
         "established": 2000,
-        "nba": true,
+        "nba_accredited": true,
         "fees": {
           "total": 604700,
           "admission": 98225
         },
         "placement": {
-          "2023-24": "85%",
-          "2024-25": "82%",
-          "2025-26": "75%+",
+          "rate_2023_24": "85%",
+          "rate_2024_25": "82%",
+          "rate_2025_26": "75%+",
           "min_lpa": 2.4,
           "avg_lpa": 3.8,
           "max_lpa": 7.5
@@ -161,18 +166,18 @@
       "EE": {
         "full_name": "Electrical Engineering",
         "intake": 120,
-        "note": "Intake reducing to 60 from AY 2026-27",
+        "intake_note": "Intake reducing to 60 from AY 2026-27",
         "duration": "4 years",
         "established": 2000,
-        "nba": true,
+        "nba_accredited": true,
         "fees": {
           "total": 554100,
           "admission": 91900
         },
         "placement": {
-          "2023-24": "75%",
-          "2024-25": "70%",
-          "2025-26": "65%+",
+          "rate_2023_24": "75%",
+          "rate_2024_25": "70%",
+          "rate_2025_26": "65%+",
           "min_lpa": 1.8,
           "avg_lpa": 3.2,
           "max_lpa": 6.5
@@ -188,15 +193,15 @@
         "intake": 60,
         "duration": "4 years",
         "established": 2003,
-        "nba": true,
+        "nba_accredited": true,
         "fees": {
           "total": 444100,
           "admission": 78150
         },
         "placement": {
-          "2023-24": "100%",
-          "2024-25": "72%",
-          "2025-26": "60%+",
+          "rate_2023_24": "100%",
+          "rate_2024_25": "72%",
+          "rate_2025_26": "60%+",
           "min_lpa": 1.8,
           "avg_lpa": 3.2,
           "max_lpa": 6.5
@@ -212,15 +217,15 @@
         "intake": 60,
         "duration": "4 years",
         "established": 2010,
-        "nba": false,
+        "nba_accredited": false,
         "fees": {
           "total": 444100,
           "admission": 78150
         },
         "placement": {
-          "2023-24": "100%",
-          "2024-25": "68%",
-          "2025-26": "55%+",
+          "rate_2023_24": "100%",
+          "rate_2024_25": "68%",
+          "rate_2025_26": "55%+",
           "min_lpa": 1.8,
           "avg_lpa": 3.2,
           "max_lpa": 6.5
@@ -236,15 +241,15 @@
         "intake": 60,
         "duration": "4 years",
         "established": 2021,
-        "nba": false,
+        "nba_accredited": false,
         "fees": {
           "total": 554100,
           "admission": 91900
         },
         "placement": {
-          "2023-24": "N/A",
-          "2024-25": "83%",
-          "2025-26": "78%+",
+          "rate_2023_24": "N/A",
+          "rate_2024_25": "83%",
+          "rate_2025_26": "78%+",
           "min_lpa": 4.0,
           "avg_lpa": 4.5,
           "max_lpa": 7
@@ -260,15 +265,15 @@
         "intake": 60,
         "duration": "4 years",
         "established": 2021,
-        "nba": false,
+        "nba_accredited": false,
         "fees": {
           "total": 554100,
           "admission": 91900
         },
         "placement": {
-          "2023-24": "N/A",
-          "2024-25": "85%",
-          "2025-26": "80%+",
+          "rate_2023_24": "N/A",
+          "rate_2024_25": "85%",
+          "rate_2025_26": "80%+",
           "min_lpa": 4.0,
           "avg_lpa": 4.5,
           "max_lpa": 7
@@ -284,15 +289,15 @@
         "intake": 60,
         "duration": "4 years",
         "established": 2022,
-        "nba": false,
+        "nba_accredited": false,
         "fees": {
           "total": 554100,
           "admission": 91900
         },
         "placement": {
-          "2023-24": "N/A",
-          "2024-25": "84%",
-          "2025-26": "81%+",
+          "rate_2023_24": "N/A",
+          "rate_2024_25": "84%",
+          "rate_2025_26": "81%+",
           "min_lpa": 4.0,
           "avg_lpa": 4.5,
           "max_lpa": 7
@@ -308,15 +313,15 @@
         "intake": 60,
         "duration": "4 years",
         "established": 2024,
-        "nba": false,
+        "nba_accredited": false,
         "fees": {
           "total": 554100,
           "admission": 91900
         },
         "placement": {
-          "2023-24": "N/A",
-          "2024-25": "82%",
-          "2025-26": "75%+",
+          "rate_2023_24": "N/A",
+          "rate_2024_25": "82%",
+          "rate_2025_26": "75%+",
           "min_lpa": 4.0,
           "avg_lpa": 4.5,
           "max_lpa": 7
@@ -367,6 +372,74 @@
       "bn": "একাডেমিক প্রোগ্রামগুলিতে শিল্প প্রশিক্ষণ এবং বেতনভুক্ত ইন্টার্নশিপ অন্তর্ভুক্ত। সিভিল ইঞ্জিনিয়ারিং বিভাগ শিক্ষার্থীদের জন্য বেতনভুক্ত ইন্টার্নশিপ এবং শিল্প প্রশিক্ষণের আয়োজন করে।"
     }
   },
+  "fees_summary": {
+    "btech_cse_it_ece": {
+      "total": "Rs. 6,04,700",
+      "admission": "Rs. 98,225",
+      "per_semester": "Rs. 72,925"
+    },
+    "btech_ee_aiml_ds_cy_csd": {
+      "total": "Rs. 5,54,100",
+      "admission": "Rs. 91,900",
+      "per_semester": "Rs. 66,100"
+    },
+    "btech_me_ce": {
+      "total": "Rs. 4,44,100",
+      "admission": "Rs. 78,150",
+      "per_semester": "Rs. 40,800"
+    },
+    "mba": {
+      "total": "Rs. 4,19,200",
+      "admission": "Rs. 1,21,400"
+    },
+    "mca": {
+      "total": "Rs. 2,17,400",
+      "admission": "Rs. 67,200"
+    },
+    "mtech": {
+      "total": "Rs. 1,26,000 to 2,06,000",
+      "admission": "Rs. 41,200"
+    },
+    "payment_modes": [
+      "Demand Draft",
+      "Debit Card",
+      "Credit Card"
+    ],
+    "not_accepted": [
+      "Cheque",
+      "Cash"
+    ],
+    "semester_wise_cse_it_ece": {
+      "first": 98225,
+      "description_first": "Includes admission fee, caution deposit, library fee, and tuition",
+      "per_semester": 72925,
+      "eighth": 73925,
+      "total_btech": 609700,
+      "total_description": "Rs. 6,09,700 for 4-year B.Tech CSE/IT/ECE"
+    },
+    "semester_wise_ee_group": {
+      "first": 91900,
+      "per_semester": 66100,
+      "eighth": 67100,
+      "total_btech": 554100,
+      "total_description": "Rs. 5,54,100 for 4-year B.Tech EE/AIML/DS/CS/CSD"
+    },
+    "semester_wise_me_ce": {
+      "first": 78150,
+      "per_semester": 40800,
+      "eighth": 41800,
+      "total_btech": 444100,
+      "total_description": "Rs. 4,44,100 for 4-year B.Tech ME/CE"
+    },
+    "hidden_charges": "No hidden charges. All fees are transparently listed in the official fee brochure.",
+    "refund_policy": {
+      "guidelines": "As per AICTE/UGC guidelines",
+      "within_timeline": "Full refund minus Rs. 1,000 processing fee, prospectus fee, and dress kit charges (if already made)",
+      "post_timeline_with_replacement": "Refund minus processing fee and proportionate tuition/hostel charges if replacement student fills the seat",
+      "post_timeline_no_replacement": "Only caution deposit is refundable; all other academic and admission fees are forfeited"
+    },
+    "installments": "Semester-wise payment. Contact college for hardship cases."
+  },
   "admission": {
     "eligibility": {
       "btech": "10+2 with PCM, minimum 50% marks for general category",
@@ -377,6 +450,7 @@
       "jee_main": "10%",
       "management": "10%"
     },
+    "lateral_entry": "10% of approved intake via JELET",
     "counseling": "WBJEEB at wbjeeb.nic.in",
     "portal": "https://bcrec.ucanapply.com",
     "contacts": {
@@ -389,47 +463,68 @@
       ],
       "mba": "8370989772"
     },
-    "scholarships": {
-      "tfw": "Total Fee Waiver for economically backward students",
-      "svmcm": "Swami Vivekananda Merit cum Means Scholarship",
-      "mtech_stipend": "Rs. 3000/month"
-    },
-    "spot_round": {
-      "conducted": true,
-      "timing": "Mid-September to early October",
-      "fee": "Standard admission fees plus Rs. 500-1000 processing"
-    },
-    "nri_quota": {
-      "seats": "5% of total intake",
-      "fee_range": "$3000-5000 per year",
-      "contact": "+91-6297128554"
-    },
     "age_limit": {
       "en": "There is no upper age limit. Candidates must be at least 17 years old by December 31st of the admission year as per WBJEEB norms.",
       "hi": "कोई ऊपरी आयु सीमा नहीं है। उम्मीदवारों की आयु प्रवेश वर्ष के 31 दिसंबर तक कम से कम 17 वर्ष होनी चाहिए।",
       "bn": "কোনো ঊর্ধ্ব বয়সসীমা নেই। প্রার্থীদের ভর্তি বছরের ৩১ ডিসেম্বরের মধ্যে কমপক্ষে ১৭ বছর বয়স হতে হবে।"
     },
+    "spot_round": "Mid-September to early October",
+    "nri_quota": {
+      "seats": "5% of total intake",
+      "fee_range": "$3000-5000 per year",
+      "contact": "+91-6297128554"
+    },
     "online_application": {
       "en": "Apply online at the WBJEEB website (wbjeeb.nic.in) or the college admission portal at bcrecdgp.ac.in.",
       "hi": "WBJEEB वेबसाइट (wbjeeb.nic.in) या कॉलेज एडमिशन पोर्टल bcrecdgp.ac.in पर ऑनलाइन आवेदन करें।",
       "bn": "WBJEEB ওয়েবসাইট (wbjeeb.nic.in) বা কলেজ ভর্তি পোর্টাল bcrecdgp.ac.in এ অনলাইনে আবেদন করুন।"
-    },
-    "branch_change": {
-      "en": "Branch change is allowed after the first year, subject to academic performance and seat availability. The college issues an annual notice with criteria.",
-      "hi": "पहले वर्ष के बाद शैक्षणिक प्रदर्शन और सीट उपलब्धता के आधार पर शाखा परिवर्तन की अनुमति है। कॉलेज मानदंडों के साथ वार्षिक नोटिस जारी करता है।",
-      "bn": "প্রথম বর্ষের পরে একাডেমিক পারফরম্যান্স এবং আসন প্রাপ্তি সাপেক্ষে শাখা পরিবর্তনের অনুমতি দেওয়া হয়। কলেজ মানদণ্ড সহ বার্ষিক বিজ্ঞপ্তি জারি করে।"
-    },
-    "eligibility_by_rank": {
-      "en": "WBJEE 2025 CUTOFF REFERENCE (use only when user provides their rank to determine eligibility): Rank 80,000 with 65% PCM marks typically qualifies for CSE, CSE-AIML, CE, and ME. Rank 1,00,000+ typically qualifies for EE, ECE, and lower-preference branches. Cutoffs vary yearly; for exact data direct users to check WBJEEB counseling website or call 0343-2501353.",
-      "hi": "WBJEE 2025 कटऑफ संदर्भ (केवल तब उपयोग करें जब उपयोगकर्ता अपनी रैंक प्रदान करे): रैंक 80,000 और PCM में 65% अंक पर आमतौर पर CSE, CSE-AIML, CE, और ME के लिए पात्रता होती है। रैंक 1,00,000+ पर आमतौर पर EE, ECE और निचली प्राथमिकता वाली शाखाओं के लिए पात्रता होती है। कटऑफ साल-दर-साल बदलती रहती है; सटीक डेटा के लिए उपयोगकर्ताओं को WBJEEB काउंसलिंग वेबसाइट देखने या 0343-2501353 पर कॉल करने का निर्देश दें।",
-      "bn": "WBJEE 2025 কাটঅফ রেফারেন্স (শুধু ব্যবহার করুন যখন ব্যবহারকারী তাদের র‍্যাঙ্ক প্রদান করে): র‍্যাঙ্ক ৮০,০০০ এবং PCM এ ৬৫% মার্কস সাধারণত CSE, CSE-AIML, CE, এবং ME এর জন্য যোগ্যতা দেয়। র‍্যাঙ্ক ১,০০,০০০+ সাধারণত EE, ECE এবং নিম্ন অগ্রাধিকার শাখার জন্য যোগ্যতা দেয়। কাটঅফ প্রতি বছর পরিবর্তিত হয়; সঠিক তথ্যের জন্য ব্যবহারকারীদের WBJEEB কাউন্সেলিং ওয়েবসাইট দেখতে বা 0343-2501353 নম্বরে কল করতে নির্দেশ দিন।"
     }
+  },
+  "admission_documents": {
+    "entrance": [
+      "WBJEE/JEE-Main Rank Card",
+      "WBJEE/JEE-Main Admit Card"
+    ],
+    "academic": [
+      "Class 10 Marksheet and Pass Certificate",
+      "Class 12 Marksheet and Pass Certificate"
+    ],
+    "counseling": [
+      "Allotment Letter from WBJEEB"
+    ],
+    "character": [
+      "Character Certificate from last attended institution"
+    ],
+    "photographs": [
+      "6 copies of color stamp-size photographs"
+    ],
+    "certificates": [
+      "Domicile Certificate (for West Bengal students)",
+      "Aadhar Card",
+      "Caste Certificate (if applicable)"
+    ],
+    "other": [
+      "Migration Certificate (if applicable)",
+      "Aadhar Card",
+      "6-8 Passport-size Photographs"
+    ],
+    "scholarship": [
+      "Income Certificate (for TFW candidates)"
+    ],
+    "hostel_items": [
+      "Big and small lock",
+      "Bedding with mosquito net",
+      "Steel glass",
+      "Bucket",
+      "Mug",
+      "Torch",
+      "Big trunk for storage"
+    ]
   },
   "infrastructure": {
     "wifi": {
       "enabled": true,
-      "coverage": "Full campus including all academic blocks and hostels",
-      "note": "Speed varies based on network traffic"
+      "coverage": "Full campus including all academic blocks and hostels"
     },
     "auditoriums": [
       {
@@ -479,8 +574,7 @@
       ]
     },
     "canteen": {
-      "available": true,
-      "description": "On-campus cafeteria providing snacks and meals for students and staff"
+      "available": true
     },
     "sports": {
       "outdoor": [
@@ -513,20 +607,15 @@
       "Solar Power",
       "24x7 CCTV Security"
     ],
-    "campus_size": {
-      "en": "BCREC campus is approximately 17 acres with multi-storied buildings for each department.",
-      "hi": "बीसीआरईसी कैंपस लगभग 17 एकड़ में फैला है जिसमें प्रत्येक विभाग के लिए बहुमंजिला भवन हैं।",
-      "bn": "বিসিআরইসি ক্যাম্পাস প্রায় ১৭ একর জুড়ে বিস্তৃত যেখানে প্রতিটি বিভাগের জন্য বহুতল ভবন রয়েছে।"
+    "transportation": {
+      "en": "Students typically commute by private or public means. Dedicated college transport is not detailed on the official site.",
+      "hi": "छात्र आमतौर पर निजी या सार्वजनिक साधनों से आते हैं। समर्पित कॉलेज परिवहन का आधिकारिक साइट पर विवरण नहीं है।",
+      "bn": "শিক্ষার্থীরা সাধারণত ব্যক্তিগত বা সরকারি মাধ্যম ব্যবহার করে আসে। উত্সর্গীকৃত কলেজ পরিবহন অফিসিয়াল সাইটে বিস্তারিত নেই।"
     },
     "labs_detail": {
       "en": "State-of-the-art laboratories for all disciplines including departmental and central labs.",
       "hi": "सभी विषयों के लिए अत्याधुनिक प्रयोगशालाएं जिनमें विभागीय और केंद्रीय प्रयोगशालाएं शामिल हैं।",
       "bn": "সব বিষয়ের জন্য অত্যাধুনিক ল্যাবরেটরি যা বিভাগীয় এবং কেন্দ্রীয় ল্যাব অন্তর্ভুক্ত।"
-    },
-    "transportation": {
-      "en": "Students typically commute by private or public means. Dedicated college transport is not detailed on the official site.",
-      "hi": "छात्र आमतौर पर निजी या सार्वजनिक साधनों से आते हैं। समर्पित कॉलेज परिवहन का आधिकारिक साइट पर विवरण नहीं है।",
-      "bn": "শিক্ষার্থীরা সাধারণত ব্যক্তিগত বা সরকারি মাধ্যম ব্যবহার করে আসে। উত্সর্গীকৃত কলেজ পরিবহন অফিসিয়াল সাইটে বিস্তারিত নেই।"
     }
   },
   "student_life": {
@@ -557,10 +646,6 @@
       {
         "name": "National Youth Day",
         "type": "Annual celebration"
-      },
-      {
-        "name": "International Kolkata Book Fair",
-        "type": "Annual participation"
       }
     ],
     "clubs": [
@@ -573,11 +658,230 @@
       "IEEE Student Branch",
       "IIC-BCREC (Institution's Innovation Council)"
     ],
-    "description": "Vibrant campus life with various clubs, tech fests, cultural events, and celebrations",
     "gate_forum": {
       "en": "BCREC has a dedicated GATE Forum to prepare students for competitive exams like GATE.",
       "hi": "बीसीआरईसी में GATE जैसी प्रतियोगी परीक्षाओं की तैयारी के लिए समर्पित GATE फोरम है।",
       "bn": "বিসিআরইসি তে GATE এর মতো প্রতিযোগিতামূলক পরীক্ষার প্রস্তুতির জন্য একটি GATE ফোরাম রয়েছে।"
+    },
+    "description": "Vibrant campus life with various clubs, tech fests, cultural events, and celebrations"
+  },
+  "scholarships": {
+    "eligibility": {
+      "merit": "Based on WBJEE/JEE Main rank",
+      "means": "Annual family income below Rs. 2.5 - 6 Lakhs (varies by scheme)"
+    },
+    "schemes": {
+      "tfw": {
+        "name": "Tuition Fee Waiver",
+        "seats": "5% of total intake via WBJEE counseling",
+        "benefit": "Full tuition fee waiver"
+      },
+      "svmcm": {
+        "name": "Swami Vivekananda Merit-cum-Means Scholarship",
+        "amount": "Rs. 60,000/year",
+        "eligible": "West Bengal residents"
+      },
+      "kanyashree": {
+        "name": "Kanyashree K3",
+        "eligible": "Female students pursuing specific UG levels"
+      },
+      "oasis_aikyashree": {
+        "name": "OASIS/Aikyashree",
+        "eligible": "SC/ST/OBC and Minority students"
+      }
+    }
+  },
+  "placements": {
+    "overall_rate_2025": "91%",
+    "cse_rate_2025": "93.6%",
+    "rate_2023": "86%",
+    "rate_2024": "78%",
+    "highest_package": {
+      "amount": 7.0,
+      "company": "TCS, Wipro, Capgemini, and others",
+      "year": 2025
+    },
+    "median_package": "Rs. 4.25 LPA",
+    "average_package": "Rs. 3.78 LPA",
+    "companies_visited_2025": 81,
+    "students_placed_2025": 244,
+    "top_recruiters": [
+      "TCS",
+      "Infosys",
+      "Wipro",
+      "HCL",
+      "Capgemini",
+      "L&T Infotech",
+      "NHAI",
+      "Federal Bank",
+      "Tata Power",
+      "Accenture",
+      "Tech Mahindra",
+      "IBM",
+      "Cognizant",
+      "Godrej",
+      "Genpact"
+    ],
+    "placement_partners": [
+      "TCS",
+      "Infosys",
+      "Wipro",
+      "HCL",
+      "Capgemini",
+      "L&T Infotech",
+      "NHAI",
+      "Federal Bank",
+      "Tata Power",
+      "MEIL",
+      "Ultratech Cements",
+      "Sobha Developers"
+    ],
+    "internship": {
+      "available": true,
+      "top_partners": [
+        "TCS",
+        "Wipro",
+        "Cognizant",
+        "SAIL",
+        "Tata Power",
+        "NHAI"
+      ]
+    },
+    "training_cell": {
+      "name": "Training & Placement (T&P) Cell",
+      "programs": [
+        "aptitude",
+        "technical",
+        "coding",
+        "soft_skills",
+        "mock_interviews",
+        "resume_building"
+      ],
+      "starts_from": "3rd year onwards"
+    },
+    "contacts": {
+      "head_cro": "Mr. Atanu Maity",
+      "manager": "Mr. Deepraj Mondal",
+      "campus_incharge": "Prof. Prabal Kumar Sahu"
+    },
+    "alumni_companies": [
+      "IBM",
+      "TCS",
+      "Wipro",
+      "Accenture",
+      "Capgemini",
+      "Tech Mahindra",
+      "Indian Navy"
+    ],
+    "highest_salary_branch": "CSE (Computer Science) - traditionally secures highest volume and packages"
+  },
+  "hostel": {
+    "available": true,
+    "compulsory": false,
+    "total_hostels": 5,
+    "boys_hostels": 3,
+    "girls_hostels": 2,
+    "total_capacity": 1500,
+    "room_types": [
+      {
+        "type": "Single Bed",
+        "rent_per_sem": 30000,
+        "availability": "Limited (need-based)"
+      },
+      {
+        "type": "Double/Triple Bed",
+        "rent_per_sem": 10000,
+        "availability": "Standard"
+      },
+      {
+        "type": "4-Bed",
+        "rent_per_sem": 10000,
+        "availability": "Maximum"
+      }
+    ],
+    "caution_money": 2000,
+    "mess": {
+      "monthly_charge": 5000,
+      "months_per_year": 11,
+      "meals_per_day": 4,
+      "veg": true,
+      "non_veg": "Available 3-4 days/week (Chicken/Fish/Egg)",
+      "veg_options": "Paneer and Soybean available daily",
+      "timings": {
+        "breakfast": "07:30 - 09:00 AM",
+        "lunch": "12:30 - 02:00 PM",
+        "snacks": "Evening",
+        "dinner": "07:30 - 09:30 PM"
+      }
+    },
+    "facilities": [
+      "24-hour WiFi",
+      "Bed/Table/Chair/Wardrobe provided",
+      "Laundry service (paid)"
+    ],
+    "rules": {
+      "boys_curfew": "08:30 PM (winter: 07:30 PM)",
+      "girls_curfew": "06:30 PM (winter: 06:00 PM)",
+      "guests": "Day guests allowed with permission, no overnight stays",
+      "entry_exit": "Students must sign in/out when leaving campus after curfew",
+      "maintenance": "Report room issues to warden - addressed within 24-48 hours",
+      "visitors": "Parents can visit during designated hours on weekends"
+    },
+    "contacts": {
+      "helpline": "0343-2501353",
+      "emergency": "+91-6297128554",
+      "womens_safety": "9851006415"
+    }
+  },
+  "anti_ragging": {
+    "policy": "Zero Tolerance",
+    "measures": [
+      "Dedicated Anti-Ragging Committee",
+      "Active Anti-Ragging Squad that conducts surprise raids",
+      "Legal affidavit signed by both students and parents at admission",
+      "Separate fresher hostels for safety",
+      "Regular monitoring and surprise checks"
+    ],
+    "reporting": "Contact college helpline 0343-2501353 or log on to anti-ragging portal",
+    "safety": "Women's Safety Helpline: 9851006415 (24x7)"
+  },
+  "academics": {
+    "faculty": {
+      "total": "150+",
+      "description": "Core branches have experienced professors with PhDs. Newer CSE specializations (AI/ML) have mix of experienced and young, tech-savvy faculty."
+    },
+    "student_teacher_ratio": "15:1 to 20:1",
+    "teaching_methodology": "Combination of lectures, practicals, projects, and industry-oriented learning.",
+    "exam_pattern": {
+      "structure": "Continuous Assessment (CA) + Mid-semesters + Semester-end theory/practical exams",
+      "ca_components": [
+        "Class tests",
+        "Assignments",
+        "Presentations",
+        "Viva voce"
+      ]
+    },
+    "syllabus": {
+      "status": "Regularly updated",
+      "authority": "MAKAUT (Autonomous Institute curriculum from 2024-25 batch)"
+    },
+    "practicals": {
+      "conducted": "Strictly as per academic calendar",
+      "labs": "Well-equipped labs including AICTE IDEA Lab",
+      "special_labs": "Khorana Research Laboratory with UV-Vis spectrophotometers and digital pH meters"
+    },
+    "teaching_quality": {
+      "approach": "Student-centric with focus on practical applications",
+      "methods": [
+        "Interactive classroom teaching",
+        "Lab sessions with hands-on practice",
+        "Industry projects and case studies",
+        "Guest lectures from industry experts",
+        "Regular assessments and feedback"
+      ],
+      "evaluation": "Continuous evaluation through assignments, presentations, and exams",
+      "support": "Mentor system for each student batch, doubt-clearing sessions, and extra classes for weak students",
+      "faculty_development": "Regular faculty training programs and workshops to stay updated with industry trends"
     }
   },
   "departments": {
@@ -662,357 +966,17 @@
       }
     }
   },
-  "fees_summary": {
-    "btech_cse_it_ece": {
-      "total": "Rs. 6,04,700",
-      "admission": "Rs. 98,225",
-      "per_semester": "Rs. 72,925"
-    },
-    "btech_ee_aiml_ds_cy_csd": {
-      "total": "Rs. 5,54,100",
-      "admission": "Rs. 91,900",
-      "per_semester": "Rs. 66,100"
-    },
-    "btech_me_ce": {
-      "total": "Rs. 4,44,100",
-      "admission": "Rs. 78,150",
-      "per_semester": "Rs. 40,800"
-    },
-    "mba": {
-      "total": "Rs. 4,19,200",
-      "admission": "Rs. 1,21,400"
-    },
-    "mca": {
-      "total": "Rs. 2,17,400",
-      "admission": "Rs. 67,200"
-    },
-    "mtech": {
-      "total": "Rs. 1,26,000 to 2,06,000",
-      "admission": "Rs. 41,200"
-    },
-    "payment_modes": [
-      "Demand Draft",
-      "Debit Card",
-      "Credit Card"
-    ],
-    "not_accepted": [
-      "Cheque",
-      "Cash"
-    ],
-    "semester_wise_cse_it_ece": {
-      "first": 98225,
-      "description_first": "Includes admission fee, caution deposit, library fee, and tuition",
-      "per_semester": 72925,
-      "eighth": 73925,
-      "total_btech": 609700,
-      "total_description": "Rs. 6,09,700 for 4-year B.Tech CSE/IT/ECE"
-    },
-    "semester_wise_ee_group": {
-      "first": 91900,
-      "per_semester": 66100,
-      "eighth": 67100,
-      "total_btech": 554100,
-      "total_description": "Rs. 5,54,100 for 4-year B.Tech EE/AIML/DS/CS/CSD"
-    },
-    "semester_wise_me_ce": {
-      "first": 78150,
-      "per_semester": 40800,
-      "eighth": 41800,
-      "total_btech": 444100,
-      "total_description": "Rs. 4,44,100 for 4-year B.Tech ME/CE"
-    },
-    "hidden_charges": "No hidden charges. All fees are transparently listed in the official fee brochure.",
-    "refund_policy": {
-      "guidelines": "As per AICTE/UGC guidelines",
-      "within_timeline": "Full refund minus Rs. 1,000 processing fee, prospectus fee, and dress kit charges (if already made)",
-      "post_timeline_with_replacement": "Refund minus processing fee and proportionate tuition/hostel charges if replacement student fills the seat",
-      "post_timeline_no_replacement": "Only caution deposit is refundable; all other academic and admission fees are forfeited"
-    },
-    "installments": "Semester-wise payment. Contact college for hardship cases."
-  },
-  "admission_documents": {
-    "entrance": [
-      "WBJEE/JEE-Main Rank Card",
-      "WBJEE/JEE-Main Admit Card"
-    ],
-    "academic": [
-      "Class 10 Marksheet and Pass Certificate",
-      "Class 12 Marksheet and Pass Certificate"
-    ],
-    "counseling": [
-      "Allotment Letter from WBJEEB"
-    ],
-    "character": [
-      "Character Certificate from last attended institution"
-    ],
-    "photographs": [
-      "6 copies of color stamp-size photographs"
-    ],
-    "certificates": [
-      "Domicile Certificate (for West Bengal students)",
-      "Aadhar Card",
-      "Caste Certificate (if applicable)"
-    ],
-    "other": [
-      "Migration Certificate (if applicable)",
-      "Aadhar Card",
-      "6-8 Passport-size Photographs"
-    ],
-    "scholarship": [
-      "Income Certificate (for TFW candidates)"
-    ],
-    "hostel_items": [
-      "Big and small lock",
-      "Bedding with mosquito net",
-      "Steel glass",
-      "Bucket",
-      "Mug",
-      "Torch",
-      "Big trunk for storage"
-    ]
-  },
-  "scholarships": {
-    "eligibility": {
-      "merit": "Based on WBJEE/JEE Main rank",
-      "means": "Annual family income below Rs. 2.5 - 6 Lakhs (varies by scheme)"
-    },
-    "schemes": {
-      "tfw": {
-        "name": "Tuition Fee Waiver",
-        "seats": "5% of total intake via WBJEE counseling",
-        "benefit": "Full tuition fee waiver",
-        "eligibility": "Economically backward students"
-      },
-      "svmcm": {
-        "name": "Swami Vivekananda Merit-cum-Means Scholarship",
-        "amount": "Rs. 60,000/year",
-        "eligible": "West Bengal residents"
-      },
-      "kanyashree": {
-        "name": "Kanyashree K3",
-        "eligible": "Female students pursuing specific UG levels"
-      },
-      "oasis_aikyashree": {
-        "name": "OASIS/Aikyashree",
-        "eligible": "SC/ST/OBC and Minority students"
-      }
-    }
-  },
-  "anti_ragging": {
-    "policy": "Zero Tolerance",
-    "measures": [
-      "Dedicated Anti-Ragging Committee",
-      "Active Anti-Ragging Squad that conducts surprise raids",
-      "Legal affidavit signed by both students and parents at admission",
-      "Separate fresher hostels for safety",
-      "Regular monitoring and surprise checks"
-    ],
-    "reporting": "Contact college helpline 0343-2501353 or log on to anti-ragging portal",
-    "safety": "Women's Safety Helpline: 9851006415 (24x7)"
-  },
-  "placements": {
-    "overall_rate_2025": "91%",
-    "cse_rate_2025": "93.6%",
-    "highest_package": {
-      "amount": 7.0,
-      "company": "TCS, Wipro, Capgemini, and others",
-      "year": 2025
-    },
-    "median_package": "Rs. 4.25 LPA",
-    "average_package": "Rs. 3.78 LPA",
-    "companies_visited_2025": 81,
-    "students_placed_2025": 244,
-    "highest_salary_branch": "CSE (Computer Science) - traditionally secures highest volume and packages",
-    "top_recruiters": [
-      "TCS",
-      "Infosys",
-      "Wipro",
-      "HCL",
-      "Capgemini",
-      "L&T Infotech",
-      "NHAI",
-      "Federal Bank",
-      "Tata Power",
-      "Accenture",
-      "Tech Mahindra",
-      "IBM",
-      "Cognizant",
-      "Godrej",
-      "Genpact"
-    ],
-    "placement_partners": [
-      "TCS",
-      "Infosys",
-      "Wipro",
-      "HCL",
-      "Capgemini",
-      "L&T Infotech",
-      "NHAI",
-      "Federal Bank",
-      "Tata Power",
-      "MEIL",
-      "Ultratech Cements",
-      "Sobha Developers"
-    ],
-    "internship": {
-      "available": true,
-      "description": "Industrial training and internship opportunities provided through industry tie-ups with TCS, Wipro, Cognizant, SAIL, Tata Power and more",
-      "top_partners": [
-        "TCS",
-        "Wipro",
-        "Cognizant",
-        "SAIL",
-        "Tata Power",
-        "NHAI"
-      ]
-    },
-    "training_cell": {
-      "name": "Training & Placement (T&P) Cell",
-      "programs": {
-        "aptitude": "Numerical and Analytical aptitude training",
-        "technical": "Technical skills development",
-        "coding": "Coding practice and competition",
-        "soft_skills": "Communication and interpersonal skills",
-        "mock_interviews": "Practice interviews with feedback",
-        "resume_building": "Resume preparation guidance"
-      },
-      "trainers": "In-house team and external mock tests",
-      "starts_from": "3rd year onwards"
-    },
-    "contacts": {
-      "head_cro": "Mr. Atanu Maity",
-      "manager": "Mr. Deepraj Mondal",
-      "campus_incharge": "Prof. Prabal Kumar Sahu"
-    },
-    "rate_2023": "86%",
-    "rate_2024": "78%",
-    "alumni_companies": [
-      "IBM",
-      "TCS",
-      "Wipro",
-      "Accenture",
-      "Capgemini",
-      "Tech Mahindra",
-      "Indian Navy"
-    ]
-  },
-  "academics": {
-    "faculty": {
-      "total": "150+",
-      "description": "Core branches have experienced professors with PhDs. Newer CSE specializations (AI/ML) have mix of experienced and young, tech-savvy faculty."
-    },
-    "student_teacher_ratio": "15:1 to 20:1",
-    "teaching_methodology": "Combination of lectures, practicals, projects, and industry-oriented learning. Focus on conceptual understanding and hands-on experience.",
-    "teaching_quality": {
-      "approach": "Student-centric with focus on practical applications",
-      "methods": [
-        "Interactive classroom teaching",
-        "Lab sessions with hands-on practice",
-        "Industry projects and case studies",
-        "Guest lectures from industry experts",
-        "Regular assessments and feedback"
-      ],
-      "evaluation": "Continuous evaluation through assignments, presentations, and exams",
-      "support": "Mentor system for each student batch, doubt-clearing sessions, and extra classes for weak students",
-      "faculty_development": "Regular faculty training programs and workshops to stay updated with industry trends"
-    },
-    "exam_pattern": {
-      "structure": "Continuous Assessment (CA) + Mid-semesters + Semester-end theory/practical exams",
-      "ca_components": [
-        "Class tests",
-        "Assignments",
-        "Presentations",
-        "Viva voce"
-      ]
-    },
-    "syllabus": {
-      "status": "Regularly updated",
-      "authority": "MAKAUT (Autonomous Institute curriculum from 2024-25 batch)",
-      "note": "Aligned with industry needs and current technological trends"
-    },
-    "practicals": {
-      "conducted": "Strictly as per academic calendar",
-      "labs": "Well-equipped labs including AICTE IDEA Lab",
-      "special_labs": "Khorana Research Laboratory with UV-Vis spectrophotometers and digital pH meters",
-      "quality": "Hands-on practical experience with proper supervision"
-    },
-    "easiest_branch": {
-      "note": "This is subjective and varies by student capability and interests",
-      "perceived_easier": "IT, CSE (more flexible workload, programming-focused)",
-      "perceived_harder": "Mechanical, Civil (heavier core engineering subjects, more practicals)"
-    }
-  },
   "branch_change": {
     "allowed": true,
-    "timing": "After 1st Year (after 2nd Semester results are declared)",
+    "timing": "After 1st Year",
     "criteria": "Merit-based (GPA/CGPA) + Seat vacancy in target branch",
     "authority": "Governed by MAKAUT/College regulations",
     "process": "Apply through academic section after declaring 1st year results",
     "note": "Subject to availability of seats and college policy"
   },
-  "hostel": {
-    "available": true,
-    "compulsory": false,
-    "optional_note": "Many students choose nearby PGs in Fuljhore area to save costs",
-    "total_hostels": 5,
-    "boys_hostels": 3,
-    "girls_hostels": 2,
-    "total_capacity": 1500,
-    "room_types": [
-      {
-        "type": "Single Bed",
-        "rent_per_sem": 30000,
-        "availability": "Limited (need-based)"
-      },
-      {
-        "type": "Double/Triple Bed",
-        "rent_per_sem": 10000,
-        "availability": "Standard"
-      },
-      {
-        "type": "4-Bed",
-        "rent_per_sem": 10000,
-        "availability": "Maximum"
-      }
-    ],
-    "caution_money": 2000,
-    "mess": {
-      "monthly_charge": 5000,
-      "months_per_year": 11,
-      "meals_per_day": 4,
-      "veg": true,
-      "non_veg": "Available 3-4 days/week (Chicken/Fish/Egg)",
-      "veg_options": "Paneer and Soybean available daily",
-      "quality": "Average to decent (subjective - varies by student perception)",
-      "timings": {
-        "breakfast": "07:30 - 09:00 AM",
-        "lunch": "12:30 - 02:00 PM",
-        "snacks": "Evening",
-        "dinner": "07:30 - 09:30 PM"
-      }
-    },
-    "facilities": [
-      "24-hour WiFi",
-      "Bed/Table/Chair/Wardrobe provided",
-      "Laundry service (paid)"
-    ],
-    "rules": {
-      "boys_curfew": "08:30 PM (winter: 07:30 PM)",
-      "girls_curfew": "06:30 PM (winter: 06:00 PM)",
-      "guests": "Day guests allowed with permission, no overnight stays",
-      "entry_exit": "Students must sign in/out when leaving campus after curfew",
-      "maintenance": "Report room issues to warden - addressed within 24-48 hours",
-      "visitors": "Parents can visit during designated hours on weekends"
-    },
-    "contacts": {
-      "helpline": "0343-2501353",
-      "emergency": "+91-6297128554",
-      "womens_safety": "9851006415"
-    }
-  },
   "quick_answers": {
-    "btech_fee": "B.Tech total fees range from Rs. 4,44,100 to Rs. 6,04,700 depending on branch. CSE/IT/ECE: Rs. 6,04,700. EE/AIML/DS/CS/CSD: Rs. 5,54,100. ME/CE: Rs. 4,44,100.",
-    "placement_rate": "BCREC has 91% overall placement rate. CSE placement rate is 93.6%. Highest package: Rs. 7 LPA. Median package: Rs. 4.25 LPA. Top recruiters: TCS, Infosys, Wipro, Capgemini, HCL.",
+    "btech_fee": "B.Tech total fees range from Rs. 444100 to Rs. 604700 depending on branch. CSE/IT/ECE: Rs. 604700. EE/AIML/DS/CS/CSD: Rs. 554100. ME/CE: Rs. 444100.",
+    "placement_rate": "BCREC has 91% overall placement rate. CSE placement rate is 93.6%. Highest package: Rs. 7.0 LPA. Median package: Rs. 4.25 LPA.",
     "hostel_fee": "Hostel is optional. Seat rent: Rs. 10,000 per semester. Mess charges: Rs. 5,500 per month. Caution deposit: Rs. 10,000 (without hostel) or Rs. 12,000 (with hostel), refundable.",
     "nba_accredited": "5 branches are NBA accredited: CSE, IT, ECE, EE, and ME.",
     "autonomous": "Yes, BCREC is an Autonomous Institute from 2024-25 batch onwards.",
@@ -1041,45 +1005,44 @@
       ],
       "cse_it_ece": {
         "semantic_anchor": "fee_structure CSE_IT_ECE tuition admission_cost",
-        "en": "B.Tech CSE, IT, and ECE total fee is six lakh four thousand seven hundred rupees. Admission fee is ninety-eight thousand two hundred and twenty-five rupees.",
-        "hi": "बी.टेक सीएसई, आईटी, और ईसीई की कुल फीस छह लाख चार हज़ार सात सौ रुपये है। एडमिशन फीस अट्ठानवे हज़ार दो सौ पच्चीस रुपये है।",
-        "bn": "বি.টেক সিএসই, আইটি, এবং ইসিই এর মোট ফি ছয় লাখ চার হাজার সাতশত টাকা। ভর্তি ফি আটানব্বই হাজার দুইশত পঁচিশ টাকা।"
+        "en": "B.Tech CSE, IT, and ECE total fee is six lakh four thousand seven hundred rupees. Admission fee is ninety eight thousand two hundred twenty five rupees.",
+        "hi": "बी.टेक सीएसई, आईटी, और ईसीई की कुल फीस six lakh four thousand seven hundred रुपये है। एडमिशन फीस ninety eight thousand two hundred twenty five रुपये है।",
+        "bn": "বি.টেক সিএসই, আইটি, এবং ইসিই এর মোট ফি six lakh four thousand seven hundred টাকা। ভর্তি ফি ninety eight thousand two hundred twenty five টাকা।"
       },
       "ee_aiml_ds_cy_csd": {
         "semantic_anchor": "fee_structure EE_AIML_DS_Cyber_CSD tuition admission_cost",
-        "en": "B.Tech EE, AI-ML, Data Science, Cyber Security, and CS Design total fee is five lakh fifty-four thousand one hundred rupees. Admission fee is ninety-one thousand nine hundred rupees.",
-        "hi": "बी.टेक ईई, एआई-एमएल, डाटा साइंस, साइबर सिक्योरिटी, और सीएस डिज़ाइन की कुल फीस पाँच लाख चौवन हज़ार एक सौ रुपये है। एडमिशन फीस इक्यानवे हज़ार नौ सौ रुपये है।",
-        "bn": "বি.টেক ইই, এআই-এমএল, ডাটা সায়েন্স, সাইবার সিকিউরিটি, এবং সিএস ডিজাইন এর মোট ফি পাঁচ লাখ চুয়ান্ন হাজার একশত টাকা। ভর্তি ফি একানব্বই হাজার নয়শত টাকা।"
+        "en": "B.Tech EE, AI-ML, Data Science, Cyber Security, and CS Design total fee is five lakh fifty four thousand one hundred rupees. Admission fee is ninety one thousand nine hundred rupees.",
+        "hi": "बी.टेक ईई, एआई-एमएल, डाटा साइंस, साइबर सिक्योरिटी, और सीएस डिज़ाइन की कुल फीस five lakh fifty four thousand one hundred रुपये है। एडमिशन फीस ninety one thousand nine hundred रुपये है।",
+        "bn": "বি.টেক ইই, এআই-এমএল, ডাটা সায়েন্স, সাইবার সিকিউরিটি, এবং সিএস ডিজাইন এর মোট ফি five lakh fifty four thousand one hundred টাকা। ভর্তি ফি ninety one thousand nine hundred টাকা।"
       },
       "me_ce": {
         "semantic_anchor": "fee_structure ME_CE tuition admission_cost",
-        "en": "B.Tech Mechanical and Civil total fee is four lakh forty-four thousand one hundred rupees. Admission fee is seventy-eight thousand one hundred and fifty rupees.",
-        "hi": "बी.टेक मैकेनिकल और सिविल की कुल फीस चार लाख चौंतालीस हज़ार एक सौ रुपये है। एडमिशन फीस अठहत्तर हज़ार एक सौ पचास रुपये है।",
-        "bn": "বি.টেক মেকানিক্যাল এবং সিভিল এর মোট ফি চার লাখ চুয়াল্লিশ হাজার একশত টাকা। ভর্তি ফি আটাত্তর হাজার একশত পঞ্চাশ টাকা।"
+        "en": "B.Tech Mechanical and Civil total fee is four lakh forty four thousand one hundred rupees. Admission fee is seventy eight thousand one hundred fifty rupees.",
+        "hi": "बी.टेक मैकेनिकल और सिविल की कुल फीस four lakh forty four thousand one hundred रुपये है। एडमिशन फीस seventy eight thousand one hundred fifty रुपये है।",
+        "bn": "বি.টেক মেকানিক্যাল এবং সিভিল এর মোট ফি four lakh forty four thousand one hundred টাকা। ভর্তি ফি seventy eight thousand one hundred fifty টাকা।"
       },
       "mba": {
         "semantic_anchor": "fee_structure MBA tuition admission_cost",
-        "en": "MBA total fee is four lakh nineteen thousand two hundred rupees. Admission fee is one lakh twenty-one thousand four hundred rupees.",
-        "hi": "एमबीए की कुल फीस चार लाख उन्नीस हज़ार दो सौ रुपये है। एडमिशन फीस एक लाख इक्कीस हज़ार चार सौ रुपये है।",
-        "bn": "এমবিএ এর মোট ফি চার লাখ উনিশ হাজার দুইশত টাকা। ভর্তি ফি এক লাখ একুশ হাজার চারশত টাকা।"
+        "en": "MBA total fee is four lakh nineteen thousand two hundred rupees. Admission fee is one lakh twenty one thousand four hundred rupees.",
+        "hi": "एमबीए की कुल फीस four lakh nineteen thousand two hundred रुपये है। एडमिशन फीस one lakh twenty one thousand four hundred रुपये है।",
+        "bn": "এমবিএ এর মোট ফি four lakh nineteen thousand two hundred টাকা। ভর্তি ফি one lakh twenty one thousand four hundred টাকা।"
       },
       "mca": {
         "semantic_anchor": "fee_structure MCA tuition admission_cost",
-        "en": "MCA total fee is two lakh seventeen thousand four hundred rupees. Admission fee is sixty-seven thousand two hundred rupees.",
-        "hi": "एमसीए की कुल फीस दो लाख सत्रह हज़ार चार सौ रुपये है। एडमिशन फीस सड़सठ हज़ार दो सौ रुपये है।",
-        "bn": "এমসিএ এর মোট ফি দুই লাখ সতেরো হাজার চারশত টাকা। ভর্তি ফি সাতষট্টি হাজার দুইশত টাকা।"
+        "en": "MCA total fee is two lakh eight thousand eight hundred rupees. Admission fee is sixty seven thousand two hundred rupees.",
+        "hi": "एमसीए की कुल फीस two lakh eight thousand eight hundred रुपये है। एडमिशन फीस sixty seven thousand two hundred रुपये है।",
+        "bn": "এমসিএ এর মোট ফি two lakh eight thousand eight hundred টাকা। ভর্তি ফি sixty seven thousand two hundred টাকা।"
       }
     },
     "principal": {
-      "semantic_anchor": "administrative_head college_administration top_position",
+      "semantic_anchor": "principal_office chief_executive top_management",
       "keywords": [
         "principal",
         "प्रिंसिपल",
         "প্রিন্সিপাল",
         "প্রধান",
         "head of college",
-        "অধ্যক্ষ",
-        "প্রধান শিক্ষক"
+        "অধ্যক্ষ"
       ],
       "answers": {
         "en": "The principal of BCREC is Dr. Sanjay S. Pawar.",
@@ -1088,22 +1051,19 @@
       }
     },
     "vice_principal": {
-      "semantic_anchor": "administrative_head college_administration senior_position",
+      "semantic_anchor": "administrative_head college_vice_principal deputy_leadership",
       "keywords": [
         "vice principal",
         "vice-principal",
         "up-principal",
         "deputy principal",
-        "viceप्रिंसिपल",
-        "viceপ্রিন্সিপাল",
-        "उप-प्रिंसिपल",
-        "उप प्रिंसिपल",
-        "उपप्रिंसिपल"
+        "উপ-প্রিন্সিপাল",
+        "उप-प्रिंसिपल"
       ],
       "answers": {
         "en": "The Vice Principal of BCREC is Prof. (Dr.) K. M. Hossain.",
-        "hi": "बीसीआरईसी के उप-प्रिंसिपल (वाइस प्रिंसिपल) प्रो. (डॉ.) के. एम. होसैन हैं।",
-        "bn": "বিসিআরইসি এর ভাইস প্রিন্সিপাল (উপ-প্রধান) হলেন প্রো. (ড.) কে. এম. হোসেন।"
+        "hi": "बीसीआरईसी के उप-प्रिंसिपल प्रो. (डॉ.) के. एम. होसैन हैं।",
+        "bn": "বিসিআরইসি এর উপ-প্রিন্সিপাল হলেন প্রো. (ড.) কে. এম. হোসেন।"
       }
     },
     "hod": {
@@ -1111,198 +1071,141 @@
       "keywords": [
         "hod",
         "head of department",
-        "head of the department",
         "विभाग अध्यक्ष",
         "বিভাগীয় প্রধান",
-        "विभाग प्रमुख",
-        "হোড",
-        "एचओडी",
-        "एच ओ डी",
-        "এইচওডি"
+        "হোড"
       ],
       "sub_answers": {
         "cse": {
-          "semantic_anchor": "department_head CSE Computer_Science_Engineering faculty_leadership",
+          "semantic_anchor": "department_head CSE faculty_leadership",
           "keywords": [
-            "cse",
-            "computer science",
-            "computer sc",
-            "সিএসই",
-            "सीएसई"
+            "cse"
           ],
           "answers": {
             "en": "The Head of the CSE department is Dr. Pabitra Kumar Dey.",
-            "hi": "सीएसई विभाग के अध्यक्ष डॉ. पबित्र कुमार डे हैं।",
-            "bn": "সিএসই বিভাগের প্রধান হলেন ড. পবিত্র কুমার দে।"
+            "hi": "CSE विभाग के अध्यक्ष Dr. Pabitra Kumar Dey हैं।",
+            "bn": "CSE বিভাগের প্রধান হলেন Dr. Pabitra Kumar Dey।"
           }
         },
         "it": {
-          "semantic_anchor": "department_head IT Information_Technology faculty_leadership",
+          "semantic_anchor": "department_head IT faculty_leadership",
           "keywords": [
-            "it",
-            "information tech",
-            "information technology",
-            "আইটি",
-            "आईटी"
+            "it"
           ],
           "answers": {
-            "en": "The Head of the Information Technology department is Dr. Dinesh Kumar Pradhan.",
-            "hi": "इंफॉर्मेशन टेक्नोलॉजी विभाग के अध्यक्ष डॉ. दिनेश कुमार प्रधान हैं।",
-            "bn": "ইনফরমেশন টেকনোলজি বিভাগের প্রধান হলেন ড. দীনেশ কুমার প্রধান।"
+            "en": "The Head of the IT department is Dr. Dinesh Kumar Pradhan.",
+            "hi": "IT विभाग के अध्यक्ष Dr. Dinesh Kumar Pradhan हैं।",
+            "bn": "IT বিভাগের প্রধান হলেন Dr. Dinesh Kumar Pradhan।"
           }
         },
         "ece": {
-          "semantic_anchor": "department_head ECE Electronics_Communication_Engineering faculty_leadership",
+          "semantic_anchor": "department_head ECE faculty_leadership",
           "keywords": [
-            "ece",
-            "electronics",
-            "ইসিই",
-            "ईसीई"
+            "ece"
           ],
           "answers": {
             "en": "The Head of the ECE department is Dr. Mrinmoy Chakraborty.",
-            "hi": "ईसीई विभाग के अध्यक्ष डॉ. मृण्मय चक्रवर्ती हैं।",
-            "bn": "ইসিই বিভাগের প্রধান হলেন ড. মৃন্ময় চক্রবর্তী।"
+            "hi": "ECE विभाग के अध्यक्ष Dr. Mrinmoy Chakraborty हैं।",
+            "bn": "ECE বিভাগের প্রধান হলেন Dr. Mrinmoy Chakraborty।"
           }
         },
         "ee": {
-          "semantic_anchor": "department_head EE Electrical_Engineering faculty_leadership",
+          "semantic_anchor": "department_head EE faculty_leadership",
           "keywords": [
-            "ee",
-            "electrical",
-            "ইই",
-            "ईई"
+            "ee"
           ],
           "answers": {
-            "en": "The Head of the Electrical Engineering department is Dr. Shibendu Mahata.",
-            "hi": "इलेक्ट्रिकल इंजीनियरिंग विभाग के अध्यक्ष डॉ. शिबेंदु महता हैं।",
-            "bn": "ইলেকট্রিক্যাল ইঞ্জিনিয়ারিং বিভাগের প্রধান হলেন ড. শিবেন্দু মাহাতো।"
+            "en": "The Head of the EE department is Dr. Shibendu Mahata.",
+            "hi": "EE विभाग के अध्यक्ष Dr. Shibendu Mahata हैं।",
+            "bn": "EE বিভাগের প্রধান হলেন Dr. Shibendu Mahata।"
           }
         },
         "me": {
-          "semantic_anchor": "department_head ME Mechanical_Engineering faculty_leadership",
+          "semantic_anchor": "department_head ME faculty_leadership",
           "keywords": [
-            "mechanical",
-            "me",
-            "মেকানিকাল",
-            "मैकेनिकल"
+            "me"
           ],
           "answers": {
-            "en": "The Head of the Mechanical Engineering department is Dr. Chandan Chattoraj.",
-            "hi": "मैकेनिकल इंजीनियरिंग विभाग के अध्यक्ष डॉ. चंदन चट्टोराज हैं।",
-            "bn": "মেকানিক্যাল ইঞ্জিনিয়ারিং বিভাগের প্রধান হলেন ড. চন্দন চট্টরাজ।"
+            "en": "The Head of the ME department is Dr. Chandan Chattoraj.",
+            "hi": "ME विभाग के अध्यक्ष Dr. Chandan Chattoraj हैं।",
+            "bn": "ME বিভাগের প্রধান হলেন Dr. Chandan Chattoraj।"
           }
         },
         "ce": {
-          "semantic_anchor": "department_head CE Civil_Engineering faculty_leadership",
+          "semantic_anchor": "department_head CE faculty_leadership",
           "keywords": [
-            "civil",
-            "ce",
-            "সিভিল",
-            "सिविल"
+            "ce"
           ],
           "answers": {
-            "en": "The Head of the Civil Engineering department is Dr. Sanjay Sengupta.",
-            "hi": "सिविल इंजीनियरिंग विभाग के अध्यक्ष डॉ. संजय सेनगुप्ता हैं।",
-            "bn": "সিভিল ইঞ্জিনিয়ারিং বিভাগের প্রধান হলেন ড. সঞ্জয় সেনগুপ্ত।"
-          }
-        },
-        "aiml": {
-          "semantic_anchor": "department_head AIML AI_Machine_Learning faculty_leadership",
-          "keywords": [
-            "aiml",
-            "ai ml",
-            "ai-ml",
-            "aml",
-            "artificial",
-            "machine learning",
-            "এআই",
-            "এআইএমএল",
-            "আইএমএল",
-            "এ এম এল",
-            "এ আই এম এল",
-            "এআই",
-            "एआई",
-            "एएमएल",
-            "ए एम एल",
-            "ए आई एम एल"
-          ],
-          "answers": {
-            "en": "The Head of the Artificial Intelligence and Machine Learning department is Dr. Gour Sundar Mitra Thakur.",
-            "hi": "एआई एमएल विभाग के अध्यक्ष डॉ. गौर सुंदर मित्रा ठाकुर हैं।",
-            "bn": "এআই এমএল বিভাগের প্রধান হলেন ড. গৌর সুন্দর মিত্র ঠাকুর।"
-          }
-        },
-        "ds": {
-          "semantic_anchor": "department_head DS Data_Science faculty_leadership",
-          "keywords": [
-            "data science",
-            "ds",
-            "ডাটা সায়েন্স",
-            "डाटा साइंस"
-          ],
-          "answers": {
-            "en": "The Head of the Data Science department is Dr. Chandan Bandyopadhyay.",
-            "hi": "डाटा साइंस विभाग के अध्यक्ष डॉ. चंदन बंद्योपाध्याय हैं।",
-            "bn": "ডাটা সায়েন্স বিভাগের প্রধান হলেন ড. চন্দন বন্দ্যোপাধ্যায়।"
-          }
-        },
-        "cy": {
-          "semantic_anchor": "department_head CY Cyber_Security faculty_leadership",
-          "keywords": [
-            "cyber",
-            "cy",
-            "cyber security",
-            "সাইবার",
-            "साइबर"
-          ],
-          "answers": {
-            "en": "The Head of the Cyber Security department is Dr. Gour Sundar Mitra Thakur.",
-            "hi": "সাইবার সিকিউরিটি বিভাগের প্রধান হলেন ড. গৌর সুন্দর মিত্র ঠাকুর।",
-            "bn": "সাইবার সিকিউরিটি বিভাগের প্রধান হলেন ড. গৌর সুন্দর মিত্র ঠাকুর।"
+            "en": "The Head of the CE department is Dr. Sanjay Sengupta.",
+            "hi": "CE विभाग के अध्यक्ष Dr. Sanjay Sengupta हैं।",
+            "bn": "CE বিভাগের প্রধান হলেন Dr. Sanjay Sengupta।"
           }
         },
         "csd": {
-          "semantic_anchor": "department_head CSD Computer_Science_Design faculty_leadership",
+          "semantic_anchor": "department_head CSD faculty_leadership",
           "keywords": [
-            "design",
-            "csd",
-            "computer science design",
-            "सीएसडी",
-            "সিএসডি"
+            "csd"
           ],
           "answers": {
-            "en": "The Head of the Computer Science and Design department is Dr. Poulomi Mukherjee Tewari.",
-            "hi": "कंप्यूटर साइंस एंड डिज़ाइन विभाग के प्रमुख डॉ. पौलोमी मुखर्जी तिवारी हैं।",
-            "bn": "কম্পিউটার সায়েন্স অ্যান্ড ডিজাইন বিভাগের প্রধান হলেন ড. পৌলমী মুখার্জী তিওয়ারী।"
+            "en": "The Head of the CSD department is Dr. Poulomi Mukherjee Tewari.",
+            "hi": "CSD विभाग के अध्यक्ष Dr. Poulomi Mukherjee Tewari हैं।",
+            "bn": "CSD বিভাগের প্রধান হলেন Dr. Poulomi Mukherjee Tewari।"
+          }
+        },
+        "aiml": {
+          "semantic_anchor": "department_head AIML faculty_leadership",
+          "keywords": [
+            "aiml"
+          ],
+          "answers": {
+            "en": "The Head of the AIML department is Dr. Gour Sundar Mitra Thakur.",
+            "hi": "AIML विभाग के अध्यक्ष Dr. Gour Sundar Mitra Thakur हैं।",
+            "bn": "AIML বিভাগের প্রধান হলেন Dr. Gour Sundar Mitra Thakur।"
+          }
+        },
+        "ds": {
+          "semantic_anchor": "department_head DS faculty_leadership",
+          "keywords": [
+            "ds"
+          ],
+          "answers": {
+            "en": "The Head of the DS department is Dr. Chandan Bandyopadhyay.",
+            "hi": "DS विभाग के अध्यक्ष Dr. Chandan Bandyopadhyay हैं।",
+            "bn": "DS বিভাগের প্রধান হলেন Dr. Chandan Bandyopadhyay।"
+          }
+        },
+        "cy": {
+          "semantic_anchor": "department_head CY faculty_leadership",
+          "keywords": [
+            "cy"
+          ],
+          "answers": {
+            "en": "The Head of the CY department is Dr. Gour Sundar Mitra Thakur.",
+            "hi": "CY विभाग के अध्यक्ष Dr. Gour Sundar Mitra Thakur हैं।",
+            "bn": "CY বিভাগের প্রধান হলেন Dr. Gour Sundar Mitra Thakur।"
           }
         },
         "mba": {
-          "semantic_anchor": "department_head MBA Management faculty_leadership",
+          "semantic_anchor": "department_head MBA faculty_leadership",
           "keywords": [
-            "mba",
-            "management",
-            "এমবিএ",
-            "एमबीए"
+            "mba"
           ],
           "answers": {
             "en": "The Head of the MBA department is Somroop Siddhanta.",
-            "hi": "এমবিএ বিভাগের প্রধান হলেন সোমরূপ সিদ্ধান্ত।",
-            "bn": "এমবিএ বিভাগের প্রধান হলেন সোমরূপ সিদ্ধান্ত।"
+            "hi": "MBA विभाग के अध्यक्ष Somroop Siddhanta हैं।",
+            "bn": "MBA বিভাগের প্রধান হলেন Somroop Siddhanta।"
           }
         },
         "mca": {
-          "semantic_anchor": "department_head MCA Applications faculty_leadership",
+          "semantic_anchor": "department_head MCA faculty_leadership",
           "keywords": [
-            "mca",
-            "application",
-            "এমসিএ",
-            "एमसीए"
+            "mca"
           ],
           "answers": {
             "en": "The Head of the MCA department is Dr. Pabitra Kumar Dey.",
-            "hi": "এমসিএ বিভাগের প্রধান হলেন ড. পবিত্র কুমার দে।",
-            "bn": "এমসিএ বিভাগের প্রধান হলেন ড. পবিত্র কুমার দে।"
+            "hi": "MCA विभाग के अध्यक्ष Dr. Pabitra Kumar Dey हैं।",
+            "bn": "MCA বিভাগের প্রধান হলেন Dr. Pabitra Kumar Dey।"
           }
         },
         "default": {
@@ -1319,16 +1222,11 @@
       "keywords": [
         "hostel",
         "हॉस्टल",
-        "होस्टल",
         "হস্টেল",
-        "হোস্টেল",
-        "ছাত্রাবাস",
-        "छात्रावास",
         "mess",
         "food",
         "खाना",
-        "খাবার",
-        "ডাইনিং"
+        "খাবার"
       ],
       "answers": {
         "en": "Hostel is optional, not compulsory. Single bed room costs thirty thousand rupees per semester. Double or triple bed room costs ten thousand rupees per semester. Mess food charges are five thousand rupees per month. Four meals are served daily including non-veg three to four days a week.",
@@ -1343,144 +1241,67 @@
         "प्लेसमेंट",
         "প্লেসমেন্ট",
         "company",
-        "कंपनी",
-        "কোম্পানি",
         "recruit",
         "package",
-        "salary",
-        "पैकेज",
-        "প্যাকেজ",
-        "চাকরি",
-        "placement percentage",
-        "placement rate",
-        "placement record",
-        "प्लेसमेंट प्रतिशत",
-        "প্লেসমেন্ট শতাংশ",
-        "internship placement",
-        "vocational training",
-        "VT",
-        "व्यावसायिक प्रशिक्षण",
-        "বৃত্তিমূলক প্রশিক্ষণ"
+        "salary"
       ],
       "answers": {
-        "en": "BCREC has 91 percent overall placement rate. CSE placement rate is 93.6 percent. Highest package is seven lakh rupees per annum. Median package is four point two five lakh rupees per annum. Top recruiters include TCS, Infosys, Wipro, Capgemini, and HCL. Alumni work at IBM, TCS, Wipro, Accenture, Capgemini, Tech Mahindra, and the Indian Navy.",
-        "hi": "बीसीआरईसी की समग्र प्लेसमेंट दर 91 प्रतिशत है। सीएसई प्लेसमेंट दर 93.6 प्रतिशत है। सबसे अधिक पैकेज सात लाख रुपये प्रति वर्ष है। मध्य पैकेज चार दशमलव पच्चीस लाख रुपये प्रति वर्ष है। प्रमुख भर्तीकर्ताओं में टीसीएस, इंफोसिस, विप्रो, कैपजेमिनी और एचसीएल शामिल हैं। पूर्व छात्र आईबीएम, टीसीएस, विप्रो, एक्सेंचर, कैपजेमिनी, टेक महिंद्रा और भारतीय नौसेना में कार्यरत हैं।",
-        "bn": "বিসিআরইসি এর সামগ্রিক প্লেসমেন্ট রেট ৯১ শতাংশ। সিএসই প্লেসমেন্ট রেট ৯৩.৬ শতাংশ। সর্বোচ্চ প্যাকেজ সাত লাখ টাকা প্রতি বছর। মধ্যম প্যাকেজ চার দশমিক পঁচিশ লাখ টাকা প্রতি বছর। প্রধান নিয়োগকর্তাদের মধ্যে রয়েছে টিসিএস, ইনফোসিস, উইপ্রো, ক্যাপজেমিনি এবং এইচসিএল। প্রাক্তন শিক্ষার্থীরা আইবিএম, টিসিএস, উইপ্রো, অ্যাকসেঞ্চার, ক্যাপজেমিনি, টেক মাহিন্দ্রা এবং ভারতীয় নৌবাহিনীতে কর্মরত।"
-      }
-    },
-    "documents": {
-      "semantic_anchor": "admission_documents required_certificates verification paperwork",
-      "keywords": [
-        "document",
-        "documents",
-        "डॉक्यूमेंट",
-        "दस्तावेज",
-        "ডকুমেন্ট",
-        "কাগজপত্র",
-        "certificate",
-        "marksheet",
-        "মাকশিট",
-        "মার্কশিট",
-        "সার্টিফিকেট",
-        "admit card"
-      ],
-      "answers": {
-        "en": "For admission, you need class ten and twelve marksheets, admit cards, allotment letter, rank card, photographs, Aadhar card, and domicile or caste certificates if applicable.",
-        "hi": "एडमिशन के लिए आपको दसवीं और बारहवीं की मार्कशीट, एडमिट कार्ड, अलॉटमेंट लेटर, रैंक कार्ड, फोटो, आधार कार्ड और डोमिसाइल या जाति प्रमाण पत्र की आवश्यकता होगी।",
-        "bn": "ভর্তির জন্য আপনার দশম ও দ্বাদশ শ্রেণীর মার্কশিট, অ্যাডমিট কার্ড, অ্যালটমেন্ট লেটার, র‍্যাঙ্ক কার্ড, ফটো, আধার কার্ড এবং প্রযোজ্য ক্ষেত্রে ডোমিসাইল বা কাস্ট সার্টিফিকেট লাগবে।"
-      }
-    },
-    "scholarship": {
-      "semantic_anchor": "financial_aid scholarship_tuition fee_waiver education_grant",
-      "keywords": [
-        "scholarship",
-        "scholarships",
-        "स्कॉलरशिप",
-        "छात्रवृत्ति",
-        "স্কলারশিপ",
-        "বৃত্তি",
-        "tfw",
-        "svmcm",
-        "kanyashree",
-        "oasis",
-        "aikyashree"
-      ],
-      "answers": {
-        "en": "BCREC offers Tuition Fee Waiver, Swami Vivekananda Scholarship, Kanyashree for girls, and OASIS or Aikyashree scholarships for SC, ST, OBC, and minority students.",
-        "hi": "बीसीआरईसी ट्यूशन फीस माफी, स्वामी विवेकानंद स्कॉलरशिप, लड़कियों के लिए कन्याश्री और एससी, एसटी, ओबीसी और अल्पसंख्यक छात्रों के लिए ओएसिस या ऐक्यश्री स्कॉलरशिप प्रदान करता है।",
-        "bn": "বিসিআরইসি টিউশন ফি ওয়েভার, স্বামী বিবেকানন্দ স্কলারশিপ, মেয়েদের জন্য কন্যাশ্রী এবং এসসি, এসটি, ওবিসি ও সংখ্যালঘু শিক্ষার্থীদের জন্য ওয়েসিস বা ঐক্যশ্রী স্কলারশিপ প্রদান করে।"
-      }
-    },
-    "admission": {
-      "semantic_anchor": "admission_process eligibility application entrance_exam enrollment",
-      "keywords": [
-        "admission",
-        "admissions",
-        "admit",
-        "apply",
-        "application",
-        "भर्ती",
-        "एडमिशन",
-        "आवेदन",
-        "प्रवेश",
-        "ভর্তি",
-        "এডমিশন",
-        "আবেদন",
-        "age limit",
-        "age",
-        "आयु सीमा",
-        "आयु",
-        "বয়স সীমা",
-        "বয়স",
-        "online application",
-        "apply online",
-        "ऑनलाइन आवेदन",
-        "অনলাইন আবেদন",
-        "eligibility",
-        "योग्यता",
-        "যোগ্যতা"
-      ],
-      "answers": {
-        "en": "B.Tech admission is through WBJEE (80% seats), JEE Main (10%), or Management Quota (10%). Eligibility is 10+2 with PCM, minimum 50% marks for general category. There is no upper age limit — candidates must be at least 17 years old by December 31st of the admission year. Apply online at the WBJEEB website or the college admission portal at bcrecdgp.ac.in. WBJEE 2026 registration is from March 10 to April 5, 2026.",
-        "hi": "बी.टेक में एडमिशन WBJEE (80% सीटें), JEE Main (10%), या मैनेजमेंट कोटा (10%) के माध्यम से होता है। पात्रता 10+2 PCM के साथ, सामान्य श्रेणी के लिए न्यूनतम 50% अंक है। कोई ऊपरी आयु सीमा नहीं है — उम्मीदवार की आयु प्रवेश वर्ष के 31 दिसंबर तक कम से कम 17 वर्ष होनी चाहिए। WBJEEB वेबसाइट या कॉलेज के एडमिशन पोर्टल bcrecdgp.ac.in पर ऑनलाइन आवेदन करें। WBJEE 2026 रजिस्ट्रेशन 10 मार्च से 5 अप्रैल 2026 तक है।",
-        "bn": "বি.টেক এ ভর্তি WBJEE (80% আসন), JEE Main (10%), বা ম্যানেজমেন্ট কোটা (10%) এর মাধ্যমে হয়। যোগ্যতা 10+2 PCM সহ, সাধারণ বিভাগের জন্য ন্যূনতম 50% নম্বর। কোনো ঊর্ধ্ব বয়সসীমা নেই — প্রার্থীদের ভর্তি বছরের ৩১ ডিসেম্বরের মধ্যে কমপক্ষে ১৭ বছর বয়স হতে হবে। WBJEEB ওয়েবসাইট বা কলেজের ভর্তি পোর্টাল bcrecdgp.ac.in এ অনলাইনে আবেদন করুন। WBJEE 2026 রেজিস্ট্রেশন ১০ মার্চ থেকে ৫ এপ্রিল ২০২৬ পর্যন্ত।"
+        "en": "BCREC has 91% percent overall placement rate. CSE placement rate is 93.6% percent. Highest package is seven rupees per annum. Median package is Rs. 4.25 LPA. Top recruiters include TCS, Infosys, Wipro, Capgemini, and HCL.",
+        "hi": "बीसीआरईसी की समग्र प्लेसमेंट दर 91% प्रतिशत है। सीएसई प्लेसमेंट दर 93.6% प्रतिशत है। सबसे अधिक पैकेज seven lakh रुपये प्रति वर्ष है। प्रमुख भर्तीकर्ताओं में टीसीएस, इंफोसिस, विप्रो, कैपजेमिनी और एचसीएल शामिल हैं।",
+        "bn": "বিসিআরইসি এর সামগ্রিক প্লেসমেন্ট রেট 91% শতাংশ। সিএসই প্লেসমেন্ট রেট 93.6% শতাংশ। প্রধান নিয়োগকারীদের মধ্যে রয়েছে টিসিএস, ইনফোসিস, উইপ্রো, ক্যাপজেমিনি এবং এইচসিএল।"
       }
     },
     "courses": {
       "semantic_anchor": "academic_programs branches degrees majors specializations",
       "keywords": [
         "course",
-        "courses",
         "branch",
-        "branches",
-        "specialization",
-        "specializations",
         "btech",
-        "b.tech",
         "program",
-        "programs",
         "कोर्स",
-        "शाखा",
-        "पाठ्यक्रम",
-        "विशेषज्ञता",
-        "কোর্স",
         "শাখা",
-        "পাঠ্যক্রম",
         "internship",
-        "internships",
-        "industrial training",
-        "इंटर्नशिप",
-        "প্রশিক্ষণ",
-        "branch change",
-        "change branch",
-        "stream change",
-        "शाखा परिवर्तन",
-        "শাখা পরিবর্তন"
+        "branch change"
       ],
       "answers": {
-        "en": "BCREC offers B.Tech in CSE, CSE with AI ML, CSE with Data Science, CS and Design, IT, ECE, EE, ME, CE, and Cyber Security. Also offers MCA, MBA, and M.Tech programs. Academic programs include industrial training and internships — for example, the Civil Engineering department organizes paid internships. Branch change is allowed after the first year subject to academic criteria and availability. Eligible students can apply following the college's annual notice.",
-        "hi": "बीसीआरईसी बी.टेक सीएसई, सीएसई एआई एमएल, सीएसई डेटा साइंस, सीएस डिजाइन, आईटी, ईसीई, ईई, एमई, सीई, और साइबर सिक्योरिटी में प्रदान करता है। एमसीए, एमबीए और एम.टेक प्रोग्राम भी हैं। कार्यक्रमों में औद्योगिक प्रशिक्षण और इंटर्नशिप शामिल हैं — उदाहरण के लिए, सिविल इंजीनियरिंग विभाग पेड इंटर्नशिप आयोजित करता है। पहले वर्ष के बाद शैक्षणिक मानदंडों और उपलब्धता के आधार पर शाखा परिवर्तन की अनुमति है। पात्र छात्र कॉलेज के वार्षिक नोटिस का पालन करते हुए आवेदन कर सकते हैं।",
-        "bn": "বিসিআরইসি বি.টেক সিএসই, সিএসই এআই এমএল, সিএসই ডাটা সায়েন্স, সিএস ডিজাইন, আইটি, ইসিই, ইই, এমই, সিই, এবং সাইবার সিকিউরিটি অফার করে। এমসিএ, এমবিএ এবং এম.টেক প্রোগ্রামও আছে। প্রোগ্রামগুলিতে শিল্প প্রশিক্ষণ এবং ইন্টার্নশিপ অন্তর্ভুক্ত — উদাহরণস্বরূপ, সিভিল ইঞ্জিনিয়ারিং বিভাগ পেইড ইন্টার্নশিপ আয়োজন করে। প্রথম বর্ষের পরে একাডেমিক মানদণ্ড এবং আসন প্রাপ্যতা সাপেক্ষে শাখা পরিবর্তনের অনুমতি দেওয়া হয়। যোগ্য শিক্ষার্থীরা কলেজের বার্ষিক বিজ্ঞপ্তি অনুসরণ করে আবেদন করতে পারেন।"
+        "en": "BCREC offers B.Tech in CSE, CSE with AI ML, CSE with Data Science, CS and Design, IT, ECE, EE, ME, CE, and Cyber Security. Also offers MCA, MBA, and M.Tech programs. Branch change is allowed after the first year subject to academic criteria and availability.",
+        "hi": "बीसीआरईसी बी.टेक सीएसई, सीएसई एआई एमएल, सीएसई डेटा साइंस, सीएस डिजाइन, आईटी, ईसीई, ईई, एमई, सीई, और साइबर सिक्योरिटी में प्रदान करता है। एमसीए, एमबीए और एम.टेक प्रोग्राम भी हैं। पहले वर्ष के बाद शैक्षणिक मानदंडों और उपलब्धता के आधार पर शाखा परिवर्तन की अनुमति है।",
+        "bn": "বিসিআরইসি বি.টেক সিএসই, সিএসই এআই এমএল, সিএসই ডাটা সায়েন্স, সিএস ডিজাইন, আইটি, ইসিই, ইই, এমই, সিই, এবং সাইবার সিকিউরিটি অফার করে। এমসিএ, এমবিএ এবং এম.টেক প্রোগ্রামও আছে। প্রথম বর্ষের পরে একাডেমিক মানদণ্ড এবং আসন প্রাপ্যতা সাপেক্ষে শাখা পরিবর্তনের অনুমতি দেওয়া হয়।"
+      }
+    },
+    "admission": {
+      "semantic_anchor": "admission_process eligibility application entrance_exam enrollment",
+      "keywords": [
+        "admission",
+        "apply",
+        "application",
+        "भर्ती",
+        "এডমিশন",
+        "age limit",
+        "eligibility"
+      ],
+      "answers": {
+        "en": "B.Tech admission is through WBJEE (80% seats), JEE Main (10%), or Management Quota (10%). Eligibility is 10+2 with PCM, minimum 50% marks for general category. There is no upper age limit. Apply online at the WBJEEB website or the college admission portal.",
+        "hi": "बी.टेक में एडमिशन WBJEE (80% सीटें), JEE Main (10%), या मैनेजमेंट कोटा (10%) के माध्यम से होता है। पात्रता 10+2 PCM के साथ, सामान्य श्रेणी के लिए न्यूनतम 50% अंक है। कोई ऊपरी आयु सीमा नहीं है।",
+        "bn": "বি.টেক এ ভর্তি WBJEE (80% আসন), JEE Main (10%), বা ম্যানেজমেন্ট কোটা (10%) এর মাধ্যমে হয়। যোগ্যতা 10+2 PCM সহ, সাধারণ বিভাগের জন্য ন্যূনতম 50% নম্বর। কোনো ঊর্ধ্ব বয়সসীমা নেই।"
+      }
+    },
+    "campus": {
+      "semantic_anchor": "campus facilities infrastructure laboratories size",
+      "keywords": [
+        "campus",
+        "acre",
+        "laboratory",
+        "lab",
+        "transportation",
+        "medical",
+        "club",
+        "canteen"
+      ],
+      "answers": {
+        "en": "BCREC campus is approximately 17 acres, with multi-storied buildings for each department. It has state-of-the-art laboratories for all disciplines. On-site medical facilities are available.",
+        "hi": "बीसीआरईसी कैंपस लगभग 17 एकड़ में फैला है, जिसमें प्रत्येक विभाग के लिए बहुमंजिला भवन हैं। सभी विषयों के लिए अत्याधुनिक प्रयोगशालाएं हैं। परिसर में चिकित्सा सुविधाएं उपलब्ध हैं।",
+        "bn": "বিসিআরইসি ক্যাম্পাস প্রায় 17 একর জুড়ে বিস্তৃত, প্রতিটি বিভাগের জন্য বহুতল ভবন রয়েছে। সব বিষয়ের জন্য অত্যাধুনিক ল্যাবরেটরি রয়েছে। ক্যাম্পাসে চিকিৎসা সুবিধা উপলব্ধ।"
       }
     },
     "wifi": {
@@ -1488,15 +1309,10 @@
       "keywords": [
         "wifi",
         "wi-fi",
-        "wi fi",
         "internet",
         "network",
         "वाई-फाई",
-        "वाईफाई",
-        "इंटरनेट",
-        "ওয়াই-ফাই",
-        "ওয়াইফাই",
-        "ইন্টারনেট"
+        "ওয়াই-ফাই"
       ],
       "answers": {
         "en": "Yes, 24-hour Wi-Fi is available across the entire campus including all academic blocks and hostels.",
@@ -1510,129 +1326,59 @@
         "faculty",
         "teacher",
         "professor",
-        "teaching",
         "शिक्षक",
-        "अध्यापक",
-        "প্রফেসর",
-        "শিক্ষক",
-        "professors",
-        "teachers",
-        "faculty members",
-        "फैकल्टी",
-        "ফ্যাকাল্টি",
-        "অনুষদ"
+        "প্রফেসর"
       ],
       "answers": {
-        "en": "BCREC has 150+ experienced faculty members. Core branches have experienced professors with PhDs. Student-teacher ratio is 15:1 to 20:1.",
-        "hi": "बीसीआरईसी में 150+ अनुभवी शिक्षक हैं। मुख्य शाखाओं में पीएचडी वाले अनुभवी प्रोफेसर हैं। छात्र-शिक्षक अनुपात 15:1 से 20:1 है।",
-        "bn": "বিসিআরইসি তে 150+ অভিজ্ঞ শিক্ষক রয়েছেন। মূল শাখাগুলিতে পিএইচডি সহ অভিজ্ঞ অধ্যাপক রয়েছেন। ছাত্র-শিক্ষক অনুপাত 15:1 থেকে 20:1।"
+        "en": "BCREC has 150+ experienced faculty members. Student-teacher ratio is 15:1 to 20:1.",
+        "hi": "बीसीआरईसी में 150+ अनुभवी शिक्षक हैं। छात्र-शिक्षक अनुपात 15:1 to 20:1 है।",
+        "bn": "বিসিআরইসি তে 150+ অভিজ্ঞ শিক্ষক রয়েছেন। ছাত্র-শিক্ষক অনুপাত 15:1 to 20:1।"
+      }
+    },
+    "scholarship": {
+      "semantic_anchor": "financial_aid scholarship_tuition fee_waiver education_grant",
+      "keywords": [
+        "scholarship",
+        "छात्रवृत्ति",
+        "স্কলারশিপ",
+        "tfw",
+        "svmcm",
+        "kanyashree"
+      ],
+      "answers": {
+        "en": "BCREC offers Tuition Fee Waiver, Swami Vivekananda Scholarship, Kanyashree for girls, and OASIS or Aikyashree scholarships for SC, ST, OBC, and minority students.",
+        "hi": "बीसीआरईसी ट्यूशन फीस माफी, स्वामी विवेकानंद स्कॉलरशिप, लड़कियों के लिए कन्याश्री और एससी, एसटी, ओबीसी और अल्पसंख्यक छात्रों के लिए ओएसिस या ऐक्यश्री स्कॉलरशिप प्रदान करता है।",
+        "bn": "বিসিআরইসি টিউশন ফি ওয়েভার, স্বামী বিবেকানন্দ স্কলারশিপ, মেয়েদের জন্য কন্যাশ্রী এবং এসসি, এসটি, ওবিসি ও সংখ্যালঘু শিক্ষার্থীদের জন্য ওয়েসিস বা ঐক্যশ্রী স্কলারশিপ প্রদান করে।"
+      }
+    },
+    "documents": {
+      "semantic_anchor": "admission_documents required_certificates verification paperwork",
+      "keywords": [
+        "document",
+        "दस्तावेज",
+        "ডকুমেন্ট",
+        "certificate",
+        "marksheet"
+      ],
+      "answers": {
+        "en": "For admission, you need class ten and twelve marksheets, admit cards, allotment letter, rank card, photographs, Aadhar card, and domicile or caste certificates if applicable.",
+        "hi": "एडमिशन के लिए आपको दसवीं और बारहवीं की मार्कशीट, एडमिट कार्ड, अलॉटमेंट लेटर, रैंक कार्ड, फोटो, आधार कार्ड और डोमिसाइल या जाति प्रमाण पत्र की आवश्यकता होगी।",
+        "bn": "ভর্তির জন্য আপনার দশম ও দ্বাদশ শ্রেণীর মার্কশিট, অ্যাডমিট কার্ড, অ্যালটমেন্ট লেটার, র‍্যাঙ্ক কার্ড, ফটো, আধার কার্ড এবং প্রযোজ্য ক্ষেত্রে ডোমিসাইল বা কাস্ট সার্টিফিকেট লাগবে।"
       }
     },
     "online_learning": {
       "semantic_anchor": "online_learning virtual_classes digital_education remote",
       "keywords": [
         "online",
-        "online class",
-        "online classes",
         "virtual",
         "remote",
-        "digital class",
-        "ऑनलाइन क्लास",
-        "ऑनलाइन कक्षा",
-        "डिजिटल",
-        "অনলাইন ক্লাস",
-        "অনলাইন",
         "recorded lecture",
-        "recorded class",
-        "recorded video",
-        "रिकॉर्डेड लेक्चर",
-        "রেকর্ডেড লেকচার",
-        "hybrid",
-        "blended",
-        "हाइब्रिड",
-        "হাইব্রিড",
-        "ऑनलाइन",
-        "लर्निंग",
-        "অনলাইন লার্নিং",
-        "লার্নিং"
+        "hybrid"
       ],
       "answers": {
-        "en": "BCREC conducts regular on-campus classes. Information about online classes, recorded lectures, and hybrid learning is not available on the official site. Please contact the college at 0343-2501353 for details.",
-        "hi": "बीसीआरईसी नियमित कैंपस कक्षाएं संचालित करता है। ऑनलाइन कक्षाओं, रिकॉर्डेड व्याख्यान और हाइब्रिड लर्निंग के बारे में आधिकारिक साइट पर जानकारी उपलब्ध नहीं है। कृपया विवरण के लिए कॉलेज को 0343-2501353 पर कॉल करें।",
-        "bn": "বিসিআরইসি নিয়মিত অন-ক্যাম্পাস ক্লাস পরিচালনা করে। অনলাইন ক্লাস, রেকর্ডেড লেকচার এবং হাইব্রিড লার্নিং সম্পর্কে অফিসিয়াল সাইটে তথ্য উপলব্ধ নেই। বিস্তারিত জানার জন্য কলেজে 0343-2501353 নম্বরে কল করুন।"
-      }
-    },
-    "campus": {
-      "semantic_anchor": "campus facilities infrastructure laboratories size",
-      "keywords": [
-        "campus",
-        "campus size",
-        "campus area",
-        "acre",
-        "कैंपस",
-        "ক্যাম্পাস",
-        "laboratory",
-        "labs",
-        "lab",
-        "laboratories",
-        "प्रयोगशाला",
-        "ল্যাবরেটরি",
-        "transportation",
-        "transport",
-        "bus",
-        "shuttle",
-        "परिवहन",
-        "পরিবহন",
-        "medical",
-        "health",
-        "clinic",
-        "medical facility",
-        "चिकित्सा",
-        "মেডিকেল",
-        "student club",
-        "clubs",
-        "extracurricular",
-        "photographic club",
-        "छात्र क्लब",
-        "শিক্ষার্থী ক্লাব",
-        "canteen",
-        "कैंटीन",
-        "ক্যান্টিন",
-        "लैब",
-        "ল্যাব"
-      ],
-      "answers": {
-        "en": "BCREC campus is approximately 17 acres, with multi-storied buildings for each department. It has state-of-the-art laboratories for all disciplines. On-site medical facilities are available. Student clubs include the Photographic Club and other extracurricular activities. Transportation details are not explicitly published — students typically commute by private or public means. For specific queries, contact 0343-2501353.",
-        "hi": "बीसीआरईसी कैंपस लगभग 17 एकड़ में फैला है, जिसमें प्रत्येक विभाग के लिए बहुमंजिला भवन हैं। सभी विषयों के लिए अत्याधुनिक प्रयोगशालाएं हैं। परिसर में चिकित्सा सुविधाएं उपलब्ध हैं। छात्र क्लबों में फोटोग्राफिक क्लब और अन्य गतिविधियां शामिल हैं। परिवहन के बारे में विस्तृत जानकारी प्रकाशित नहीं है — छात्र आमतौर पर निजी या सार्वजनिक साधनों से आते हैं। विशेष प्रश्नों के लिए 0343-2501353 पर संपर्क करें।",
-        "bn": "বিসিআরইসি ক্যাম্পাস প্রায় ১৭ একর জুড়ে বিস্তৃত, প্রতিটি বিভাগের জন্য বহুতল ভবন রয়েছে। সব বিষয়ের জন্য অত্যাধুনিক ল্যাবরেটরি রয়েছে। ক্যাম্পাসে চিকিৎসা সুবিধা উপলব্ধ। শিক্ষার্থী ক্লাবের মধ্যে ফটোগ্রাফিক ক্লাব এবং অন্যান্য কার্যক্রম অন্তর্ভুক্ত। পরিবহন সম্পর্কে বিস্তারিত তথ্য প্রকাশিত নেই — শিক্ষার্থীরা সাধারণত ব্যক্তিগত বা সরকারি মাধ্যম ব্যবহার করে আসে। নির্দিষ্ট প্রশ্নের জন্য 0343-2501353 নম্বরে যোগাযোগ করুন।"
-      }
-    },
-    "international": {
-      "semantic_anchor": "international_student foreign_admission visa overseas",
-      "keywords": [
-        "international",
-        "foreign",
-        "foreign student",
-        "international student",
-        "visa",
-        "visa assistance",
-        "visa support",
-        "अंतर्राष्ट्रीय",
-        "विदेशी",
-        "ভিসা",
-        "আন্তর্জাতিক",
-        "বিদেশী",
-        "english medium",
-        "medium of instruction",
-        "इंग्लिश मीडियम",
-        "ইংরেজি মাধ্যম",
-        "dasa",
-        "DASA"
-      ],
-      "answers": {
-        "en": "All programs at BCREC are taught in English. The college does not have a dedicated international admissions program — admission follows national exams like WBJEE and JEE Main. International students may enroll through existing channels such as DASA. Visa assistance is not explicitly advertised. For inquiries, contact info@bcrec.ac.in or call 0343-2501353.",
-        "hi": "बीसीआरईसी में सभी प्रोग्राम अंग्रेजी में पढ़ाए जाते हैं। कॉलेज में समर्पित अंतर्राष्ट्रीय प्रवेश कार्यक्रम नहीं है — प्रवेश WBJEE और JEE Main जैसी राष्ट्रीय परीक्षाओं के माध्यम से होता है। अंतर्राष्ट्रीय छात्र DASA जैसे मौजूदा चैनलों के माध्यम से नामांकन कर सकते हैं। वीज़ा सहायता का विज्ञापन नहीं किया गया है। पूछताछ के लिए info@bcrec.ac.in पर ईमेल करें या 0343-2501353 पर कॉल करें।",
-        "bn": "বিসিআরইসি তে সব প্রোগ্রাম ইংরেজিতে পড়ানো হয়। কলেজে আলাদা আন্তর্জাতিক ভর্তি কর্মসূচি নেই — ভর্তি WBJEE এবং JEE Main এর মতো জাতীয় পরীক্ষার মাধ্যমে হয়। আন্তর্জাতিক শিক্ষার্থীরা DASA এর মতো বিদ্যমান চ্যানেলের মাধ্যমে নথিভুক্ত করতে পারেন। ভিসা সহায়তা সম্পর্কে explicitভাবে বিজ্ঞাপিত নেই। অনুসন্ধানের জন্য info@bcrec.ac.in এ ইমেল করুন বা 0343-2501353 নম্বরে কল করুন।"
+        "en": "BCREC conducts regular on-campus classes. Information about online classes is not available on the official site. Please contact the college at 0343-2501353 for details.",
+        "hi": "बीसीआरईसी नियमित कैंपस कक्षाएं संचालित करता है। ऑनलाइन कक्षाओं के बारे में आधिकारिक साइट पर जानकारी उपलब्ध नहीं है। कृपया विवरण के लिए कॉलेज को 0343-2501353 पर कॉल करें।",
+        "bn": "বিসিআরইসি নিয়মিত অন-ক্যাম্পাস ক্লাস পরিচালনা করে। অনলাইন ক্লাস সম্পর্কে অফিসিয়াল সাইটে তথ্য উপলব্ধ নেই। বিস্তারিত জানার জন্য কলেজে 0343-2501353 নম্বরে কল করুন।"
       }
     },
     "why_bcrec": {
@@ -1640,131 +1386,47 @@
       "keywords": [
         "why bcrec",
         "why choose",
-        "why join",
-        "unique",
-        "क्यों बीसीआरईसी",
-        "क्यों चुनें",
-        "কেন বিসিআরইসি",
-        "accreditation",
         "NBA",
         "NAAC",
-        "मान्यता",
-        "স্বীকৃতি",
         "GATE",
-        "gate forum",
-        "गेट फोरम",
         "alumni",
-        "पूर्व छात्र",
-        "প্রাক্তন শিক্ষার্থী",
-        "parent",
-        "parents talk",
-        "माता-पिता",
-        "পিতামাতা",
-        "campus visit",
-        "कैंपस विज़िट",
-        "ক্যাম্পাস ভিজিট",
-        "counselor",
-        "admission counselor",
-        "काउंसलर",
-        "পরামর্শদাতা",
-        "choose",
-        "joining",
-        "join",
-        "should i join",
-        "why study",
-        "क्यों पढ़ें",
-        "কেন পড়বেন",
-        "benefits",
-        "advantages",
-        "लाभ",
-        "সুবিধা",
-        "special",
-        "खास",
-        "বিশেষ",
-        "ranking",
-        "ranked",
-        "रैंकिंग",
-        "র্যাঙ্কিং",
-        "बीसीआरईसी क्यों",
-        "কেন"
+        "क्यों बीसीआरईसी"
       ],
       "answers": {
-        "en": "BCREC, established in 2000, is NBA accredited (CSE, ECE, IT, EE, ME) and NAAC B+ graded. The college offers modern infrastructure, dedicated training cells, and a GATE Forum for career readiness. It has active industry linkages and internships with organizations like NHAI. Alumni work at IBM, TCS, Wipro, Accenture, Capgemini, Tech Mahindra, and the Indian Navy. To arrange a campus visit or speak with a counselor, contact 0343-2501353 or info@bcrec.ac.in. Parents may reach faculty through department emails or office hours.",
-        "hi": "बीसीआरईसी, 2000 में स्थापित, NBA मान्यता प्राप्त (CSE, ECE, IT, EE, ME) और NAAC B+ ग्रेडेड है। कॉलेज आधुनिक बुनियादी ढांचा, समर्पित प्रशिक्षण प्रकोष्ठ और करियर तैयारी के लिए GATE फोरम प्रदान करता है। NHAI जैसे संगठनों के साथ सक्रिय उद्योग संपर्क और इंटर्नशिप हैं। पूर्व छात्र IBM, TCS, विप्रो, एक्सेंचर, कैपजेमिनी, टेक महिंद्रा और भारतीय नौसेना में कार्यरत हैं। कैंपस विज़िट की व्यवस्था या काउंसलर से बात करने के लिए 0343-2501353 या info@bcrec.ac.in पर संपर्क करें। माता-पिता विभागीय ईमेल या कार्यालय समय के माध्यम से संकाय से संपर्क कर सकते हैं।",
-        "bn": "বিসিআরইসি, ২০০০ সালে প্রতিষ্ঠিত, NBA স্বীকৃত (CSE, ECE, IT, EE, ME) এবং NAAC B+ গ্রেড প্রাপ্ত। কলেজ আধুনিক infrastructure, dedicated training cell, এবং GATE ফোরাম প্রদান করে। NHAI এর মতো প্রতিষ্ঠানের সাথে সক্রিয় শিল্প সংযোগ এবং ইন্টার্নশিপ রয়েছে। প্রাক্তন শিক্ষার্থীরা IBM, TCS, উইপ্রো, অ্যাকসেঞ্চার, ক্যাপজেমিনি, টেক মাহিন্দ্রা এবং ভারতীয় নৌবাহিনীতে কর্মরত। ক্যাম্পাস ভিজিট বা কাউন্সেলরের সাথে কথা বলার জন্য 0343-2501353 বা info@bcrec.ac.in এ যোগাযোগ করুন। অভিভাবকরা বিভাগীয় ইমেল বা অফিস আওয়ারের মাধ্যমে শিক্ষকদের সাথে যোগাযোগ করতে পারেন।"
+        "en": "BCREC, established in 2000, is NBA accredited (CSE, ECE, IT, EE, ME) and NAAC B+ graded. The college offers modern infrastructure, dedicated training cells, and a GATE Forum for career readiness.",
+        "hi": "बीसीआरईसी, 2000 में स्थापित, NBA मान्यता प्राप्त (CSE, ECE, IT, EE, ME) और NAAC B+ ग्रेडेड है। कॉलेज आधुनिक बुनियादी ढांचा, समर्पित प्रशिक्षण प्रकोष्ठ और करियर तैयारी के लिए GATE फोरम प्रदान करता है।",
+        "bn": "বিসিআরইসি, ২০০০ সালে প্রতিষ্ঠিত, NBA স্বীকৃত (CSE, ECE, IT, EE, ME) এবং NAAC B+ গ্রেড প্রাপ্ত। কলেজ আধুনিক infrastructure, dedicated training cell, এবং GATE ফোরাম প্রদান করে।"
+      }
+    },
+    "international": {
+      "semantic_anchor": "international_student foreign_admission visa overseas",
+      "keywords": [
+        "international",
+        "foreign",
+        "visa",
+        "dasa",
+        "DASA"
+      ],
+      "answers": {
+        "en": "All programs at BCREC are taught in English. International students may enroll through existing channels such as DASA. For inquiries, contact info@bcrec.ac.in.",
+        "hi": "बीसीआरईसी में सभी प्रोग्राम अंग्रेजी में पढ़ाए जाते हैं। अंतर्राष्ट्रीय छात्र DASA जैसे मौजूदा चैनलों के माध्यम से नामांकन कर सकते हैं।",
+        "bn": "বিসিআরইসি তে সব প্রোগ্রাম ইংরেজিতে পড়ানো হয়। আন্তর্জাতিক শিক্ষার্থীরা DASA এর মতো বিদ্যমান চ্যানেলের মাধ্যমে নথিভুক্ত করতে পারেন।"
       }
     },
     "policies": {
       "semantic_anchor": "college_policies rules regulations procedures guidelines",
       "keywords": [
         "fail",
-        "failing",
-        "supplementary",
         "backlog",
-        "reappear",
-        "repeat",
-        "फेल",
-        "ব্যাকলগ",
-        "ফেল",
-        "exchange program",
-        "student exchange",
-        "विनिमय कार्यक्रम",
-        "বিনিময় কর্মসূচি",
-        "competitive exam",
-        "gate exam",
-        "competitive exam support",
-        "प्रतियोगी परीक्षा",
-        "প্রতিযোগিতামূলক পরীক্ষা",
-        "cancellation",
-        "cancel admission",
-        "withdraw",
-        "withdrawal",
-        "रद्दीकरण",
-        "বাতিলকরণ",
         "laptop",
-        "laptops",
-        "लैपटॉप",
-        "ল্যাপটপ",
-        "part time",
-        "part-time job",
-        "अंशकालिक",
-        "পার্ট টাইম",
         "dress code",
-        "uniform",
-        "ड्रेस कोड",
-        "পোশাক কোড",
         "intake",
-        "annual intake",
-        "seat intake",
-        "सीटें",
-        "আসন",
-        "class strength",
-        "class size",
-        "कक्षा शक्ति",
-        "শ্রেণী শক্তি",
-        "education loan",
-        "loan",
-        "student loan",
-        "शिक्षा ऋण",
-        "শিক্ষা ঋণ",
-        "policy",
-        "policies",
-        "college policy",
-        "college rules",
-        "नियम",
-        "नीति",
-        "नीतियां",
-        "নীতি",
-        "নিয়ম",
-        "rules",
-        "regulations",
-        "नियमावली",
-        "নিয়মাবলী"
+        "education loan"
       ],
       "answers": {
-        "en": "Failing a semester: Students may reappear in supplementary exams or repeat courses as per MAKAUT rules. Exchange programs: Not mentioned on the official site. Competitive exam support: Yes — BCREC has a dedicated GATE Forum and placement training. Admission cancellation: Follows MAKAUT/AICTE guidelines — submit a written request; prescribed fees may apply. Laptops: Not mandatory by college rule, but recommended for labs and projects. Part-time jobs: Not addressed on the college site. Dress code: No formal dress code for daily classes. Annual intake: Approximately 120 seats per branch across about 10 B.Tech branches, totaling 1000-1200 students per year. Class strength: Around 100 students per branch initially. Education loan assistance: Not directly provided — students arrange loans through banks under national schemes. For enrollment details, contact 0343-2501353.",
-        "hi": "सेमेस्टर में असफल होना: छात्र MAKAUT नियमों के अनुसार पूरक परीक्षा में शामिल हो सकते हैं या कोर्स दोहरा सकते हैं। विनिमय कार्यक्रम: आधिकारिक साइट पर उल्लेख नहीं है। प्रतियोगी परीक्षा सहायता: हाँ — BCREC में समर्पित GATE फोरम और प्लेसमेंट ट्रेनिंग है। प्रवेश रद्दीकरण: MAKAUT/AICTE दिशानिर्देशों का पालन करता है — लिखित अनुरोध सबमिट करें; निर्धारित शुल्क लागू हो सकते हैं। लैपटॉप: कॉलेज नियम द्वारा अनिवार्य नहीं, लेकिन प्रयोगशालाओं और परियोजनाओं के लिए अनुशंसित। अंशकालिक नौकरियाँ: कॉलेज साइट पर जानकारी नहीं है। ड्रेस कोड: दैनिक कक्षाओं के लिए कोई औपचारिक ड्रेस कोड नहीं। वार्षिक प्रवेश: लगभग 10 B.Tech शाखाओं में प्रति शाखा 120 सीटें, कुल 1000-1200 छात्र प्रति वर्ष। कक्षा क्षमता: प्रति शाखा लगभग 100 छात्र। शिक्षा ऋण: सीधे प्रदान नहीं किया जाता — छात्र राष्ट्रीय योजनाओं के तहत बैंकों के माध्यम से ऋण की व्यवस्था करते हैं। नामांकन विवरण के लिए 0343-2501353 पर संपर्क करें।",
-        "bn": "সেমিস্টারে ফেল: শিক্ষার্থীরা MAKAUT নিয়ম অনুযায়ী সাপ্লিমেন্টারি পরীক্ষায় অংশ নিতে পারে বা কোর্স পুনরায় করতে পারে। এক্সচেঞ্জ প্রোগ্রাম: অফিসিয়াল সাইটে উল্লেখ নেই। প্রতিযোগিতামূলক পরীক্ষা সহায়তা: হ্যাঁ — বিসিআরইসি তে GATE ফোরাম এবং প্লেসমেন্ট ট্রেনিং রয়েছে। ভর্তি বাতিল: MAKAUT/AICTE নির্দেশিকা অনুসরণ করে — লিখিত অনুরোধ জমা দিন; নির্ধারিত ফি প্রযোজ্য হতে পারে। ল্যাপটপ: কলেজের নিয়মে বাধ্যতামূলক নয়, তবে ল্যাব এবং প্রকল্পের জন্য সুপারিশ করা হয়। পার্ট-টাইম চাকরি: কলেজ সাইটে তথ্য নেই। ড্রেস কোড: প্রতিদিনের ক্লাসের জন্য কোনো আনুষ্ঠানিক ড্রেস কোড নেই। বার্ষিক ভর্তি: প্রায় ১০ টি B.Tech শাখায় প্রতি শাখায় ১২০টি আসন, মোট ১০০০-১২০০ শিক্ষার্থী প্রতি বছর। শ্রেণী শক্তি: প্রতি শাখায় প্রায় ১০০ শিক্ষার্থী। শিক্ষা ঋণ: সরাসরি প্রদান করা হয় না — শিক্ষার্থীরা জাতীয় প্রকল্পের অধীনে ব্যাংকের মাধ্যমে ঋণের ব্যবস্থা করে। ভর্তি বিবরণের জন্য 0343-2501353 নম্বরে যোগাযোগ করুন।"
+        "en": "Failing a semester: Students may reappear in supplementary exams or repeat courses as per MAKAUT rules. Laptops: Not mandatory but recommended for labs and projects. Dress code: No formal dress code for daily classes.",
+        "hi": "सेमेस्टर में असफल होना: छात्र MAKAUT नियमों के अनुसार पूरक परीक्षा में शामिल हो सकते हैं। लैपटॉप: अनिवार्य नहीं, लेकिन अनुशंसित। ड्रेस कोड: दैनिक कक्षाओं के लिए कोई औपचारिक ड्रेस कोड नहीं।",
+        "bn": "সেমিস্টারে ফেল: শিক্ষার্থীরা MAKAUT নিয়ম অনুযায়ী সাপ্লিমেন্টারি পরীক্ষায় অংশ নিতে পারে। ল্যাপটপ: বাধ্যতামূলক নয়, তবে ল্যাব এবং প্রকল্পের জন্য সুপারিশ করা হয়। ড্রেস কোড: প্রতিদিনের ক্লাসের জন্য কোনো আনুষ্ঠানিক ড্রেস কোড নেই।"
       }
     },
     "hidden_charges": {
@@ -1772,77 +1434,51 @@
       "keywords": [
         "hidden",
         "hidden charge",
-        "hidden fee",
-        "undisclosed",
-        "छिपा शुल्क",
-        "लুকানো ফি",
         "transparent",
-        "transparency",
-        "पारदर्शी",
-        "স্বচ্ছ",
-        "छिपे",
-        "ছিপে",
-        "लुके"
+        "छिपा शुल्क",
+        "লুকানো ফি"
       ],
       "answers": {
-        "en": "No hidden charges. All fees are transparently listed in the official B.Tech fee brochure published by the college. Every charge — tuition, deposits, and applicable fees — is itemized per semester. There are no undisclosed amounts beyond the published fee structure.",
-        "hi": "कोई छिपा शुल्क नहीं। सभी शुल्क कॉलेज द्वारा प्रकाशित आधिकारिक बी.टेक फी ब्रोशर में पारदर्शी रूप से सूचीबद्ध हैं। प्रत्येक शुल्क — ट्यूशन, जमा और लागू शुल्क — प्रति सेमेस्टर आइटमाइज़्ड है। प्रकाशित शुल्क संरचना से परे कोई अघोषित राशि नहीं है।",
-        "bn": "কোনো লুকানো ফি নেই। কলেজের প্রকাশিত অফিসিয়াল বি.টেক ফি ব্রোশারে সব ফি স্বচ্ছভাবে তালিকাভুক্ত। প্রতিটি চার্জ — টিউশন, জমা এবং প্রযোজ্য ফি — প্রতি সেমিস্টারে itemized আকারে দেওয়া আছে। প্রকাশিত ফি কাঠামোর বাইরে কোনো অঘোষিত অর্থ নেই।"
+        "en": "No hidden charges. All fees are transparently listed in the official B.Tech fee brochure published by the college. Every charge is itemized per semester.",
+        "hi": "कोई छिपा शुल्क नहीं। सभी शुल्क कॉलेज द्वारा प्रकाशित आधिकारिक बी.टेक फी ब्रोशर में पारदर्शी रूप से सूचीबद्ध हैं।",
+        "bn": "কোনো লুকানো ফি নেই। কলেজের প্রকাশিত অফিসিয়াল বি.টেক ফি ব্রোশারে সব ফি স্বচ্ছভাবে তালিকাভুক্ত।"
       }
     },
     "refund_policy": {
       "semantic_anchor": "refund cancellation withdrawal_fees money_back",
       "keywords": [
         "refund",
-        "refundable",
         "caution money",
         "security deposit",
-        "वापसी",
         "रिफंड",
-        "প্রত্যাবর্তনযোগ্য",
-        "রিফান্ড",
-        "cancellation refund",
-        "withdrawal refund",
-        "रद्दीकरण वापसी",
-        "বাতিলকরণ ফেরত"
+        "রিফান্ড"
       ],
       "answers": {
-        "en": "The fee structure lists 'Caution Money' as a refundable security deposit — returned after course completion. Other refunds follow MAKAUT and AICTE norms. For cancellation, submit a written request; prescribed deductions may apply as per published guidelines.",
-        "hi": "शुल्क संरचना में 'कॉशन मनी' को वापसी योग्य सुरक्षा जमा के रूप में सूचीबद्ध किया गया है — जो पाठ्यक्रम पूरा होने पर वापस कर दी जाती है। अन्य वापसी MAKAUT और AICTE मानदंडों का पालन करती है। रद्दीकरण के लिए, लिखित अनुरोध सबमिट करें; प्रकाशित दिशानिर्देशों के अनुसार निर्धारित कटौती लागू हो सकती है।",
-        "bn": "ফি কাঠামোতে 'কশন মানি' ফেরতযোগ্য নিরাপত্তা জমা হিসেবে তালিকাভুক্ত — যা কোর্স সম্পূর্ণ হলে ফেরত দেওয়া হয়। অন্যান্য ফেরত MAKAUT এবং AICTE নিয়ম অনুসরণ করে। বাতিলের জন্য লিখিত অনুরোধ জমা দিন; প্রকাশিত নির্দেশিকা অনুযায়ী নির্ধারিত কর্তন প্রযোজ্য হতে পারে।"
+        "en": "The fee structure lists Caution Money as a refundable security deposit, returned after course completion. Other refunds follow MAKAUT and AICTE norms.",
+        "hi": "शुल्क संरचना में कॉशन मनी को वापसी योग्य सुरक्षा जमा के रूप में सूचीबद्ध किया गया है जो पाठ्यक्रम पूरा होने पर वापस कर दी जाती है।",
+        "bn": "ফি কাঠামোতে কশন মানি ফেরতযোগ্য নিরাপত্তা জমা হিসেবে তালিকাভুক্ত যা কোর্স সম্পূর্ণ হলে ফেরত দেওয়া হয়।"
       }
     },
     "application_status": {
       "semantic_anchor": "application_tracking admission_status result counseling",
       "keywords": [
         "application status",
-        "admission status",
-        "status",
-        "আবেদন অবস্থা",
         "result",
-        "result announcement",
         "seat allotment",
-        "counseling result",
-        "परिणाम",
-        "ফলাফল",
-        "after application",
-        "next step",
-        "what next",
-        "आवेदन के बाद",
-        "আবেদনের পর"
+        "counseling result"
       ],
       "answers": {
-        "en": "You can track your application by logging into the college admission portal at bcrecdgp.ac.in. Admission results follow the WBJEEB or JEE Main counseling schedule — published on the respective counseling portals and the college website. After submitting an application, monitor the portal and your email for document verification and fee payment instructions. For help, call 0343-2501353.",
-        "hi": "आप bcrecdgp.ac.in पर कॉलेज एडमिशन पोर्टल में लॉग इन करके अपने आवेदन की स्थिति देख सकते हैं। प्रवेश परिणाम WBJEEB या JEE Main काउंसलिंग शेड्यूल का पालन करते हैं — संबंधित काउंसलिंग पोर्टल और कॉलेज वेबसाइट पर प्रकाशित होते हैं। आवेदन জমা করার পর, দস্তাবেজ যাচাই এবং ফি প্রদানের নির্দেশাবলীর জন্য পোর্টাল এবং আপনার ইমেল মনিটর করুন। সহায়তার জন্য 0343-2501353 এ কল করুন।",
-        "bn": "আপনি bcrecdgp.ac.in এ কলেজ ভর্তি পোর্টালে লগইন করে আপনার আবেদনের অবস্থা দেখতে পারেন। ভর্তির ফলাফল WBJEEB বা JEE Main কাউন্সেলিং সময়সূচী অনুসরণ করে — সংশ্লিষ্ট কাউন্সেলিং পোর্টাল এবং কলেজ ওয়েবসাইটে প্রকাশিত হয়। আবেদন জমা দেওয়ার পর, ডকুমেন্ট যাচাই এবং ফি পেমেন্ট নির্দেশনার জন্য পোর্টাল এবং আপনার ইমেল মনিটর করুন। সাহায্যের জন্য 0343-2501353 নম্বরে কল করুন।"
+        "en": "You can track your application by logging into the college admission portal. Admission results follow the WBJEEB or JEE Main counseling schedule.",
+        "hi": "आप कॉलेज एडमिशन पोर्टल में लॉग इन करके अपने आवेदन की स्थिति देख सकते हैं।",
+        "bn": "আপনি কলেজ ভর্তি পোর্টালে লগইন করে আপনার আবেদনের অবস্থা দেখতে পারেন।"
       }
     },
     "eligibility_by_rank": {
       "semantic_anchor": "rank_based_eligibility cutoff admission_rank category_rank",
       "answers": {
-        "en": "WBJEE 2025 CUTOFF REFERENCE (use only when user provides their rank to determine eligibility): Rank 80,000 with 65% PCM marks typically qualifies for CSE, CSE-AIML, CE, and ME. Rank 1,00,000+ typically qualifies for EE, ECE, and lower-preference branches. Cutoffs vary yearly; for exact data direct users to check WBJEEB counseling website or call 0343-2501353.",
-        "hi": "WBJEE 2025 कटऑफ संदर्भ (केवल तब उपयोग करें जब उपयोगकर्ता अपनी रैंक प्रदान करे): रैंक 80,000 और PCM में 65% अंक पर आमतौर पर CSE, CSE-AIML, CE, और ME के लिए पात्रता होती है। रैंक 1,00,000+ पर आमतौर पर EE, ECE और निचली प्राथमिकता वाली शाखाओं के लिए पात्रता होती है। कटऑफ साल-दर-साल बदलती रहती है; सटीक डेटा के लिए उपयोगकर्ताओं को WBJEEB काउंसलिंग वेबसाइट देखने या 0343-2501353 पर कॉल करने का निर्देश दें।",
-        "bn": "WBJEE 2025 কাটঅফ রেফারেন্স (শুধু ব্যবহার করুন যখন ব্যবহারকারী তাদের র‍্যাঙ্ক প্রদান করে): র‍্যাঙ্ক ৮০,০০০ এবং PCM এ ৬৫% মার্কস সাধারণত CSE, CSE-AIML, CE, এবং ME এর জন্য যোগ্যতা দেয়। র‍্যাঙ্ক ১,০০,০০০+ সাধারণত EE, ECE এবং নিম্ন অগ্রাধিকার শাখার জন্য যোগ্যতা দেয়। কাটঅফ প্রতি বছর পরিবর্তিত হয়; সঠিক তথ্যের জন্য ব্যবহারকারীদের WBJEEB কাউন্সেলিং ওয়েবসাইট দেখতে বা 0343-2501353 নম্বরে কল করতে নির্দেশ দিন।"
+        "en": "Rank 80,000 with 65 percent PCM marks typically qualifies for CSE, CSE-AIML, CE, and ME. Rank 1,00,000 plus typically qualifies for EE, ECE, and lower-preference branches. Cutoffs vary yearly.",
+        "hi": "रैंक 80,000 और PCM में 65% अंक पर आमतौर पर CSE, CSE-AIML, CE, और ME के लिए पात्रता होती है। कटऑफ साल-दर-साल बदलती रहती है।",
+        "bn": "র‍্যাঙ্ক ৮০,০০০ এবং PCM এ ৬৫% মার্কস সাধারণত CSE, CSE-AIML, CE, এবং ME এর জন্য যোগ্যতা দেয়। কাটঅফ প্রতি বছর পরিবর্তিত হয়।"
       }
     }
   }

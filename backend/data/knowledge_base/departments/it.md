@@ -1,73 +1,41 @@
-# Information Technology (IT)
+# Information Technology
 
 ## Program Overview
 
-**B.Tech in Information Technology** at BCREC focuses on software development, database management, and IT systems.
+**4 years** program with an intake of **60** students.
 
 ## Key Details
 
 | Attribute | Value |
 |-----------|-------|
-| **Duration** | 4 Years (8 Semesters) |
-| **Intake** | 120 Students |
-| **Affiliation** | MAKAUT |
-| **Accreditation** | NBA |
+| **Duration** | 4 years |
+| **Intake** | 60 |
+| **Established** | 2000 |
+| **NBA Accredited** | Yes |
 
-## Eligibility
+## Fee Structure
 
-- 10+2 with Physics, Chemistry, Mathematics
-- Minimum 50% aggregate marks
-- Valid WBJEE or JEE Main score
-
-## WBJEE Cutoff (2025)
-
-| Category | Round 1 | Round 2 |
-|----------|---------|---------|
-| General | 7,500 | 53,000 |
+- **Total Fee**: Rs. 604700
+- **Admission Fee**: Rs. 98225
 
 ## Placement Statistics
 
-- **Placement Rate**: 80-85%
-- **Average Package**: ₹3.5-4.5 LPA
-- **Highest Package**: ₹8 LPA
+- **Placement Rate (2023-24)**: 90%
+- **Placement Rate (2024-25)**: 88%
+- **Placement Rate (2025-26)**: 80%+
+- **Minimum Package**: 3.0 LPA
+- **Average Package**: 4.0 LPA
+- **Highest Package**: 10 LPA
 
-## Curriculum Overview
+## WBJEE Cutoff
 
-### Year 1 (Foundation)
-- Engineering Mathematics
-- Physics & Chemistry
-- C Programming
-- Data Structures
-- Digital Logic
+- **2024**: 18421
+- **2025**: 97611
+- **2026 (Estimated)**: ~95000
 
-### Year 2 (IT Core)
-- Database Management Systems
-- Operating Systems
-- Computer Networks
-- Software Engineering
-- Web Technology
+## Contact
 
-### Year 3 (Advanced)
-- Cloud Computing
-- Cyber Security
-- Mobile App Development
-- Data Science Basics
-- IT Infrastructure
+**Head of Department**: Dr. Dinesh Kumar Pradhan
+- Email: dinesh.pradhan@bcrec.ac.in
+- Phone: 9433303419
 
-### Year 4 (Specialization)
-- Capstone Project
-- Industrial Training
-- Electives
-
-## Career Opportunities
-
-- Software Developer
-- Database Administrator
-- Network Administrator
-- System Analyst
-- IT Project Manager
-- Cloud Engineer
-
-## Top Recruiters
-
-TCS, Infosys, Wipro, Cognizant, Capgemini, IBM, Accenture

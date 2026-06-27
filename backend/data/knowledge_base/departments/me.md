@@ -1,73 +1,41 @@
-# Mechanical Engineering (ME)
+# Mechanical Engineering
 
 ## Program Overview
 
-**B.Tech in Mechanical Engineering** at BCREC focuses on design, manufacturing, and thermal engineering.
+**4 years** program with an intake of **60** students.
 
 ## Key Details
 
 | Attribute | Value |
 |-----------|-------|
-| **Duration** | 4 Years (8 Semesters) |
-| **Intake** | 60 Students |
-| **Affiliation** | MAKAUT |
-| **Accreditation** | NBA |
+| **Duration** | 4 years |
+| **Intake** | 60 |
+| **Established** | 2003 |
+| **NBA Accredited** | Yes |
 
-## Eligibility
+## Fee Structure
 
-- 10+2 with Physics, Chemistry, Mathematics
-- Minimum 50% aggregate marks
-- Valid WBJEE or JEE Main score
-
-## WBJEE Cutoff (2025)
-
-| Category | Round 1 | Round 2 |
-|----------|---------|---------|
-| General | 60,000 | 75,000 |
+- **Total Fee**: Rs. 444100
+- **Admission Fee**: Rs. 78150
 
 ## Placement Statistics
 
-- **Placement Rate**: 60-70%
-- **Average Package**: ₹4-5 LPA
-- **Highest Package**: ₹8-10 LPA
+- **Placement Rate (2023-24)**: 100%
+- **Placement Rate (2024-25)**: 72%
+- **Placement Rate (2025-26)**: 60%+
+- **Minimum Package**: 1.8 LPA
+- **Average Package**: 3.2 LPA
+- **Highest Package**: 6.5 LPA
 
-## Curriculum Overview
+## WBJEE Cutoff
 
-### Year 1 (Foundation)
-- Engineering Mathematics
-- Physics & Chemistry
-- Engineering Graphics
-- Workshop Practice
-- Basic Mechanical Engineering
+- **2024**: 104490
+- **2025**: 96926
+- **2026 (Estimated)**: ~100000
 
-### Year 2 (Mechanical Core)
-- Strength of Materials
-- Thermodynamics
-- Fluid Mechanics
-- Manufacturing Technology
-- Machine Drawing
+## Contact
 
-### Year 3 (Advanced)
-- Heat Transfer
-- Design of Machine Elements
-- Automobile Engineering
-- CAD/CAM
-- Industrial Engineering
+**Head of Department**: Dr. Chandan Chattoraj
+- Email: chandan.chattoraj@bcrec.ac.in
+- Phone: 9531591525
 
-### Year 4 (Specialization)
-- Capstone Project
-- Industrial Training
-- Electives
-
-## Career Opportunities
-
-- Mechanical Engineer
-- Design Engineer
-- Manufacturing Engineer
-- Automobile Engineer
-- Quality Engineer
-- HVAC Engineer
-
-## Top Recruiters
-
-Tata Motors, Maruti Suzuki, Hyundai, L&T, Tata Steel, JSW, Infosys

@@ -24,37 +24,46 @@ _MODEL_DIR = Path(__file__).resolve().parent.parent.parent.parent / "data" / "mo
 _MODEL_PATH = _MODEL_DIR / "lid.176.ftz"
 
 
+_HAS_FASTTEXT = None
+
+
+def _check_fasttext():
+    global _HAS_FASTTEXT
+    if _HAS_FASTTEXT is None:
+        try:
+            import fasttext
+
+            _HAS_FASTTEXT = True
+        except ImportError:
+            _HAS_FASTTEXT = False
+            logger.info("fasttext not installed — using keyword-only detection")
+    return _HAS_FASTTEXT
+
+
 def _load_model():
-    """Download (if needed) and load the FastText language ID model."""
     global _model
     if _model is not None:
         return _model
-
-    try:
-        import fasttext
-    except ImportError:
-        # Silently fail to avoid overhead, fallback will be used
+    if not _check_fasttext():
         return None
 
-    # Download model if not present
     if not _MODEL_PATH.exists():
-        logger.info(f"Downloading FastText language model to {_MODEL_PATH}...")
+        logger.info(f"Downloading FastText model to {_MODEL_PATH}...")
         os.makedirs(_MODEL_DIR, exist_ok=True)
         try:
             urllib.request.urlretrieve(_MODEL_URL, str(_MODEL_PATH))
-            logger.info("FastText model downloaded successfully.")
-        except Exception as e:
-            logger.error(f"Failed to download FastText model: {e}")
+            logger.info("FastText model downloaded.")
+        except Exception:
             return None
 
-    # Load model (suppress FastText's own warnings about deprecated API)
     try:
+        import fasttext
+
         fasttext.FastText.eprint = lambda *args, **kwargs: None
         _model = fasttext.load_model(str(_MODEL_PATH))
-        logger.info("FastText language model loaded.")
+        logger.info("FastText model loaded.")
         return _model
-    except Exception as e:
-        logger.error(f"Failed to load FastText model: {e}")
+    except Exception:
         return None
 
 

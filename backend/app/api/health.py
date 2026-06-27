@@ -17,6 +17,11 @@ def _init_sarvam():
     return get_sarvam_service()
 
 
+@router.get("/")
+async def health_root():
+    return {"status": "ok", "service": "BCREC Voice Agent"}
+
+
 @router.get("/tts")
 async def tts_health_check():
     """Check which TTS providers are working"""
@@ -36,5 +41,5 @@ async def tts_health_check():
         "sarvam_available": sarvam_available,
         "active_provider": active_provider,
         "status": "healthy" if sarvam_available else "degraded",
-        "key_prefix": settings.sarvam_api_key[:10] if settings.sarvam_api_key else "none"
+        "key_prefix": settings.sarvam_api_key[:10] if settings.sarvam_api_key else "none",
     }

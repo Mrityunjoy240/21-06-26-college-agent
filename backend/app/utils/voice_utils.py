@@ -236,14 +236,15 @@ def clean_for_voice(text: str) -> str:
             clean = re.sub(pattern, replacement, clean, flags=re.IGNORECASE)
 
         # ── Step 3: Space out acronyms (English/Romanized only) ──
-        # Known acronyms → C. S. E.
-        for acronym in _ACRONYMS:
+        # Known acronyms → C. S. E. / M. A. K. A. U. T.
+        for acronym in sorted(_ACRONYMS, key=len, reverse=True):
             clean = re.sub(
                 rf"\b{acronym}\b",
                 ". ".join(list(acronym)) + ".",
                 clean,
             )
-        # Handle already-spaced acronyms (e.g., "C S E" → "C. S. E.")
+        # Handle already-spaced acronyms (any length)
+        clean = re.sub(r"\b([A-Z])\s+([A-Z])\s+([A-Z])\s+([A-Z])\b", r"\1. \2. \3. \4.", clean)
         clean = re.sub(r"\b([A-Z])\s+([A-Z])\s+([A-Z])\b", r"\1. \2. \3.", clean)
         clean = re.sub(r"\b([A-Z])\s+([A-Z])\b", r"\1. \2.", clean)
 

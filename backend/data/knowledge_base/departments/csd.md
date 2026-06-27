@@ -1,4 +1,4 @@
-# CSE (Artificial Intelligence and Machine Learning)
+# Computer Science and Design
 
 ## Program Overview
 
@@ -21,20 +21,20 @@
 ## Placement Statistics
 
 - **Placement Rate (2023-24)**: N/A
-- **Placement Rate (2024-25)**: 85%
-- **Placement Rate (2025-26)**: 80%+
+- **Placement Rate (2024-25)**: 83%
+- **Placement Rate (2025-26)**: 78%+
 - **Minimum Package**: 4.0 LPA
 - **Average Package**: 4.5 LPA
 - **Highest Package**: 7 LPA
 
 ## WBJEE Cutoff
 
-- **2024**: 19576
-- **2025**: 78384
-- **2026 (Estimated)**: ~75000
+- **2024**: N/A
+- **2025**: N/A
+- **2026 (Estimated)**: ~95000
 
 ## Contact
 
-**Head of Department**: Dr. Gour Sundar Mitra Thakur
-- Email: gour.mitrathakur@bcrec.ac.in
+**Head of Department**: Dr. Poulomi Mukherjee Tewari
+- Email: poulami.mukherjee@bcrec.ac.in
 

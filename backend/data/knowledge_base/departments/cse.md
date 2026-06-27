@@ -1,79 +1,41 @@
-# Computer Science & Engineering (CSE)
+# Computer Science and Engineering
 
 ## Program Overview
 
-**B.Tech in Computer Science & Engineering** is the flagship program at BCREC, focusing on software development, algorithms, and computer systems.
+**4 years** program with an intake of **180** students.
 
 ## Key Details
 
 | Attribute | Value |
 |-----------|-------|
-| **Duration** | 4 Years (8 Semesters) |
-| **Intake** | 120 Students |
-| **Affiliation** | MAKAUT |
-| **Accreditation** | NBA |
+| **Duration** | 4 years |
+| **Intake** | 180 |
+| **Established** | 2000 |
+| **NBA Accredited** | Yes |
 
-## Eligibility
+## Fee Structure
 
-- 10+2 with Physics, Chemistry, Mathematics
-- Minimum 50% aggregate marks
-- Valid WBJEE or JEE Main score
-
-## WBJEE Cutoff (2025)
-
-| Category | Round 1 | Round 2 | Round 3 |
-|----------|---------|---------|---------|
-| General | 39,210 | 65,661 | 62,121 |
+- **Total Fee**: Rs. 604700
+- **Admission Fee**: Rs. 98225
 
 ## Placement Statistics
 
-- **Placement Rate**: 85-90%
-- **Average Package**: ₹3.5-4.5 LPA
-- **Highest Package**: ₹12 LPA
+- **Placement Rate (2023-24)**: 93.60%
+- **Placement Rate (2024-25)**: 90%
+- **Placement Rate (2025-26)**: 85%+
+- **Minimum Package**: 3.36 LPA
+- **Average Package**: 4.25 LPA
+- **Highest Package**: 15 LPA
 
-## Curriculum Overview
+## WBJEE Cutoff
 
-### Year 1 (Foundation)
-- Engineering Mathematics
-- Physics & Chemistry
-- C Programming
-- Data Structures
-- Digital Logic
-
-### Year 2 (Core CS)
-- Database Management Systems
-- Operating Systems
-- Computer Networks
-- Theory of Computation
-- Software Engineering
-
-### Year 3 (Advanced)
-- Algorithms
-- Machine Learning
-- Web Technologies
-- Cloud Computing
-- Cyber Security
-
-### Year 4 (Specialization)
-- Capstone Project
-- Industrial Training
-- Electives
-
-## Career Opportunities
-
-- Software Developer
-- Full Stack Engineer
-- Data Analyst
-- System Designer
-- Tech Lead
-- Product Manager
-
-## Top Recruiters
-
-TCS, Infosys, Wipro, Cognizant, Amazon, Microsoft, Google, IBM
+- **2024**: 16059
+- **2025**: 67761
+- **2026 (Estimated)**: ~65000
 
 ## Contact
 
-**HOD**: Dr. Pabitra Kumar Dey
-- Email: pabitrakumar.dey@bcrec.ac.in
-- Phone: Contact main office
+**Head of Department**: Dr. Pabitra Kumar Dey
+- Email: pabitra.dey@bcrec.ac.in
+- Phone: 9434476503
+

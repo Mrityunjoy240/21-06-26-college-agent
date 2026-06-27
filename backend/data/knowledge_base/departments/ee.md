@@ -1,73 +1,41 @@
-# Electrical Engineering (EE)
+# Electrical Engineering
 
 ## Program Overview
 
-**B.Tech in Electrical Engineering** at BCREC focuses on power systems, electrical machines, and control systems.
+**4 years** program with an intake of **120** students.
 
 ## Key Details
 
 | Attribute | Value |
 |-----------|-------|
-| **Duration** | 4 Years (8 Semesters) |
-| **Intake** | 120 Students |
-| **Affiliation** | MAKAUT |
-| **Accreditation** | NBA |
+| **Duration** | 4 years |
+| **Intake** | 120 |
+| **Established** | 2000 |
+| **NBA Accredited** | Yes |
 
-## Eligibility
+## Fee Structure
 
-- 10+2 with Physics, Chemistry, Mathematics
-- Minimum 50% aggregate marks
-- Valid WBJEE or JEE Main score
-
-## WBJEE Cutoff (2025)
-
-| Category | Round 1 | Round 2 |
-|----------|---------|---------|
-| General | 40,000 | 55,000 |
+- **Total Fee**: Rs. 554100
+- **Admission Fee**: Rs. 91900
 
 ## Placement Statistics
 
-- **Placement Rate**: 70-75%
-- **Average Package**: ₹4.5-5.2 LPA
-- **Highest Package**: ₹8-10 LPA
+- **Placement Rate (2023-24)**: 75%
+- **Placement Rate (2024-25)**: 70%
+- **Placement Rate (2025-26)**: 65%+
+- **Minimum Package**: 1.8 LPA
+- **Average Package**: 3.2 LPA
+- **Highest Package**: 6.5 LPA
 
-## Curriculum Overview
+## WBJEE Cutoff
 
-### Year 1 (Foundation)
-- Engineering Mathematics
-- Physics & Chemistry
-- C Programming
-- Basic Electrical Engineering
-- Engineering Mechanics
+- **2024**: 29776
+- **2025**: 93045
+- **2026 (Estimated)**: ~90000
 
-### Year 2 (Electrical Core)
-- Circuit Theory
-- Electrical Machines
-- Power Systems
-- Electromagnetic Fields
-- Electronic Devices
+## Contact
 
-### Year 3 (Advanced)
-- Power Electronics
-- Control Systems
-- Instrumentation
-- Renewable Energy
-- High Voltage Engineering
+**Head of Department**: Dr. Shibendu Mahata
+- Email: shibendu.mahata@bcrec.ac.in
+- Phone: 9832724052
 
-### Year 4 (Specialization)
-- Capstone Project
-- Industrial Training
-- Electives
-
-## Career Opportunities
-
-- Electrical Engineer
-- Power Engineer
-- Control Systems Engineer
-- Electronics Engineer
-- Renewable Energy Engineer
-- PSU Engineer
-
-## Top Recruiters
-
-NTPC, NHPC, BHEL, Tata Power, CESC, WBSEDCL, L&T, Schneider
